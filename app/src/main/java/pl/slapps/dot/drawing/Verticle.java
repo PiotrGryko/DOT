@@ -1,5 +1,7 @@
 package pl.slapps.dot.drawing;
 
+import android.util.Log;
+
 /**
  * Created by piotr on 01.11.15.
  */
@@ -19,6 +21,12 @@ public class Verticle {
 
     }
 
+    public void update(float x, float y)
+    {
+        this.x+=x;
+        this.y+=y;
+    }
+
     public String print()
     {
         return x +" "+y +" "+z+" ";
@@ -26,7 +34,8 @@ public class Verticle {
 
     public boolean equals(Verticle v)
     {
-        if(x==v.x && y==v.y && z==v.z)
+        //Log.d("path", "comparing verticles " +  this.x + " " + this.y + " " +  v.x + " " +  v.y);
+        if((int)x==(int)v.x && (int)y==(int)v.y && (int)z==(int)v.z)
             return true;
         else
             return false;

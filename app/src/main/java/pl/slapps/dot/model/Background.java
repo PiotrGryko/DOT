@@ -7,14 +7,9 @@ import java.nio.FloatBuffer;
 import javax.microedition.khronos.opengles.GL10;
 
 
-
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.opengl.GLUtils;
 
-import pl.slapps.dot.R;
-import pl.slapps.dot.view.GameView;
+import pl.slapps.dot.game.GameView;
 
 public class Background {
 

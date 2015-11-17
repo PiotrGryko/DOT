@@ -1,20 +1,10 @@
 package pl.slapps.dot.route;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.opengl.GLUtils;
-
-import java.nio.FloatBuffer;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import pl.slapps.dot.R;
-import pl.slapps.dot.model.Background;
-import pl.slapps.dot.model.Maze;
 import pl.slapps.dot.model.Sprite;
-import pl.slapps.dot.view.GameView;
 
 /**
  * Created by piotr on 20.10.15.
@@ -66,7 +56,7 @@ public class RouteBackground extends Sprite {
 
 
         gl.glColor4f(r, g, b, a);
-        gl.glVertexPointer(3, GL10.GL_FLOAT, 0, bufferedVertex);
+        gl.glVertexPointer(2, GL10.GL_FLOAT, 0, bufferedVertex);
         gl.glDrawElements(GL10.GL_TRIANGLES, indices.length,
                 GL10.GL_UNSIGNED_SHORT, bufferedIndices);
 

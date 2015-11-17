@@ -6,7 +6,6 @@ import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
 import pl.slapps.dot.drawing.Quad;
-import pl.slapps.dot.view.GameView;
 
 
 public class Sprite {
@@ -62,11 +61,11 @@ public class Sprite {
 
 	public float[] getVertices()
 	{
-		return vertices;
+		return quad.vertices;
 	}
 	public short[] getIndices()
 	{
-		return indices;
+		return quad.indices;
 	}
 
 
@@ -88,6 +87,15 @@ public class Sprite {
 		moveY += y;
 		centerX += x;
 		centerY += y;
+
+		quad.bottomLeft.update(x, y);
+		quad.bottomRight.update(x, y);
+		quad.topLeft.update(x, y);
+		quad.topRight.update(x, y);
+		quad.initSharedVerticles();
+		this.bufferedVertex.position(0);
+		this.bufferedVertex.put(quad.vertices);
+		this.bufferedVertex.position(0);
 	}
 
 	public float getCenterX() {

@@ -1,15 +1,16 @@
 package pl.slapps.dot.animation;
 
 import android.graphics.Color;
-import android.util.Log;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.Random;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import pl.slapps.dot.view.GameView;
+import pl.slapps.dot.game.GameView;
 
 
 public class Explosion {
@@ -20,18 +21,21 @@ public class Explosion {
     public float y;
     private Random random;
     private GameView view;
-    private long lifeTime = 1000;
+    private long lifeTime = 1500;
     private long time = 0;
     public float r, g, b;
     public float size;
     //private Text points;
+    private int bufferSize;
 
     private FloatBuffer bufferedVertex;
 
 
     private ArrayList<Particle> particles;
+    private int count;
 
     public Explosion(GameView view, int count, float x, float y, long time, float speed, int shipSize, String color_start, String color_end) {
+
 
         int intColor = Color.parseColor(color_start);
         float a_start = (float) Color.alpha(intColor) / 255;
@@ -58,6 +62,13 @@ public class Explosion {
         b = (float) Math.random() * (Math.abs(b_end - b_start)) + b_start;
         //points = new Text(view,"100",x,y,50,50);
 
+        this.count=count;
+        bufferSize = count*2*6*4;
+
+        ByteBuffer bytes = ByteBuffer.allocateDirect(bufferSize);
+        bytes.order(ByteOrder.nativeOrder());
+
+        bufferedVertex = bytes.asFloatBuffer();
 
         particles = new ArrayList<>();
         for (int i = 0; i < count; i++) {
@@ -68,8 +79,10 @@ public class Explosion {
             Particle p = new Particle(view, x, y, partSize, partSize, view.getMaze(), time, this);
             p.setMove(randomSign((float) Math.random() * speed * 1.5f),
                     randomSign((float) Math.random() * speed * 1.5f));
+            p.initDrawing(bufferedVertex,i);
             particles.add(p);
         }
+        bufferedVertex.position(0);
 
 
     }
@@ -85,6 +98,7 @@ public class Explosion {
     public void removeParticle(Particle particle) {
         particles.remove(particle);
 
+
         if (particles.size() == 0)
             view.removeExplosion(this);
     }
@@ -98,8 +112,17 @@ public class Explosion {
 
     public void draw(GL10 gl) {
 
-        for (int i = 0; i < particles.size(); i++)
-            particles.get(i).draw(gl, r, g, b);
+        gl.glLoadIdentity();
+
+
+        gl.glColor4f(r, g, b, 0.0f);
+
+        //gl.glTranslatef(moveX, moveY, 0);
+
+        gl.glVertexPointer(2, GL10.GL_FLOAT, 0, bufferedVertex);
+        gl.glDrawArrays(GL10.GL_TRIANGLES, 0, count*3);
+        //for (int i = 0; i < particles.size(); i++)
+        ///    particles.get(i).draw(gl, r, g, b);
 
         //points.draw(gl);
 

@@ -1,4 +1,4 @@
-package pl.slapps.dot.view;
+package pl.slapps.dot.game;
 
 import java.util.ArrayList;
 
@@ -19,11 +19,8 @@ import pl.slapps.dot.MainActivity;
 import pl.slapps.dot.R;
 import pl.slapps.dot.animation.Explosion;
 import pl.slapps.dot.model.Background;
-import pl.slapps.dot.model.Generator;
-import pl.slapps.dot.model.Maze;
 import pl.slapps.dot.model.MainSprite;
 import pl.slapps.dot.route.Route;
-import pl.slapps.dot.route.RouteFinish;
 
 
 public class GameView extends GLSurfaceView implements GLSurfaceView.Renderer {
@@ -43,6 +40,7 @@ public class GameView extends GLSurfaceView implements GLSurfaceView.Renderer {
 
     private String explosionColorStart;
     private String explosionColorEnd;
+    private String backgroundColor;
 
 
     public float spriteSpeed = this.getResources().getDimension(R.dimen.speed);
@@ -52,14 +50,21 @@ public class GameView extends GLSurfaceView implements GLSurfaceView.Renderer {
 
     public void setRunnig(boolean isRunnig) {
         this.isRunnig = isRunnig;
+
+        if(!isRunnig && generator!=null)
+            context.clearStageState();
+
+
+
     }
 
-    public void loadStageData(JSONObject jsonStage, String color) {
+    public void loadStageData(JSONObject jsonStage) {
         try {
 
             JSONObject colors = jsonStage.has("colors") ? jsonStage.getJSONObject("colors") : new JSONObject();
 
             explosionColorStart = colors.has("explosion_start") ? colors.getString("explosion_start") : "#FF0000";
+            backgroundColor = colors.has("background") ? colors.getString("background") : "#ff9999";
 
             explosionColorEnd = colors.has("explosion_end") ? colors.getString("explosion_end") : "#700BCB";
             shipColor = colors.has("ship") ? colors.getString("ship") : "#000000";
@@ -70,7 +75,7 @@ public class GameView extends GLSurfaceView implements GLSurfaceView.Renderer {
 
         generator = null;
         background = null;
-        background = new Background(this, color);
+        background = new Background(this, backgroundColor);
 
         maze = null;
         maze = new Maze(this, jsonStage);
@@ -120,8 +125,8 @@ public class GameView extends GLSurfaceView implements GLSurfaceView.Renderer {
     public void moveToNextLvl() {
         //resetDot();
         //maze.clearRoutes();
-        context.playFinishSound();
-        isRunnig = false;
+        context.getSoundsManager().playFinishSound();
+        //isRunnig = false;
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -167,6 +172,8 @@ public class GameView extends GLSurfaceView implements GLSurfaceView.Renderer {
     @Override
     public void onDrawFrame(GL10 gl) {
 
+
+
         // TODO Auto-generated method stub
         gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
         gl.glLoadIdentity();
@@ -175,9 +182,11 @@ public class GameView extends GLSurfaceView implements GLSurfaceView.Renderer {
         if (background != null)
             background.draw(gl);
 
-        if (generator != null)
+
+
+        if (generator != null  && isRunnig)
             generator.draw(gl);
-        else if (maze != null) {
+        else if (maze != null  && mainSprite!=null  && isRunnig) {
 
 
             maze.draw(gl);
@@ -217,7 +226,7 @@ public class GameView extends GLSurfaceView implements GLSurfaceView.Renderer {
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         //	points.loadTexture(gl);
         //	gl.glEnable(GL10.GL_TEXTURE_2D);
-        background.loadTexture(gl);
+        //background.loadTexture(gl);
 
 
     }
@@ -232,7 +241,7 @@ public class GameView extends GLSurfaceView implements GLSurfaceView.Renderer {
             if (r != null) {
                 Route.Movement movement = r.getDirection();
 
-                context.playMoveSound();
+                context.getSoundsManager().playMoveSound();
 
                 setDotMovement(movement);
             }
@@ -307,12 +316,12 @@ public class GameView extends GLSurfaceView implements GLSurfaceView.Renderer {
     }
 
     public Explosion explodeDot(boolean sound) {
-        Explosion e = new Explosion(this, 30, mainSprite.centerX, mainSprite.centerY, System.currentTimeMillis(), spriteSpeed, (int) dotSize, explosionColorStart, explosionColorEnd);
+        Explosion e = new Explosion(this, 50, mainSprite.centerX, mainSprite.centerY, System.currentTimeMillis(), spriteSpeed, (int) dotSize, explosionColorStart, explosionColorEnd);
 
         //view.resetDot();
         addExplosion(e);
         if (sound)
-            context.playCrashSound();
+            context.getSoundsManager().playCrashSound();
         return e;
     }
 
@@ -349,7 +358,7 @@ public class GameView extends GLSurfaceView implements GLSurfaceView.Renderer {
 
             case MotionEvent.ACTION_DOWN: {
 
-                if (generator != null) {
+                if (generator != null && isRunnig) {
                     return generator.onTouch(event);
                 }
 
@@ -362,7 +371,7 @@ public class GameView extends GLSurfaceView implements GLSurfaceView.Renderer {
 
                         Route current = maze.getCurrentRouteObject(mainSprite.centerX, mainSprite.centerY);
                         if (current != null) {
-                            context.playMoveSound();
+                            context.getSoundsManager().playMoveSound();
 
                             setDotMovement(current.next);
                         }

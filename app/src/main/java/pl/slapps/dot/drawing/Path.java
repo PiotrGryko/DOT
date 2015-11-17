@@ -103,7 +103,7 @@ public class Path {
             int startIncentIndex = j*6;
 
             Quad q = quads.get(j);
-            Log.d(TAG,"strt index "+startVerticlesIndex +" "+startIncentIndex);
+            //Log.d(TAG,"strt index "+startVerticlesIndex +" "+startIncentIndex);
             verticles[startVerticlesIndex++]=q.bottomLeft.x;
             verticles[startVerticlesIndex++]=q.bottomLeft.y;
             //verticles[startVerticlesIndex++]=q.bottomLeft.z;
@@ -172,7 +172,8 @@ public class Path {
         for(int i=0;i<quads.size();i++)
         {
             Quad e = quads.get(i);
-            if(q.bottomLeft.equals(e.topLeft) && q.bottomRight.equals(e.topRight))
+            if(e.compareTop(q))
+            //if(q.bottomLeft.equals(e.topLeft) && q.bottomRight.equals(e.topRight))
             {
                 q.topLeft.index=e.topLeft.index;
                 q.topRight.index=e.topRight.index;
@@ -181,8 +182,8 @@ public class Path {
                 Log.d(TAG,"quad connected top");
                 return;
             }
-
-            if(q.bottomLeft.equals(e.bottomRight) && q.topLeft.equals(e.topRight))
+            if(e.compareRight(q))
+            //if(q.bottomLeft.equals(e.bottomRight) && q.topLeft.equals(e.topRight))
             {
                 q.bottomRight.index=e.bottomRight.index;
                 q.topRight.index=e.topRight.index;
@@ -192,7 +193,9 @@ public class Path {
                 return;
             }
 
-            if(q.bottomRight.equals(e.bottomLeft) && q.topRight.equals(e.topLeft))
+            //Log.d(TAG,"comparing left");
+            if(e.compareLeft(q))
+            //if(q.bottomRight.equals(e.bottomLeft) && q.topRight.equals(e.topLeft))
             {
                 q.bottomLeft.index=e.bottomLeft.index;
                 q.topLeft.index=e.topLeft.index;
@@ -201,8 +204,8 @@ public class Path {
                 Log.d(TAG,"quad connected left ");
                 return;
             }
-
-            if(q.topLeft.equals(e.bottomLeft) && q.topRight.equals(e.bottomRight))
+            if(e.compareBottom(q))
+            //if(q.topLeft.equals(e.bottomLeft) && q.topRight.equals(e.bottomRight))
             {
                 q.bottomRight.index=e.bottomRight.index;
                 q.bottomLeft.index=e.bottomLeft.index;
@@ -221,6 +224,7 @@ public class Path {
         q.bottomLeft.index+=startIndex;
         q.topRight.index+=startIndex;
         q.topLeft.index+=startIndex;
+
 
         quads.add(q);
 

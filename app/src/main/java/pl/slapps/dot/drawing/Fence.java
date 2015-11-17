@@ -93,18 +93,21 @@ public class Fence {
 
 
             output.add(startWall);
-            if (startWall.end.equals(firstWall.start))
+            if (startWall.end.equals(firstWall.start)) {
+                Log.d(TAG,"BREAK!");
                 break;
+            }
         }
 
 
         Log.d(TAG, "walls sorted " + walls.size() + " " + output.size());
         walls = output;
 
+        /*
         for (int i = 0; i < walls.size(); i++) {
             Log.d(TAG, walls.get(i).start.print() + " $$ " + walls.get(i).end.print());
         }
-
+*/
     }
 
 
@@ -112,14 +115,16 @@ public class Fence {
         for (int i = 0; i < walls.size(); i++) {
             Wall next = walls.get(i);
             if (w == next) {
-                Log.d(TAG, "duplicate");
+                //Log.d(TAG, "duplicate");
                 continue;
             }
             if (w.end.equals(next.start)) {
-                Log.d(TAG, "ok " + w.start.print() + " " + w.end.print());
+                //Log.d(TAG, "ok " + w.start.print() + " " + w.end.print());
+                //Log.d(TAG, "returned: " + next.start.print() + " " + next.end.print());
+
                 return next;
             } else if (w.end.equals(next.end)) {
-                Log.d(TAG, "switch");
+                //Log.d(TAG, "switch");
 
                 next.end = next.start;
                 next.start = w.end;
@@ -127,6 +132,7 @@ public class Fence {
             }
 
         }
+        //Log.d(TAG,"find next wall returns null");
         return null;
     }
 

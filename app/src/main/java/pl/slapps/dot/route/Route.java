@@ -42,6 +42,8 @@ public class Route {
     public float width;
     public float height;
     public float routeWidth;
+    public float routeHeight;
+
     public float centerX;
     public float centerY;
     float borderX;
@@ -71,13 +73,15 @@ public class Route {
             return;
         }
         if (type == Type.TILE || type == Type.BLOCK) {
+            borderX=0;
+            borderY=0;
             walls.add(new Wall(new Junction(topX + borderX, topY + height - borderY, 0), new Junction(topX + borderX, topY + borderY, 0), Wall.Type.LEFT));
             walls.add(new Wall(new Junction(topX + borderX, topY + borderY, 0), new Junction(topX + width - borderX, topY + borderY, 0), Wall.Type.TOP));
             walls.add(new Wall(new Junction(topX + width - borderX, topY + borderY, 0), new Junction(topX + width - borderX, topY + height - borderY, 0), Wall.Type.RIGHT));
             walls.add(new Wall(new Junction(topX + width - borderX, topY + height - borderY, 0), new Junction(topX + borderX, topY + height - borderY, 0), Wall.Type.BOTTOM));
 
 
-            backgroundPartOne = new RouteBackground(centerX, centerY, routeWidth, routeWidth, backgroundColor);
+            //backgroundPartOne = new RouteBackground(centerX, centerY, routeWidth, routeHeight, backgroundColor);
 
             return;
         }
@@ -111,9 +115,8 @@ public class Route {
                 walls.add(bWall);
 
                 backgroundPartOne = new RouteBackground(centerX, topY + height - borderY / 2, routeWidth, borderY, backgroundColor);
-                backgroundPartTwo = new RouteBackground(topX + borderX + (width - borderX) / 2, centerY, width - borderX, routeWidth, backgroundColor);
+                backgroundPartTwo = new RouteBackground(topX + borderX + (width - borderX) / 2, centerY, width - borderX, routeHeight, backgroundColor);
 
-                //  backgroundPartOne=new RouteBackground(centerX,centerY,(int)width,(int)(height-2*borderY));
                 break;
             }
             case BOTTOMLEFT:
@@ -144,7 +147,7 @@ public class Route {
                 walls.add(bWall);
 
                 backgroundPartOne = new RouteBackground(centerX, topY + height - borderY / 2, routeWidth, borderY, backgroundColor);
-                backgroundPartTwo = new RouteBackground(topX + (width - borderX) / 2, centerY, width - borderX, routeWidth, backgroundColor);
+                backgroundPartTwo = new RouteBackground(topX + (width - borderX) / 2, centerY, width - borderX, routeHeight, backgroundColor);
 
                 break;
             }
@@ -170,7 +173,7 @@ public class Route {
                 walls.add(bWall);
 
                 backgroundPartOne = new RouteBackground(centerX, topY + borderY / 2, routeWidth, borderY, backgroundColor);
-                backgroundPartTwo = new RouteBackground(topX + borderX + (width - borderX) / 2, centerY, width - borderX, routeWidth, backgroundColor);
+                backgroundPartTwo = new RouteBackground(topX + borderX + (width - borderX) / 2, centerY, width - borderX, routeHeight, backgroundColor);
 
                 break;
             }
@@ -195,7 +198,7 @@ public class Route {
                 walls.add(bWall);
 
                 backgroundPartOne = new RouteBackground(centerX, topY + borderY / 2, routeWidth, borderY, backgroundColor);
-                backgroundPartTwo = new RouteBackground(topX + (width - borderX) / 2, centerY, width - borderX, routeWidth, backgroundColor);
+                backgroundPartTwo = new RouteBackground(topX + (width - borderX) / 2, centerY, width - borderX, routeHeight, backgroundColor);
 
                 break;
             }
@@ -213,7 +216,7 @@ public class Route {
                 walls.add(tWall);
                 walls.add(bWall);
 
-                backgroundPartOne = new RouteBackground(centerX, centerY, (int) width, (int) routeWidth, backgroundColor);
+                backgroundPartOne = new RouteBackground(centerX, centerY,  width,  routeHeight, backgroundColor);
 
 
                 break;
@@ -251,8 +254,10 @@ public class Route {
         topX = width * (widthNumber);
         topY = height * heightNumber;
         this.routeWidth = width * 9 / 10;
+        this.routeHeight = height * 9 / 10;
+
         this.borderX = (width - routeWidth) / 2;
-        this.borderY = (height - routeWidth) / 2;
+        this.borderY = (height - routeHeight) / 2;
         this.horizontalPos = widthNumber;
         this.verticalPos = heightNumber;
         this.from = Direction.valueOf(from);

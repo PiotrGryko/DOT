@@ -1,4 +1,4 @@
-package pl.slapps.dot.model;
+package pl.slapps.dot.game;
 
 import android.app.Dialog;
 import android.graphics.Color;
@@ -30,11 +30,9 @@ import javax.microedition.khronos.opengles.GL10;
 
 import pl.slapps.dot.DAO;
 import pl.slapps.dot.R;
-import pl.slapps.dot.Stages;
 import pl.slapps.dot.route.Route;
 import pl.slapps.dot.route.RouteFinish;
 import pl.slapps.dot.route.RouteStart;
-import pl.slapps.dot.view.GameView;
 import yuku.ambilwarna.AmbilWarnaDialog;
 
 /**
@@ -53,6 +51,9 @@ public class Generator {
     private GameView view;
 
     private String _id;
+
+    private String name="generated stage";
+    private String description = "generated desc";
 
     private String backgroundColor;
     private String fillColor;
@@ -314,16 +315,16 @@ public class Generator {
         View v = LayoutInflater.from(view.context).inflate(R.layout.dialog_stages, null);
         ListView listView = (ListView) v.findViewById(R.id.lv);
         ArrayList<String> entries = new ArrayList<String>();
-        for (int i = 0; i < Stages.stages.size(); i++) {
+        for (int i = 0; i < view.context.stages.length(); i++) {
             entries.add(Integer.toString(i));
         }
         listView.setAdapter(new ArrayAdapter<String>(view.context, android.R.layout.simple_list_item_1, entries));
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            public void onItemClick(AdapterView<?> adapterView, View v, int i, long l) {
                 try {
-                    loadRoute(new JSONObject(Stages.stages.get(i)));
+                    loadRoute(view.context.stages.getJSONObject(i));
 
                     stages.dismiss();
                 } catch (JSONException e) {
@@ -413,13 +414,12 @@ public class Generator {
         JSONObject output = new JSONObject();
 
 
-        String name = "genereted stage " + Integer.toString(tiles.size());
-        String desc = "try out generated stage!";
+
 
         try {
             output.put("name", name);
 
-            output.put("description", desc);
+            output.put("description", description);
             output.put("y_max", height);
             output.put("x_max", width);
 
@@ -512,6 +512,43 @@ public class Generator {
 
     }
 
+    private void showStringsDialog() {
+        View v = LayoutInflater.from(view.context).inflate(R.layout.dialog_generator_strings, null);
+        final EditText etName = (EditText) v.findViewById(R.id.et_name);
+        final EditText etDesc = (EditText) v.findViewById(R.id.et_desc);
+        Button btnSave = (Button) v.findViewById(R.id.btn_ok);
+
+        final Dialog dialog = new Dialog(view.context);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String textName = etName.getText().toString();
+                String textDesc = etDesc.getText().toString();
+
+                if (textName.trim().equals("")) {
+                    Toast.makeText(view.context, "width is required", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                if (textDesc.trim().equals("")) {
+                    Toast.makeText(view.context, "height is required", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                name=textName;
+                description=textDesc;
+                //initGrid(Integer.parseInt(textWidht), Integer.parseInt(textHeight));
+                dialog.dismiss();
+            }
+        });
+
+        dialog.setContentView(v);
+        dialog.show();
+
+    }
+
     private void showOptionsDialog(final Route tile) {
 
         View layout = LayoutInflater.from(view.context).inflate(R.layout.dialog_generator_options, null);
@@ -571,6 +608,8 @@ public class Generator {
         TextView tvSave = (TextView) layout.findViewById(R.id.tv_save);
         TextView tvLoad = (TextView) layout.findViewById(R.id.tv_load);
         TextView tvLoadOnline = (TextView) layout.findViewById(R.id.tv_load_online);
+        TextView tvDeleteOnline = (TextView) layout.findViewById(R.id.tv_delete_online);
+        TextView tvSetName = (TextView) layout.findViewById(R.id.tv_set_name);
 
         TextView tvGridSize = (TextView) layout.findViewById(R.id.tv_grid_size);
 
@@ -706,8 +745,35 @@ public class Generator {
                         loadOnlineMaze();
                         break;
                     }
+
+                    case R.id.tv_delete_online: {
+
+
+                        if(_id == null )
+                        {
+                            Toast.makeText(view.context,"First you have to load online stage",Toast.LENGTH_LONG).show();
+                        }
+                        else
+                        {
+                            DAO.removeStage(view.context, new Response.Listener() {
+                                @Override
+                                public void onResponse(Object response) {
+
+                                    Log.d(TAG,"Stage removed ");
+                                    Toast.makeText(view.context,"Stage removed",Toast.LENGTH_LONG).show();
+                                }
+                            },_id);
+                        }
+                        //deleteOnlineMaze();
+                        break;
+                    }
                     case R.id.tv_grid_size: {
                         showGridSizeDialog();
+                        break;
+                    }
+
+                    case R.id.tv_set_name: {
+                        showStringsDialog();
                         break;
                     }
 
@@ -983,6 +1049,8 @@ public class Generator {
         tvSave.setOnClickListener(listener);
         tvLoad.setOnClickListener(listener);
         tvLoadOnline.setOnClickListener(listener);
+        tvDeleteOnline.setOnClickListener(listener);
+        tvSetName.setOnClickListener(listener);
         tvGridSize.setOnClickListener(listener);
 
 

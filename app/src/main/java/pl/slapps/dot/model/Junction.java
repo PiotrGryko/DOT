@@ -1,5 +1,7 @@
 package pl.slapps.dot.model;
 
+import android.util.Log;
+
 /**
  * Created by piotr on 12.10.15.
  */
@@ -19,7 +21,8 @@ public class Junction {
 
     public boolean equals(Junction junction)
     {
-        if(this.z==junction.z && this.x==junction.x && this.y==junction.y)
+        //Log.d("fence", "comparing junctions " + this.x + " " + this.y + " " + junction.x + " " + junction.y);
+        if(Math.round(this.z)==Math.round(junction.z) && Math.round(this.x)==Math.round(junction.x) && Math.round(this.y)==Math.round(junction.y))
             return true;
         else
             return false;

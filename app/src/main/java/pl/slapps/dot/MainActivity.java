@@ -2,20 +2,26 @@ package pl.slapps.dot;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.graphics.drawable.ColorDrawable;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.media.AsyncPlayer;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
+import android.support.v4.view.ViewCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.Transformation;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -29,142 +35,405 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-import pl.slapps.dot.view.GameView;
+import pl.slapps.dot.adapter.AdapterStages;
+import pl.slapps.dot.game.GameView;
 
 public class MainActivity extends Activity {
 
     private String TAG = "MainActivity";
     private GameView game;
 
-    private Dialog dialogMenu;
 
+    private final String STAGES_FILE = "stages.json";
     private TextView tvName;
     private TextView tvDesc;
 
-    private Button btnPlay;
-    private Button btnExit;
-    private Button btnGenerate;
-    private Button btnStages;
-    private Button btnOnline;
+    private LinearLayout layoutMenu;
+    private LinearLayout layoutBtns;
+    private LinearLayout layoutHeader;
+    private TextView tvHeader;
+    private LinearLayout menuBkg;
 
 
-    private Uri moveSound;
-    private Uri crashSound;
-    private Uri soundFinish;
-    private Uri soundBackgroundBirds;
-    private Uri soundBackgroundBeach;
+    private ImageButton btnPlay;
+    private ImageButton btnExit;
+    private ImageButton btnGenerate;
+    private ImageButton btnStages;
+    private ImageButton btnOnline;
 
-    private Uri soundBackgroundWater;
+    private SoundsManager soundsManager;
 
-    private Uri currentBackground;
-
-
-    private AsyncPlayer asyncPlayer;
-    private AsyncPlayer asyncPlayerBackground;
-
-    // private MediaPlayer mediaPlayerBirds;
-
-
-    // private LinearLayout optionsLayout;
-
+    private SharedPreferences preferences;
+    public JSONArray stages;
 
     private int currentStage = 0;
+    private int unlockedStage = 0;
+
     private Handler handler = new Handler();
 
-    public void loadStage(JSONObject jsonStage) {
-        //setContentView(R.layout.dialog_main_menu);
+    private HideAnimation menuHideAnimation;
+    private ShowAnimation menuShowAnimation;
+    private HideAnimation headerHideAnimation;
+    private HideAnimation btnsHideAnimation;
+    private EntranceAnimation entranceAnimation;
 
-        try {
-          /*
-            if (stage >= Stages.stages.size()) {
-                stage = currentStage = 0;
+
+    class HideAnimation {
+        private View view;
+        private Animation animation;
+
+        public HideAnimation(final View view, Animation.AnimationListener listener) {
+            this.view = view;
+            animation = new Animation() {
+                @Override
+                protected void applyTransformation(float interpolatedTime, Transformation t) {
+                    super.applyTransformation(interpolatedTime, t);
+                    ViewCompat.setAlpha(view, 1 - interpolatedTime);
+                }
+            };
+
+            animation.setDuration(300);
+            if (listener != null)
+                animation.setAnimationListener(listener);
+            else {
+                animation.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        view.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
+            }
+        }
+
+        public void startAnimation() {
+            view.startAnimation(animation);
+        }
+
+        public void clearAnimation() {
+            ViewCompat.setAlpha(view, 1);
+        }
+    }
+
+
+    interface OnAnimationListener
+    {
+        public void onAnimationEnd();
+        public void onAnimationStart();
+    }
+    class ShowAnimation {
+        private View view;
+        private Animation animation;
+        private OnAnimationListener listener;
+
+
+
+        public ShowAnimation(final View view) {
+            this.view = view;
+            animation = new Animation() {
+                @Override
+                protected void applyTransformation(float interpolatedTime, Transformation t) {
+                    super.applyTransformation(interpolatedTime, t);
+                    ViewCompat.setAlpha(view, interpolatedTime);
+                }
+            };
+            animation.setDuration(150);
+            animation.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                    if(listener!=null)
+                        listener.onAnimationStart();
+
+                    view.setVisibility(View.VISIBLE);
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+
+                    if(listener!=null)
+                        listener.onAnimationEnd();
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            });
+        }
+
+        public void startAnimation(OnAnimationListener listener) {
+            this.listener=listener;
+            view.startAnimation(animation);
+            //view.setVisibility(View.VISIBLE);
+        }
+
+    }
+
+    class EntranceAnimation {
+        private View view;
+        private Animation animation;
+
+        public EntranceAnimation(final View view, Animation.AnimationListener listener) {
+            this.view = view;
+
+            animation = new Animation() {
+                @Override
+                protected void applyTransformation(float interpolatedTime, Transformation t) {
+                    super.applyTransformation(interpolatedTime, t);
+                    ViewCompat.setScaleX(view, 1 + interpolatedTime / 3);
+                    ViewCompat.setScaleY(view, 1 + interpolatedTime / 3);
+
+
+                }
+            };
+
+
+            animation.setDuration(2000);
+
+
+            if (listener != null)
+                animation.setAnimationListener(listener);
+        }
+
+        public void startAnimation() {
+            view.startAnimation(animation);
+        }
+
+        public void clearAnimation() {
+            ViewCompat.setScaleX(view, 1);
+            ViewCompat.setScaleY(view, 1);
+        }
+    }
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
+
+        soundsManager = new SoundsManager(this);
+        loadStagesFile();
+
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        currentStage =unlockedStage= preferences.getInt("current_stage", 0);
+
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        this.getWindow().setFlags(
+                WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
+                WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+
+        setContentView(R.layout.main_activity);
+        game = (GameView) findViewById(R.id.game);
+        layoutMenu = (LinearLayout) findViewById(R.id.layout_menu);
+        layoutBtns = (LinearLayout) findViewById(R.id.layout_btns);
+        layoutHeader = (LinearLayout) findViewById(R.id.layout_header);
+        tvHeader = (TextView) findViewById(R.id.tv_header);
+        menuHideAnimation = new HideAnimation(layoutMenu, new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
             }
 
-            String stageData = Stages.stages.get(stage);
+            @Override
+            public void onAnimationEnd(Animation animation) {
 
 
-            final JSONObject jsonStage = new JSONObject(stageData);
-           */
+                layoutMenu.setVisibility(View.GONE);
+                //menuHideAnimation.clearAnimation();
+                entranceAnimation.clearAnimation();
+                btnsHideAnimation.clearAnimation();
+                headerHideAnimation.clearAnimation();
+
+                game.setRunnig(true);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        menuShowAnimation = new ShowAnimation(layoutMenu);
+        headerHideAnimation = new HideAnimation(tvHeader, new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        entranceAnimation = new EntranceAnimation(layoutHeader, new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+
+                menuHideAnimation.startAnimation();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        btnsHideAnimation = new HideAnimation(layoutBtns, new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+
+                entranceAnimation.startAnimation();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+
+        menuBkg = (LinearLayout) findViewById(R.id.menu_bkg);
+
+        initMainMenu();
+
+
+        try {
+            loadStage(stages.getJSONObject(currentStage));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        soundsManager.playBackgroundBirds();
+
+    }
+
+    public void clearStageState()
+    {
+        try {
+            game.loadStageData(stages.getJSONObject(currentStage));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void loadStage(final JSONObject jsonStage) {
+
+        game.setRunnig(false);
+        try {
+
             final String name = jsonStage.has("name") ? jsonStage.getString("name") : "";
             final String desc = jsonStage.has("description") ? jsonStage.getString("description") : "";
             JSONObject colors = jsonStage.has("colors") ? jsonStage.getJSONObject("colors") : new JSONObject();
             final String backgroundColor = colors.has("background") ? colors.getString("background") : "#ff9999";
 
-
-            // dialogMenu.setBackgroundColor(Color.parseColor(backgroundColor));
-
+            final int color = Color.parseColor(backgroundColor);
+            int c = Color.argb(100, Color.red(color), Color.green(color), Color.blue(color));
+            menuBkg.setBackgroundColor(c);
 
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    if (!dialogMenu.isShowing())
-                        dialogMenu.show();
+                    layoutMenu.clearAnimation();
+                    tvName.setTextColor(color);
+                    tvDesc.setTextColor(color);
+                    if (layoutMenu.getVisibility() == View.GONE)
+                        menuShowAnimation.startAnimation(new OnAnimationListener() {
+                            @Override
+                            public void onAnimationEnd() {
+                                game.setRunnig(true);
+                            }
 
+                            @Override
+                            public void onAnimationStart() {
+
+                            }
+                        });
 
                     tvName.setText(name);
                     tvDesc.setText(desc);
 
                 }
             });
+            game.loadStageData(jsonStage);
 
-            game.loadStageData(jsonStage, backgroundColor);
 
-            /*
-            if (stage < 10 && currentBackground != soundBackgroundBirds) {
-                playBackgroundBirds();
-            } else if (stage >= 10 && stage < 20 && currentBackground != soundBackgroundBeach) {
-                playBackgroundBeach();
 
-            } else if (stage >= 20 && currentBackground != soundBackgroundWater) {
-                playBackgroundWaves();
-            }
-*/
         } catch (Throwable e) {
             e.printStackTrace();
         }
     }
 
+
+
     public void moveToNextStage() {
 
+
         currentStage++;
+        if (currentStage >= stages.length())
+            currentStage = stages.length() - 1;
         try {
-            loadStage(new JSONObject(Stages.stages.get(currentStage)));
+            loadStage(stages.getJSONObject(currentStage));
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        int savedStage = preferences.getInt("current_stage", 0);
+        if (savedStage < currentStage) {
+            unlockedStage=currentStage;
+            preferences.edit().putInt("current_stage", unlockedStage).apply();
+        }
     }
+
 
     private void initMainMenu() {
 
-        dialogMenu = new Dialog(this);
-        dialogMenu.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialogMenu.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-        //dialogMenu.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        tvName = (TextView) findViewById(R.id.tv_lvl);
+        tvDesc = (TextView) findViewById(R.id.tv_desc);
 
-        View v = LayoutInflater.from(this).inflate(R.layout.dialog_main_menu, null);
-
-        tvName = (TextView) v.findViewById(R.id.tv_lvl);
-        tvDesc = (TextView) v.findViewById(R.id.tv_desc);
-
-        btnExit = (Button) v.findViewById(R.id.btn_exit);
-        btnPlay = (Button) v.findViewById(R.id.btn_play);
-        btnGenerate = (Button) v.findViewById(R.id.btn_generate);
-        btnStages = (Button) v.findViewById(R.id.btn_stages);
-        btnOnline = (Button) v.findViewById(R.id.btn_online);
-
-        //  optionsLayout = (LinearLayout) v.findViewById(R.id.layout_options);
+        btnExit = (ImageButton) findViewById(R.id.btn_exit);
+        btnPlay = (ImageButton) findViewById(R.id.btn_play);
+        btnGenerate = (ImageButton) findViewById(R.id.btn_generate);
+        btnStages = (ImageButton) findViewById(R.id.btn_stages);
+        btnOnline = (ImageButton) findViewById(R.id.btn_online);
 
 
         btnPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //  optionsLayout.setVisibility(View.GONE);
-                dialogMenu.dismiss();
-                game.setRunnig(true);
-                //   game.onResume();
-                //   game.resetDot();
+                headerHideAnimation.startAnimation();
+                btnsHideAnimation.startAnimation();
+
 
             }
         });
@@ -173,10 +442,8 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View view) {
                 game.initGenerator(9, 15);
-                dialogMenu.dismiss();
-                // optionsLayout.setVisibility(View.GONE);
-                //   game.onResume();
-                //   game.resetDot();
+                menuHideAnimation.startAnimation();
+
 
             }
         });
@@ -191,31 +458,38 @@ public class MainActivity extends Activity {
         btnStages.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final Dialog stages = new Dialog(MainActivity.this);
-                stages.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                final Dialog stagesDialog = new Dialog(MainActivity.this);
+                stagesDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
                 View v = LayoutInflater.from(MainActivity.this).inflate(R.layout.dialog_stages, null);
                 ListView listView = (ListView) v.findViewById(R.id.lv);
-                ArrayList<String> entries = new ArrayList<String>();
-                for (int i = 0; i < Stages.stages.size(); i++) {
-                    entries.add(Integer.toString(i));
+
+                ArrayList<JSONObject> entries = new ArrayList<JSONObject>();
+
+                for (int i = 0; i <= unlockedStage; i++) {
+                    try {
+                        entries.add(stages.getJSONObject(i));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
-                listView.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, entries));
+
+                listView.setAdapter(new AdapterStages(MainActivity.this, entries));
 
                 listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                         currentStage = i;
                         try {
-                            loadStage(new JSONObject(Stages.stages.get(i)));
+                            loadStage(stages.getJSONObject(i));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        stages.dismiss();
+                        stagesDialog.dismiss();
                     }
                 });
-                stages.setContentView(v);
-                stages.show();
+                stagesDialog.setContentView(v);
+                stagesDialog.show();
             }
         });
 
@@ -241,17 +515,18 @@ public class MainActivity extends Activity {
 
                             View v = LayoutInflater.from(MainActivity.this).inflate(R.layout.dialog_stages, null);
                             ListView listView = (ListView) v.findViewById(R.id.lv);
-                            ArrayList<String> entries = new ArrayList<String>();
+                            ArrayList<JSONObject> entries = new ArrayList<JSONObject>();
                             for (int i = 0; i < results.length(); i++) {
-                                entries.add(Integer.toString(i));
+                                entries.add(results.getJSONObject(i));
                             }
-                            listView.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, entries));
+                            listView.setAdapter(new AdapterStages(MainActivity.this, entries));
 
                             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                 @Override
                                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                                     try {
-                                        currentStage = i;
+
+                                        currentStage = unlockedStage-1;
                                         loadStage(results.getJSONObject(i));
                                         stages.dismiss();
 
@@ -281,136 +556,70 @@ public class MainActivity extends Activity {
         });
 
 
-        dialogMenu.setContentView(v);
-        dialogMenu.setCanceledOnTouchOutside(false);
-        dialogMenu.setCancelable(false);
-        dialogMenu.show();
     }
 
-    public void playFinishSound() {
-        asyncPlayer.play(this, soundFinish, false, AudioManager.STREAM_MUSIC);
-        //  mediaPlayerMove.start();
+    public SoundsManager getSoundsManager() {
+        return soundsManager;
     }
 
-    public void playMoveSound() {
-        asyncPlayer.play(this, moveSound, false, AudioManager.STREAM_MUSIC);
-        //  mediaPlayerMove.start();
-    }
-
-    public void playCrashSound() {
-        asyncPlayer.play(this, crashSound, false, AudioManager.STREAM_MUSIC);
-
-        //  mediaPlayerCrash.start();
-    }
-
-    public void playBackgroundBirds() {
-        currentBackground = soundBackgroundBirds;
-        asyncPlayerBackground.stop();
-        asyncPlayerBackground.play(this, soundBackgroundBirds, true, AudioManager.STREAM_MUSIC);
-
-        //  mediaPlayerCrash.start();
-    }
-
-    public void playBackgroundBeach() {
-        currentBackground = soundBackgroundBeach;
-        asyncPlayerBackground.stop();
-        asyncPlayerBackground.play(this, soundBackgroundBeach, true, AudioManager.STREAM_MUSIC);
-
-        //  mediaPlayerCrash.start();
-    }
-
-    public void playBackgroundWaves() {
-        currentBackground = soundBackgroundWater;
-        asyncPlayerBackground.stop();
-        asyncPlayerBackground.play(this, soundBackgroundWater, true, AudioManager.STREAM_MUSIC);
-
-        //  mediaPlayerCrash.start();
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        Fabric.with(this, new Crashlytics());
-        Stages.initStages();
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        asyncPlayer = new AsyncPlayer("action");
-        asyncPlayerBackground = new AsyncPlayer("background");
-
-        Log.d(TAG, this.getPackageName());
-        moveSound = Uri.parse("android.resource://" + this.getPackageName() + "/raw/click2");
-        crashSound = Uri.parse("android.resource://" + this.getPackageName() + "/raw/click");
-        soundFinish = Uri.parse("android.resource://" + this.getPackageName() + "/raw/finish");
-        soundBackgroundBirds = Uri.parse("android.resource://" + this.getPackageName() + "/raw/birds");
-        soundBackgroundWater = Uri.parse("android.resource://" + this.getPackageName() + "/raw/waves");
-        soundBackgroundBeach = Uri.parse("android.resource://" + this.getPackageName() + "/raw/beach");
-
-//  mediaPlayerBirds = MediaPlayer.create(getApplicationContext(), R.raw.birds);
-
-
-        this.getWindow().setFlags(
-                WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
-                WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
-        // making it full screen
-
-
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-        //	game.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-
-
-        //setContentView(R.layout.dialog_main_menu);
-        //setContentView(R.layout.main_activity);
-        //game = (GameView) findViewById(R.id.game);
-        game = new GameView(this);
-        setContentView(game);
-        initMainMenu();
-
+    public void loadStagesFile() {
+        StringBuilder returnString = new StringBuilder();
+        InputStream fIn = null;
+        InputStreamReader isr = null;
+        BufferedReader input = null;
         try {
-            loadStage(new JSONObject(Stages.stages.get(currentStage)));
-        } catch (JSONException e) {
-            e.printStackTrace();
+            fIn = getResources().getAssets()
+                    .open(STAGES_FILE, Context.MODE_WORLD_READABLE);
+            isr = new InputStreamReader(fIn);
+            input = new BufferedReader(isr);
+            String line = "";
+            while ((line = input.readLine()) != null) {
+                returnString.append(line);
+            }
+        } catch (Exception e) {
+            e.getMessage();
+        } finally {
+            try {
+                if (isr != null)
+                    isr.close();
+                if (fIn != null)
+                    fIn.close();
+                if (input != null)
+                    input.close();
+            } catch (Exception e2) {
+                e2.getMessage();
+            }
         }
 
-        /*
-        mediaPlayerBirds.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mediaPlayer) {
-                mediaPlayerBirds.setLooping(true);
-                mediaPlayerBirds.start();
-
-            }
-        });
-        mediaPlayerBirds.prepareAsync();
-
-*/
-        //
-        // game.initGenerator(13,16);
-
-        // asyncPlayer.play(this, birdsSound, false, AudioManager.STREAM_MUSIC);
-
-        playBackgroundBirds();
+        try {
+            JSONObject jsonData = new JSONObject(returnString.toString());
+            JSONObject api = jsonData.has("api") ? jsonData.getJSONObject("api") : new JSONObject();
+            stages = api.has("results") ? api.getJSONArray("results") : new JSONArray();
+            Log.d(TAG, "stages loaded");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.d(TAG, e.toString());
+        }
 
     }
+
 
     public void onBackPressed() {
 
-        if (!dialogMenu.isShowing())
-            dialogMenu.show();
-        else {
-            asyncPlayerBackground.stop();
+        layoutMenu.clearAnimation();
 
-            dialogMenu.dismiss();
+        if (layoutMenu.getVisibility() == View.GONE) {
+            game.setRunnig(false);
+            menuShowAnimation.startAnimation(null);
+
+        } else {
+            soundsManager.stopBackgroundPlayer();
+
             finish();
         }
 
     }
 
-
-//	public void onWindowFocusChanged(boolean flag)
-//	{
-    //	Log.d(TAG, Boolean.toString(game.isHardwareAccelerated()));
-//	}
 
     public void onResume() {
 

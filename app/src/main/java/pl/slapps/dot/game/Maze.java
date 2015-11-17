@@ -1,14 +1,10 @@
-package pl.slapps.dot.model;
+package pl.slapps.dot.game;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
-import java.nio.ShortBuffer;
 import java.util.ArrayList;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import android.graphics.RectF;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -17,13 +13,10 @@ import org.json.JSONObject;
 
 import pl.slapps.dot.drawing.Fence;
 import pl.slapps.dot.drawing.Path;
-import pl.slapps.dot.drawing.Quad;
+import pl.slapps.dot.model.Wall;
 import pl.slapps.dot.route.Route;
-import pl.slapps.dot.route.RouteBackground;
 import pl.slapps.dot.route.RouteFinish;
 import pl.slapps.dot.route.RouteStart;
-
-import pl.slapps.dot.view.GameView;
 
 public class Maze {
 
@@ -68,8 +61,13 @@ public class Maze {
         ArrayList<Route> output = new ArrayList<>();
         Route start = getStartRoute();
         output.add(start);
+        Route old = null;
         while ((start = findNextRoute(start)) != null) {
+
             output.add(start);
+            if(start.getType()== Route.Type.FINISH)
+                break;
+
         }
         Log.d(TAG, "maze sorted " + routes.size() + " " + output.size());
 
@@ -95,7 +93,8 @@ public class Maze {
                 break;
         }
 
-        return next;
+
+            return next;
     }
 
     private Route findRoute(int x, int y) {
@@ -111,6 +110,7 @@ public class Maze {
     public Maze(GameView view, JSONObject maze) {
         //this.elements=elements;
 
+        Log.d(TAG, "maze created");
 
         try {
             this.view = view;

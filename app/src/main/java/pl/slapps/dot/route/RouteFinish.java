@@ -4,7 +4,7 @@ import org.json.JSONObject;
 
 import pl.slapps.dot.model.Junction;
 import pl.slapps.dot.model.Wall;
-import pl.slapps.dot.view.GameView;
+import pl.slapps.dot.game.GameView;
 
 /**
  * Created by piotr on 17.10.15.

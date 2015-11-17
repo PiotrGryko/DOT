@@ -409,6 +409,15 @@
                 android:text="Load online stage" />
 
             <TextView
+                android:id="@+id/tv_delete_online"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/abc_list_selector_holo_light"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="delete online stage" />
+
+            <TextView
                 android:id="@+id/tv_grid_size"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -416,6 +425,15 @@
                 android:gravity="center"
                 android:padding="5dp"
                 android:text="change grid size" />
+
+            <TextView
+                android:id="@+id/tv_set_name"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/abc_list_selector_holo_light"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="change stirngs" />
         </LinearLayout>
     </ScrollView>
 

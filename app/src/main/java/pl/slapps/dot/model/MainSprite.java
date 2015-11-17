@@ -8,13 +8,11 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.opengl.GLUtils;
 
-import java.nio.FloatBuffer;
-
 import pl.slapps.dot.R;
-import pl.slapps.dot.animation.Explosion;
+import pl.slapps.dot.game.Maze;
 import pl.slapps.dot.route.Route;
 import pl.slapps.dot.route.RouteFinish;
-import pl.slapps.dot.view.GameView;
+import pl.slapps.dot.game.GameView;
 
 
 public class MainSprite extends Sprite {
@@ -100,6 +98,10 @@ public class MainSprite extends Sprite {
         //fence.setMove(-x, -y);
         //background.setMove(-x, -y);
 
+        this.bufferedVertex.position(0);
+        this.bufferedVertex.put(this.quad.vertices);
+        this.bufferedVertex.position(0);
+
 
 
         Route collision = fence.checkRouteCollision(centerX, centerY, width / 2);
@@ -122,7 +124,7 @@ public class MainSprite extends Sprite {
     public void draw(GL10 gl) {
 
 
-        gl.glRotatef(angle, centerX, centerY, 0);
+        //gl.glRotatef(angle, centerX, centerY, 0);
 
         gl.glLoadIdentity();
 
@@ -130,16 +132,16 @@ public class MainSprite extends Sprite {
 
 
 
-        gl.glTranslatef(centerX, centerY, 0);
-        gl.glRotatef(angle, 0, 0, 1);
-        gl.glTranslatef(-centerX, -centerY, 0);
+    //    gl.glTranslatef(centerX, centerY, 0);
+    //    gl.glRotatef(angle, 0, 0, 1);
+     //   gl.glTranslatef(-centerX, -centerY, 0);
 
-        gl.glTranslatef(moveX, moveY, 0);
+      //  gl.glTranslatef(moveX, moveY, 0);
 
         gl.glColor4f(r, g, b, 0.0f);
-        gl.glVertexPointer(3, GL10.GL_FLOAT, 0, bufferedVertex);
+        gl.glVertexPointer(2, GL10.GL_FLOAT, 0, bufferedVertex);
 
-        gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, vertices.length / 3);
+        gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, vertices.length / 2);
 
 
     }
