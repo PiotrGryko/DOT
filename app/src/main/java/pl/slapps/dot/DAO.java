@@ -11,6 +11,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -21,16 +22,15 @@ import java.util.Map;
  */
 public class DAO {
     final static String TAG = DAO.class.getName();
-    final static String url = "http://188.166.101.11:4321/v1/stage";
-
+    final static String url = "http://188.166.101.11:4321/v1/";
 
 
     public static void removeStage(Context context, Response.Listener listener, final String id) {
         RequestQueue queue = Volley.newRequestQueue(context);
 
-        String request = url;
-        if(id!=null)
-            request= request+"?_id="+id;
+        String request = url + "stage";
+        if (id != null)
+            request = request + "?_id=" + id;
 
 // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.DELETE, request,
@@ -42,8 +42,6 @@ public class DAO {
                 Log.d(TAG, error.toString());
             }
         }) {
-
-
 
 
             public Map<String, String> getHeaders() {
@@ -59,10 +57,11 @@ public class DAO {
     public static void addStage(Context context, final JSONObject stage, Response.Listener listener, final String id) {
         RequestQueue queue = Volley.newRequestQueue(context);
 
-        String request = url;
-        if(id!=null)
-            request= request+"?_id="+id;
+        String request = url + "stage";
+        if (id != null)
+            request = request + "?_id=" + id;
 
+        Log.d(TAG, request);
 // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.POST, request,
                 listener, new Response.ErrorListener() {
@@ -80,8 +79,6 @@ public class DAO {
             }
 
 
-
-
             public Map<String, String> getHeaders() {
                 Map<String, String> headers = new HashMap<>();
                 headers.put("Content-Type", "application/json");
@@ -96,8 +93,129 @@ public class DAO {
         RequestQueue queue = Volley.newRequestQueue(context);
 
 // Request a string response from the provided URL.
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url + "?find",
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url + "stage?find",
                 listener, errorListener);
+// Add the request to the RequestQueue.
+        queue.add(stringRequest);
+    }
+
+
+    public static void getWorlds(Context context, Response.Listener listener, Response.ErrorListener errorListener, boolean fetchStages) {
+        RequestQueue queue = Volley.newRequestQueue(context);
+
+// Request a string response from the provided URL.
+        String request = url + "world?find";
+        if (fetchStages)
+            request = request + "&fetchStages";
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, request,
+                listener, errorListener);
+// Add the request to the RequestQueue.
+        queue.add(stringRequest);
+    }
+
+    public static void addWorld(Context context, final JSONObject stage, Response.Listener listener, final String id) {
+        RequestQueue queue = Volley.newRequestQueue(context);
+
+        String request = url + "world";
+        if (id != null)
+            request = request + "?_id=" + id;
+
+        Log.d(TAG, request);
+// Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, request,
+                listener, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+
+                Log.d(TAG, error.toString());
+            }
+        }) {
+
+            @Override
+            public byte[] getBody() {
+                return stage.toString().getBytes();
+            }
+
+
+            public Map<String, String> getHeaders() {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json");
+                return headers;
+            }
+        };
+// Add the request to the RequestQueue.
+        queue.add(stringRequest);
+    }
+
+
+    public static void addStageToWorld(Context context, Response.Listener listener, final String id, final String worldId) {
+        RequestQueue queue = Volley.newRequestQueue(context);
+
+        String request = url + "stage?_id=" + id;
+
+        final JSONObject data = new JSONObject();
+        try {
+            data.put("world_id", worldId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        Log.d(TAG, request);
+// Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, request,
+                listener, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+
+                Log.d(TAG, error.toString());
+            }
+        }) {
+
+            @Override
+            public byte[] getBody() {
+                return data.toString().getBytes();
+            }
+
+
+            public Map<String, String> getHeaders() {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json");
+                return headers;
+            }
+        };
+// Add the request to the RequestQueue.
+        queue.add(stringRequest);
+    }
+
+
+    public static void removeWorld(Context context, Response.Listener listener, final String id) {
+        RequestQueue queue = Volley.newRequestQueue(context);
+
+        String request = url + "world";
+        if (id != null)
+            request = request + "?_id=" + id;
+
+// Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.DELETE, request,
+                listener, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+
+                Log.d(TAG, error.toString());
+            }
+        }) {
+
+
+            public Map<String, String> getHeaders() {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json");
+                return headers;
+            }
+        };
 // Add the request to the RequestQueue.
         queue.add(stringRequest);
     }

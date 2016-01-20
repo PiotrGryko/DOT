@@ -1,6 +1,4 @@
-package pl.slapps.dot.model;
-
-import android.util.Log;
+package pl.slapps.dot.game;
 
 import java.lang.reflect.Array;
 import java.nio.ByteBuffer;

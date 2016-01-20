@@ -6,435 +6,65 @@
     android:orientation="vertical"
     android:padding="10dp">
 
-    <ScrollView
+    <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
-        <LinearLayout
+        <ImageView
+            android:id="@+id/btn_settings"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_margin="5dp"
+            android:adjustViewBounds="true"
+            android:src="@drawable/cogs" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical">
+
+
+        <TextView
+            android:id="@+id/tv_load"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:background="@drawable/abc_list_selector_holo_light"
+            android:gravity="center"
+            android:padding="5dp"
+            android:text="Load stage" />
+
+        <TextView
+            android:id="@+id/tv_load_online"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/abc_list_selector_holo_light"
+            android:gravity="center"
+            android:padding="5dp"
+            android:text="Load online stage" />
+
+        <TextView
+            android:id="@+id/tv_delete_online"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/abc_list_selector_holo_light"
+            android:gravity="center"
+            android:padding="5dp"
+            android:text="delete online stage" />
+
+
+        <TextView
+            android:id="@+id/tv_assign_stage"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/abc_list_selector_holo_light"
+            android:gravity="center"
+            android:padding="5dp"
+            android:text="assign stage to world" />
+
+
+    </LinearLayout>
 
-            <TextView
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="start" />
-
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/tv_starttop"
-
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:background="@drawable/abc_list_selector_holo_light"
-                    android:src="@drawable/arrow_bottom" />
-
-                <ImageView
-                    android:id="@+id/tv_startbottom"
-                    android:layout_width="50dp"
-
-                    android:layout_height="50dp"
-                    android:background="@drawable/abc_list_selector_holo_light"
-                    android:src="@drawable/arrow_top" />
-
-                <ImageView
-                    android:id="@+id/tv_startleft"
-                    android:layout_width="50dp"
-
-                    android:layout_height="50dp"
-                    android:background="@drawable/abc_list_selector_holo_light"
-                    android:src="@drawable/arrow_right" />
-
-                <ImageView
-                    android:id="@+id/tv_startright"
-                    android:layout_width="50dp"
-
-                    android:layout_height="50dp"
-                    android:background="@drawable/abc_list_selector_holo_light"
-                    android:src="@drawable/arrow_left" />
-
-            </LinearLayout>
-
-
-            <TextView
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="finish" />
-
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/tv_finishtop"
-
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:background="@drawable/abc_list_selector_holo_light"
-                    android:src="@drawable/arrow_top" />
-
-                <ImageView
-                    android:id="@+id/tv_finishbottom"
-                    android:layout_width="50dp"
-
-                    android:layout_height="50dp"
-                    android:background="@drawable/abc_list_selector_holo_light"
-                    android:src="@drawable/arrow_bottom" />
-
-                <ImageView
-                    android:id="@+id/tv_finishleft"
-                    android:layout_width="50dp"
-
-                    android:layout_height="50dp"
-                    android:background="@drawable/abc_list_selector_holo_light"
-                    android:src="@drawable/arrow_left" />
-
-                <ImageView
-                    android:id="@+id/tv_finishright"
-                    android:layout_width="50dp"
-
-                    android:layout_height="50dp"
-                    android:background="@drawable/abc_list_selector_holo_light"
-                    android:src="@drawable/arrow_right" />
-
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="route" />
-
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/tv_bottomleft"
-
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:background="@drawable/abc_list_selector_holo_light"
-                    android:src="@drawable/arrow_bottom_left" />
-
-                <ImageView
-                    android:id="@+id/tv_lefttop"
-                    android:layout_width="50dp"
-
-                    android:layout_height="50dp"
-                    android:background="@drawable/abc_list_selector_holo_light"
-                    android:src="@drawable/arrow_top_left" />
-
-                <ImageView
-                    android:id="@+id/tv_bottomright"
-                    android:layout_width="50dp"
-
-                    android:layout_height="50dp"
-                    android:background="@drawable/abc_list_selector_holo_light"
-                    android:src="@drawable/arrow_bottom_right" />
-
-                <ImageView
-                    android:id="@+id/tv_righttop"
-                    android:layout_width="50dp"
-
-                    android:layout_height="50dp"
-                    android:background="@drawable/abc_list_selector_holo_light"
-                    android:src="@drawable/arrow_top_right" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/tv_leftright"
-                    android:layout_width="50dp"
-
-                    android:layout_height="50dp"
-                    android:background="@drawable/abc_list_selector_holo_light"
-                    android:src="@drawable/arrow_horizontal" />
-
-                <ImageView
-                    android:id="@+id/tv_bottomtop"
-                    android:layout_width="50dp"
-
-                    android:layout_height="50dp"
-                    android:background="@drawable/abc_list_selector_holo_light"
-                    android:src="@drawable/arrow_vertical" />
-
-                <ImageView
-                    android:id="@+id/tv_block"
-                    android:layout_width="50dp"
-
-                    android:layout_height="50dp"
-                    android:background="@drawable/abc_list_selector_holo_light"
-                    android:src="@drawable/square" />
-
-                <ImageView
-                    android:id="@+id/tv_fill"
-                    android:layout_width="50dp"
-
-                    android:layout_height="50dp"
-                    android:background="@drawable/abc_list_selector_holo_light"
-                    android:src="@drawable/fill" />
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:id="@+id/tv_block_color"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/abc_list_selector_holo_light"
-                android:gravity="center"
-
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:padding="5dp"
-                    android:text="Block color" />
-
-                <View
-                    android:id="@+id/color_block"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-
-                    android:layout_margin="5dp"></View>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/tv_fill_color"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/abc_list_selector_holo_light"
-                android:gravity="center"
-
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:padding="5dp"
-                    android:text="Fill color" />
-
-                <View
-                    android:id="@+id/color_fill"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-
-                    android:layout_margin="5dp"></View>
-
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:id="@+id/tv_route_color"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/abc_list_selector_holo_light"
-                android:gravity="center"
-
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:padding="5dp"
-                    android:text="Route color" />
-
-                <View
-                    android:id="@+id/color_route"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-
-                    android:layout_margin="5dp"></View>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/tv_background_color"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/abc_list_selector_holo_light"
-                android:gravity="center"
-
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:padding="5dp"
-                    android:text="Background color" />
-
-                <View
-                    android:id="@+id/color_background"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-
-                    android:layout_margin="5dp"></View>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/tv_dot_color"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/abc_list_selector_holo_light"
-
-                android:gravity="center"
-
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:padding="5dp"
-                    android:text="Dot color" />
-
-
-                <View
-                    android:id="@+id/color_dot"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-
-                    android:layout_margin="5dp"></View>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/tv_explosion_start_color"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/abc_list_selector_holo_light"
-                android:gravity="center"
-
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:padding="5dp"
-                    android:text="Explosion start" />
-
-
-                <View
-                    android:id="@+id/color_explosion_start"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-
-                    android:layout_margin="5dp"></View>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/tv_explosion_end_color"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/abc_list_selector_holo_light"
-                android:gravity="center"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:padding="5dp"
-                    android:text="Explosion end" />
-
-                <View
-                    android:id="@+id/color_explosion_end"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-
-                    android:layout_margin="5dp"></View>
-
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/tv_blank"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/abc_list_selector_holo_light"
-                android:gravity="center"
-                android:padding="5dp"
-                android:text="BLANK" />
-
-            <TextView
-                android:id="@+id/tv_save"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/abc_list_selector_holo_light"
-                android:gravity="center"
-                android:padding="5dp"
-                android:text="SAVE" />
-
-            <TextView
-                android:id="@+id/tv_load"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/abc_list_selector_holo_light"
-                android:gravity="center"
-                android:padding="5dp"
-                android:text="Load stage" />
-
-            <TextView
-                android:id="@+id/tv_load_online"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/abc_list_selector_holo_light"
-                android:gravity="center"
-                android:padding="5dp"
-                android:text="Load online stage" />
-
-            <TextView
-                android:id="@+id/tv_delete_online"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/abc_list_selector_holo_light"
-                android:gravity="center"
-                android:padding="5dp"
-                android:text="delete online stage" />
-
-            <TextView
-                android:id="@+id/tv_grid_size"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/abc_list_selector_holo_light"
-                android:gravity="center"
-                android:padding="5dp"
-                android:text="change grid size" />
-
-            <TextView
-                android:id="@+id/tv_set_name"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/abc_list_selector_holo_light"
-                android:gravity="center"
-                android:padding="5dp"
-                android:text="change stirngs" />
-        </LinearLayout>
-    </ScrollView>
 
 </LinearLayout>

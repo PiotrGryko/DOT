@@ -6,6 +6,19 @@
     android:gravity="center"
     android:padding="20dp">
 
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/btn_settings"
+            android:layout_width="30dp"
+            android:adjustViewBounds="true"
+            android:layout_height="30dp"
+            android:layout_margin="5dp"
+            android:src="@drawable/cogs" />
+    </LinearLayout>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -21,7 +34,7 @@
         android:layout_width="wrap_content"
 
         android:layout_height="wrap_content"
-        android:text="height" />
+        android:text="gridY" />
 
     <EditText
         android:id="@+id/et_height"

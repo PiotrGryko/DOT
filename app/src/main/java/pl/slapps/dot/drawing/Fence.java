@@ -1,5 +1,6 @@
 package pl.slapps.dot.drawing;
 
+import android.graphics.Color;
 import android.util.Log;
 
 import java.nio.ByteBuffer;
@@ -10,8 +11,8 @@ import java.util.Arrays;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import pl.slapps.dot.model.Wall;
-import pl.slapps.dot.route.Route;
+import pl.slapps.dot.game.Wall;
+import pl.slapps.dot.tile.TileRoute;
 
 /**
  * Created by piotr on 02.11.15.
@@ -23,8 +24,10 @@ public class Fence {
     private float vert[];
     private FloatBuffer bufferedVertex;
     private ArrayList<Wall> walls;
+    private int color;
 
-    public Fence(ArrayList<Route> routes, String color) {
+    public Fence(ArrayList<TileRoute> routes, String color) {
+        this.color=Color.parseColor(color);
         walls = new ArrayList<>();
         ArrayList<Wall> tmp = new ArrayList<>();
 
@@ -140,7 +143,7 @@ public class Fence {
     public void draw(GL10 gl) {
 
 
-        gl.glColor4f(0.0f, 0.0f, 0.0f, 0.0f);
+        gl.glColor4f(0.0f, Color.red(color), Color.green(color), Color.blue(color));
 
 
         gl.glVertexPointer(2, GL10.GL_FLOAT, 0, bufferedVertex);

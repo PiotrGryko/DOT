@@ -1,4 +1,4 @@
-package pl.slapps.dot.model;
+package pl.slapps.dot.game;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

@@ -1,4 +1,4 @@
-package pl.slapps.dot.model;
+package pl.slapps.dot.game;
 
 import javax.microedition.khronos.opengles.GL10;
 
@@ -7,17 +7,20 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.opengl.GLUtils;
+import android.util.Log;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
 
 import pl.slapps.dot.R;
-import pl.slapps.dot.game.Maze;
-import pl.slapps.dot.route.Route;
-import pl.slapps.dot.route.RouteFinish;
-import pl.slapps.dot.game.GameView;
+import pl.slapps.dot.tile.TileRoute;
+import pl.slapps.dot.tile.TileRouteFinish;
 
 
 public class MainSprite extends Sprite {
 
-    private String TAG = "MainSprite";
+    private String TAG = MainSprite.class.getName();
     private Maze fence;
     private Background background;
 
@@ -29,6 +32,15 @@ public class MainSprite extends Sprite {
     public boolean prepareToDie;
 
     private GameView view;
+
+    public TileRoute lastChangeRoute;
+    public TileRoute currentTile;
+
+    public float spriteSpeed = 0;
+
+    private FloatBuffer lPos = ByteBuffer.allocateDirect(4 * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
+
+
 
     public void setPrepareToDie(boolean prepareToDie) {
         this.prepareToDie = prepareToDie;
@@ -57,6 +69,7 @@ public class MainSprite extends Sprite {
         r = (float) Color.red(intColor) / 255;
         g = (float) Color.green(intColor) / 255;
         b = (float) Color.blue(intColor) / 255;
+        spriteSpeed = view.context.getResources().getDimension(R.dimen.speed);
 
 
     }
@@ -104,17 +117,42 @@ public class MainSprite extends Sprite {
 
 
 
-        Route collision = fence.checkRouteCollision(centerX, centerY, width / 2);
+        lPos.position(0);
+        lPos.put(new float[]{this.getCenterX(), this.getCenterY(), 100.0f, 1.0f});
+        lPos.position(0);
+
+
+        TileRoute collision = fence.checkRouteCollision(centerX, centerY, width / 2);
+        TileRoute tmpCurrent = fence.getCurrentRouteObject(centerX, centerY);
+
+        if (tmpCurrent != null && currentTile != tmpCurrent) {
+            currentTile = tmpCurrent;
+            if (x > 0)
+                x = spriteSpeed * (float) currentTile.speedRatio;
+
+            if (x < 0)
+                x = -spriteSpeed * (float) currentTile.speedRatio;
+
+            if (y > 0)
+                y = spriteSpeed * (float) currentTile.speedRatio;
+            if (y < 0)
+                y = -spriteSpeed * (float) currentTile.speedRatio;
+
+
+        }
+
         if (collision != null) {
-            if (collision instanceof RouteFinish) {
+            if (collision instanceof TileRouteFinish) {
                 view.explodeDot(false);
                 view.destroyDot();
             } else if (!prepareToDie) {
                 view.crashDot(true);
+                //    view.toggleColors();
             } else {
                 view.explodeDot(true);
 
                 view.resetDot();
+                //   view.toggleColors();
             }
 
         }
@@ -131,17 +169,38 @@ public class MainSprite extends Sprite {
 
 
 
+        //    gl.glTranslatef(centerX, centerY, 0);
+        //    gl.glRotatef(angle, 0, 0, 1);
+        //   gl.glTranslatef(-centerX, -centerY, 0);
 
-    //    gl.glTranslatef(centerX, centerY, 0);
-    //    gl.glRotatef(angle, 0, 0, 1);
-     //   gl.glTranslatef(-centerX, -centerY, 0);
-
-      //  gl.glTranslatef(moveX, moveY, 0);
+        //  gl.glTranslatef(moveX, moveY, 0);
 
         gl.glColor4f(r, g, b, 0.0f);
         gl.glVertexPointer(2, GL10.GL_FLOAT, 0, bufferedVertex);
 
         gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, vertices.length / 2);
+
+
+
+
+
+
+
+
+
+
+
+//lights
+
+
+
+
+
+
+
+
+       // gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_POSITION, lPos);
+
 
 
     }

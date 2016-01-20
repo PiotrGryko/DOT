@@ -1,6 +1,4 @@
-package pl.slapps.dot.model;
-
-import android.util.Log;
+package pl.slapps.dot.game;
 
 /**
  * Created by piotr on 12.10.15.

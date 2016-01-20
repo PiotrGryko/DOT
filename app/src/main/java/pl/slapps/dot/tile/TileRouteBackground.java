@@ -1,17 +1,17 @@
-package pl.slapps.dot.route;
+package pl.slapps.dot.tile;
 
 import android.graphics.Color;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import pl.slapps.dot.model.Sprite;
+import pl.slapps.dot.game.Sprite;
 
 /**
  * Created by piotr on 20.10.15.
  */
-public class RouteBackground extends Sprite {
+public class TileRouteBackground extends Sprite {
 
-    private String TAG = RouteBackground.class.getName();
+    private String TAG = TileRouteBackground.class.getName();
 
 
     private float angle;
@@ -34,8 +34,8 @@ public class RouteBackground extends Sprite {
     }
 
 
-    public RouteBackground(float centerX, float centerY, float width,
-                           float height, String color) {
+    public TileRouteBackground(float centerX, float centerY, float width,
+                               float height, String color) {
 
         super(centerX, centerY, width, height);
         setColor(color);

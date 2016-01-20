@@ -1,40 +1,24 @@
-package pl.slapps.dot.route;
-
-import android.util.Log;
+package pl.slapps.dot.tile;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Array;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import pl.slapps.dot.model.Junction;
-import pl.slapps.dot.model.Wall;
+import pl.slapps.dot.game.Junction;
+import pl.slapps.dot.game.Wall;
+import pl.slapps.dot.model.Route;
 
 /**
  * Created by piotr on 13.10.15.
  */
-public class Route {
+public class TileRoute {
 
-    public enum Movement {
-        BOTTOMRIGHT, BOTTOMLEFT, RIGHTTOP, RIGHTBOTTOM, LEFTBOTTOM, LEFTTOP, TOPLEFT, TOPRIGHT, LEFTRIGHT, RIGHTLEFT, TOPBOTTOM, BOTTOMTOP;
-    }
 
-    public enum Direction {
-        LEFT, TOP, RIGHT, BOTTOM;
-    }
-
-    public enum Type {
-        FINISH, START, ROUTE, TILE, BLOCK, FILL;
-    }
-
-    private RouteBackground backgroundPartOne;
-    private RouteBackground backgroundPartTwo;
+    private TileRouteBackground backgroundPartOne;
+    private TileRouteBackground backgroundPartTwo;
 
 
     public float topX;
@@ -49,32 +33,35 @@ public class Route {
     float borderX;
     float borderY;
 
-    public Direction from;
-    public Direction to;
+    public Route.Direction from;
+    public Route.Direction to;
 
-    public Movement next;
+    public Route.Movement next;
 
 
     private boolean isInitialized;
     public int horizontalPos;
     public int verticalPos;
     public ArrayList<Wall> walls;
-    public Type type;
+    public Route.Type type;
     public String backgroundColor;
+    public String sound;
+
+    public double speedRatio = 1;
 
 
-    public void initRoute(Movement d) {
+    public void initRoute(Route.Movement d) {
 
-        if (type == Type.FILL) {
+        if (type == Route.Type.FILL) {
 
 
-            backgroundPartOne = new RouteBackground(centerX, centerY, width, height, backgroundColor);
+            backgroundPartOne = new TileRouteBackground(centerX, centerY, width, height, backgroundColor);
 
             return;
         }
-        if (type == Type.TILE || type == Type.BLOCK) {
-            borderX=0;
-            borderY=0;
+        if (type == Route.Type.TILE || type == Route.Type.BLOCK) {
+            borderX = 0;
+            borderY = 0;
             walls.add(new Wall(new Junction(topX + borderX, topY + height - borderY, 0), new Junction(topX + borderX, topY + borderY, 0), Wall.Type.LEFT));
             walls.add(new Wall(new Junction(topX + borderX, topY + borderY, 0), new Junction(topX + width - borderX, topY + borderY, 0), Wall.Type.TOP));
             walls.add(new Wall(new Junction(topX + width - borderX, topY + borderY, 0), new Junction(topX + width - borderX, topY + height - borderY, 0), Wall.Type.RIGHT));
@@ -114,8 +101,8 @@ public class Route {
                 walls.add(rWall);
                 walls.add(bWall);
 
-                backgroundPartOne = new RouteBackground(centerX, topY + height - borderY / 2, routeWidth, borderY, backgroundColor);
-                backgroundPartTwo = new RouteBackground(topX + borderX + (width - borderX) / 2, centerY, width - borderX, routeHeight, backgroundColor);
+                backgroundPartOne = new TileRouteBackground(centerX, topY + height - borderY / 2, routeWidth, borderY, backgroundColor);
+                backgroundPartTwo = new TileRouteBackground(topX + borderX + (width - borderX) / 2, centerY, width - borderX, routeHeight, backgroundColor);
 
                 break;
             }
@@ -146,8 +133,8 @@ public class Route {
                 walls.add(rWall);
                 walls.add(bWall);
 
-                backgroundPartOne = new RouteBackground(centerX, topY + height - borderY / 2, routeWidth, borderY, backgroundColor);
-                backgroundPartTwo = new RouteBackground(topX + (width - borderX) / 2, centerY, width - borderX, routeHeight, backgroundColor);
+                backgroundPartOne = new TileRouteBackground(centerX, topY + height - borderY / 2, routeWidth, borderY, backgroundColor);
+                backgroundPartTwo = new TileRouteBackground(topX + (width - borderX) / 2, centerY, width - borderX, routeHeight, backgroundColor);
 
                 break;
             }
@@ -172,8 +159,8 @@ public class Route {
                 walls.add(rWall);
                 walls.add(bWall);
 
-                backgroundPartOne = new RouteBackground(centerX, topY + borderY / 2, routeWidth, borderY, backgroundColor);
-                backgroundPartTwo = new RouteBackground(topX + borderX + (width - borderX) / 2, centerY, width - borderX, routeHeight, backgroundColor);
+                backgroundPartOne = new TileRouteBackground(centerX, topY + borderY / 2, routeWidth, borderY, backgroundColor);
+                backgroundPartTwo = new TileRouteBackground(topX + borderX + (width - borderX) / 2, centerY, width - borderX, routeHeight, backgroundColor);
 
                 break;
             }
@@ -197,8 +184,8 @@ public class Route {
                 walls.add(rWall);
                 walls.add(bWall);
 
-                backgroundPartOne = new RouteBackground(centerX, topY + borderY / 2, routeWidth, borderY, backgroundColor);
-                backgroundPartTwo = new RouteBackground(topX + (width - borderX) / 2, centerY, width - borderX, routeHeight, backgroundColor);
+                backgroundPartOne = new TileRouteBackground(centerX, topY + borderY / 2, routeWidth, borderY, backgroundColor);
+                backgroundPartTwo = new TileRouteBackground(topX + (width - borderX) / 2, centerY, width - borderX, routeHeight, backgroundColor);
 
                 break;
             }
@@ -216,7 +203,7 @@ public class Route {
                 walls.add(tWall);
                 walls.add(bWall);
 
-                backgroundPartOne = new RouteBackground(centerX, centerY,  width,  routeHeight, backgroundColor);
+                backgroundPartOne = new TileRouteBackground(centerX, centerY, width, routeHeight, backgroundColor);
 
 
                 break;
@@ -233,7 +220,7 @@ public class Route {
                 walls.add(lWall);
                 walls.add(rWall);
 
-                backgroundPartOne = new RouteBackground(centerX, centerY, routeWidth, height, backgroundColor);
+                backgroundPartOne = new TileRouteBackground(centerX, centerY, routeWidth, height, backgroundColor);
 
             }
 
@@ -243,11 +230,7 @@ public class Route {
     }
 
 
-
-
-
-
-    private void initData(float screenWidth, float screenHeight, float widthBlocksCount, float heightBlocksCount, int widthNumber, int heightNumber, String from, String to, Type t) {
+    private void initData(float screenWidth, float screenHeight, float widthBlocksCount, float heightBlocksCount, int widthNumber, int heightNumber, String from, String to, Route.Type t) {
         this.type = t;
         width = screenWidth / widthBlocksCount;
         height = screenHeight / heightBlocksCount;
@@ -260,8 +243,8 @@ public class Route {
         this.borderY = (height - routeHeight) / 2;
         this.horizontalPos = widthNumber;
         this.verticalPos = heightNumber;
-        this.from = Direction.valueOf(from);
-        this.to = Direction.valueOf(to);
+        this.from = Route.Direction.valueOf(from);
+        this.to = Route.Direction.valueOf(to);
         this.walls = new ArrayList<>();
         this.centerX = topX + width / 2;
         this.centerY = topY + height / 2;
@@ -271,42 +254,27 @@ public class Route {
         isInitialized = true;
     }
 
-    public Route(float screenWidth, float screenHeight, float widthBlocksCount, float heightBlocksCount, int widthNumber, int heightNumber, String from, String to, Type t) {
+
+    public TileRoute(float screenWidth, float screenHeight, float widthBlocksCount, float heightBlocksCount, int widthNumber, int heightNumber, String from, String to, Route.Type t) {
 
         initData(screenWidth, screenHeight, widthBlocksCount, heightBlocksCount, widthNumber, heightNumber, from, to, t);
 
     }
 
-    public Route(float screenWidth, float screenHeight, float widthBlocksCount, float heightBlocksCount, int widthNumber, int heightNumber, String from, String to, Type t,String color) {
-
-        initData(screenWidth, screenHeight, widthBlocksCount, heightBlocksCount, widthNumber, heightNumber, from, to, t);
-        this.backgroundColor=color;
-
-    }
-
-    public Route(float screenWidth, float screenHeight, float widthBlocksCount, float heightBlocksCount, JSONObject element, String color) {
-
-        int widthNumber = 0;
-        try {
-            widthNumber = element.has("x") ? element.getInt("x") : 0;
-
-            int heightNumber = element.has("y") ? element.getInt("y") : 0;
-            String from = element.has("from") ? element.getString("from") : "";
-            String to = element.has("to") ? element.getString("to") : "";
-            String next = element.has("next") ? element.getString("next") : null;
-            if(next!=null)
-            this.next=Movement.valueOf(next);
-            String type = element.has("type") ? element.getString("type") : "ROUTE";
-            JSONObject colors = element.has("colors")?element.getJSONObject("colors"):new JSONObject();
-            backgroundColor =  element.has("background_color") ? element.getString("background_color") : color;
-            Route.Type t = Route.Type.valueOf(type);
-
-            initData(screenWidth, screenHeight, widthBlocksCount, heightBlocksCount, widthNumber, heightNumber, from, to, t);
 
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+
+    public TileRoute(float screenWidth, float screenHeight, float widthBlocksCount, float heightBlocksCount, Route route) {
+
+
+        this.next = Route.Movement.valueOf(route.next.name());
+        backgroundColor = route.backgroundColor;
+        sound = route.sound;
+        speedRatio=route.speedRatio;
+
+
+        initData(screenWidth, screenHeight, widthBlocksCount, heightBlocksCount, route.x, route.y, route.from.name(), route.to.name(), Route.Type.valueOf(route.type.name()));
+
 
     }
 
@@ -325,12 +293,10 @@ public class Route {
         gl.glLoadIdentity();
 
 
-
         if (backgroundPartOne != null)
             backgroundPartOne.draw(gl);
         if (backgroundPartTwo != null)
             backgroundPartTwo.draw(gl);
-
 
 
         for (int i = 0; i < walls.size(); i++) {
@@ -364,60 +330,58 @@ public class Route {
         return null;
     }
 
-    public Type getType() {
+    public Route.Type getType() {
         return type;
     }
 
-    public ArrayList<Wall> getWalls()
-    {
+    public ArrayList<Wall> getWalls() {
         return walls;
     }
 
-    public ArrayList<RouteBackground> getBackgrounds()
-    {
-        ArrayList<RouteBackground> routeBackgrounds = new ArrayList<>();
-        if(backgroundPartOne!=null)
+    public ArrayList<TileRouteBackground> getBackgrounds() {
+        ArrayList<TileRouteBackground> routeBackgrounds = new ArrayList<>();
+        if (backgroundPartOne != null)
             routeBackgrounds.add(backgroundPartOne);
-        if(backgroundPartTwo!=null)
+        if (backgroundPartTwo != null)
             routeBackgrounds.add(backgroundPartTwo);
 
         return routeBackgrounds;
     }
 
-    public Movement getDirection() {
+    public Route.Movement getDirection() {
 
 
-        if (from == Direction.TOP) {
-            if (to == Direction.LEFT)
-                return Movement.TOPLEFT;
-            if (to == Direction.RIGHT)
-                return Movement.TOPRIGHT;
-            if (to == Direction.BOTTOM)
-                return Movement.TOPBOTTOM;
+        if (from == Route.Direction.TOP) {
+            if (to == Route.Direction.LEFT)
+                return Route.Movement.TOPLEFT;
+            if (to == Route.Direction.RIGHT)
+                return Route.Movement.TOPRIGHT;
+            if (to == Route.Direction.BOTTOM)
+                return Route.Movement.TOPBOTTOM;
         }
-        if (from == Direction.BOTTOM) {
-            if (to == Direction.LEFT)
-                return Movement.BOTTOMLEFT;
-            if (to == Direction.RIGHT)
-                return Movement.BOTTOMRIGHT;
-            if (to == Direction.TOP)
-                return Movement.BOTTOMTOP;
+        if (from == Route.Direction.BOTTOM) {
+            if (to == Route.Direction.LEFT)
+                return Route.Movement.BOTTOMLEFT;
+            if (to == Route.Direction.RIGHT)
+                return Route.Movement.BOTTOMRIGHT;
+            if (to == Route.Direction.TOP)
+                return Route.Movement.BOTTOMTOP;
         }
-        if (from == Direction.LEFT) {
-            if (to == Direction.TOP)
-                return Movement.LEFTTOP;
-            if (to == Direction.BOTTOM)
-                return Movement.LEFTBOTTOM;
-            if (to == Direction.RIGHT)
-                return Movement.LEFTRIGHT;
+        if (from == Route.Direction.LEFT) {
+            if (to == Route.Direction.TOP)
+                return Route.Movement.LEFTTOP;
+            if (to == Route.Direction.BOTTOM)
+                return Route.Movement.LEFTBOTTOM;
+            if (to == Route.Direction.RIGHT)
+                return Route.Movement.LEFTRIGHT;
         }
-        if (from == Direction.RIGHT) {
-            if (to == Direction.TOP)
-                return Movement.RIGHTTOP;
-            if (to == Direction.BOTTOM)
-                return Movement.RIGHTBOTTOM;
-            if (to == Direction.LEFT)
-                return Movement.RIGHTLEFT;
+        if (from == Route.Direction.RIGHT) {
+            if (to == Route.Direction.TOP)
+                return Route.Movement.RIGHTTOP;
+            if (to == Route.Direction.BOTTOM)
+                return Route.Movement.RIGHTBOTTOM;
+            if (to == Route.Direction.LEFT)
+                return Route.Movement.RIGHTLEFT;
         }
         return null;
     }

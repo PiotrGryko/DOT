@@ -13,25 +13,26 @@ import org.json.JSONObject;
 
 import pl.slapps.dot.drawing.Fence;
 import pl.slapps.dot.drawing.Path;
-import pl.slapps.dot.model.Wall;
-import pl.slapps.dot.route.Route;
-import pl.slapps.dot.route.RouteFinish;
-import pl.slapps.dot.route.RouteStart;
+import pl.slapps.dot.model.Route;
+import pl.slapps.dot.model.Stage;
+import pl.slapps.dot.tile.TileRoute;
+import pl.slapps.dot.tile.TileRouteFinish;
+import pl.slapps.dot.tile.TileRouteStart;
 
 public class Maze {
 
     private String TAG = Maze.class.getName();
 
 
-    ArrayList<Route> elements;
-    ArrayList<Route> routes;
+    ArrayList<TileRoute> elements;
+    ArrayList<TileRoute> routes;
     private GameView view;
 
     public int horizontalSize = 0;
     public int verticalSize = 0;
     public float width;
     public float height;
-    public float spriteSpeed;
+   // public float spriteSpeed;
 
     public int defaultVerticalSize = 15;
     public int defaultHorizontalSize = 9;
@@ -43,10 +44,19 @@ public class Maze {
     private Fence fence;
 
 
-    public Route getStartRoute() {
+    public Path getPath()
+    {
+        return path;
+    }
+    public Fence getFence()
+    {
+        return fence;
+    }
+
+    public TileRoute getStartRoute() {
         for (int i = 0; i < routes.size(); i++) {
 
-            Route r = routes.get(i);
+            TileRoute r = routes.get(i);
             if (r == null)
                 continue;
             if (r.getType() == Route.Type.START)
@@ -58,14 +68,14 @@ public class Maze {
     }
 
     public void sortMaze() {
-        ArrayList<Route> output = new ArrayList<>();
-        Route start = getStartRoute();
+        ArrayList<TileRoute> output = new ArrayList<>();
+        TileRoute start = getStartRoute();
         output.add(start);
-        Route old = null;
+        TileRoute old = null;
         while ((start = findNextRoute(start)) != null) {
 
             output.add(start);
-            if(start.getType()== Route.Type.FINISH)
+            if (start.getType() == Route.Type.FINISH)
                 break;
 
         }
@@ -76,8 +86,8 @@ public class Maze {
 
     }
 
-    private Route findNextRoute(Route t) {
-        Route next = null;
+    private TileRoute findNextRoute(TileRoute t) {
+        TileRoute next = null;
         switch (t.to) {
             case TOP:
                 next = findRoute(t.horizontalPos, t.verticalPos - 1);
@@ -94,12 +104,12 @@ public class Maze {
         }
 
 
-            return next;
+        return next;
     }
 
-    private Route findRoute(int x, int y) {
+    private TileRoute findRoute(int x, int y) {
         for (int i = 0; i < routes.size(); i++) {
-            Route t = routes.get(i);
+            TileRoute t = routes.get(i);
             if (t.horizontalPos == x && t.verticalPos == y)
                 return t;
         }
@@ -107,94 +117,89 @@ public class Maze {
     }
 
 
-    public Maze(GameView view, JSONObject maze) {
+    public Maze(GameView view, Stage stage) {
         //this.elements=elements;
 
         Log.d(TAG, "maze created");
 
-        try {
-            this.view = view;
 
-            horizontalSize = maze.has("x_max") ? maze.getInt("x_max") : 0;
+        this.view = view;
 
-            verticalSize = maze.has("y_max") ? maze.getInt("y_max") : 0;
+        horizontalSize = stage.xMax;
 
-            this.elements = new ArrayList<>();
-            this.routes = new ArrayList<>();
+        verticalSize = stage.yMax;
 
-            JSONObject colors = maze.has("colors") ? maze.getJSONObject("colors") : new JSONObject();
-            String routeColor = colors.has("route") ? colors.getString("route") : "#C8C8C8";
-
-            float vertRatio = (float) defaultVerticalSize / (float) verticalSize;
-            float horizRatio = (float) defaultHorizontalSize / (float) horizontalSize;
-
-            float ratio = vertRatio;
-            if (horizRatio < ratio)
-                ratio = horizRatio;
-
-            spriteSpeed = view.spriteSpeed * ratio;
+        this.elements = new ArrayList<>();
+        this.routes = new ArrayList<>();
 
 
-            this.width = view.screenWidth / horizontalSize;
-            this.height = view.screenHeight / verticalSize;
+        float vertRatio = (float) defaultVerticalSize / (float) verticalSize;
+        float horizRatio = (float) defaultHorizontalSize / (float) horizontalSize;
 
-            JSONArray jsonRoutes = maze.has("route") ? maze.getJSONArray("route") : new JSONArray();
+       // float ratio = vertRatio;
+       // if (horizRatio < ratio)
+        //    ratio = horizRatio;
 
-            for (int i = 0; i < jsonRoutes.length(); i++) {
-                JSONObject element = jsonRoutes.getJSONObject(i);
-                String type = element.has("type") ? element.getString("type") : "ROUTE";
+       // spriteSpeed = view.spriteSpeed * ratio;
 
-                Route.Type t = Route.Type.valueOf(type);
 
-                Route r = null;
+        this.width = view.screenWidth / horizontalSize;
+        this.height = view.screenHeight / verticalSize;
 
-                switch (t) {
 
-                    case FINISH:
-                        r = new RouteFinish(view.screenWidth, view.screenHeight, horizontalSize, verticalSize, view, element, routeColor);
-                        this.elements.add(r);
-                        break;
+        for (int i = 0; i < stage.routes.size(); i++) {
 
-                    case START:
-                        r = new RouteStart(view.screenWidth, view.screenHeight, horizontalSize, verticalSize, element, routeColor);
-                        this.elements.add(r);
-                        break;
-                    default:
-                        r = new Route(view.screenWidth, view.screenHeight, horizontalSize, verticalSize, element, routeColor);
-                        this.elements.add(r);
+            Route element = stage.routes.get(i);
 
-                        break;
+            TileRoute r = null;
 
-                }
-            }
+            switch (element.type) {
 
-            for (int i = 0; i < elements.size(); i++) {
+                case FINISH:
 
-                Route element = elements.get(i);
-                if (element == null)
-                    continue;
-                if (element.getType() == Route.Type.ROUTE || element.getType() == Route.Type.START || element.getType() == Route.Type.FINISH)
-                    routes.add(element);
+                    r = new TileRouteFinish(view.screenWidth, view.screenHeight, horizontalSize, verticalSize, view, element);
+                    this.elements.add(r);
+                    break;
+
+                case START:
+                    r = new TileRouteStart(view.screenWidth, view.screenHeight, horizontalSize, verticalSize, element);
+
+                    this.elements.add(r);
+                    break;
+                default:
+                    r = new TileRoute(view.screenWidth, view.screenHeight, horizontalSize, verticalSize, element);
+
+                    this.elements.add(r);
+
+                    break;
 
             }
-            sortMaze();
-            Log.d(TAG, "elements loaded ");
-            //initWallsDrawing();
-            path = new Path(routes, routeColor);
-            fence = new Fence(routes, routeColor);
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
+
+        for (int i = 0; i < elements.size(); i++) {
+
+            TileRoute element = elements.get(i);
+            if (element == null)
+                continue;
+            if (element.getType() == Route.Type.ROUTE || element.getType() == Route.Type.START || element.getType() == Route.Type.FINISH)
+                routes.add(element);
+
+        }
+        sortMaze();
+        Log.d(TAG, "elements loaded ");
+        //initWallsDrawing();
+        path = new Path(routes, stage.colorRoute);
+        fence = new Fence(routes, "#000000");
 
 
     }
 
 
-    public Route getCurrentRouteObject(float x, float y) {
+    public TileRoute getCurrentRouteObject(float x, float y) {
 
         for (int i = 0; i < routes.size(); i++) {
 
-            Route r = routes.get(i);
+            TileRoute r = routes.get(i);
             if (r != null && r.contains(x, y)) {
 
                 return routes.get(i);
@@ -209,7 +214,7 @@ public class Maze {
     public Wall.Type checkCollision(float x, float y, float width) {
 
 
-        Route element = getCurrentRouteObject(x, y);
+        TileRoute element = getCurrentRouteObject(x, y);
         if (element == null)
             return null;
 
@@ -221,8 +226,8 @@ public class Maze {
         return null;
     }
 
-    public Route checkRouteCollision(float x, float y, float width) {
-        Route element = getCurrentRouteObject(x, y);
+    public TileRoute checkRouteCollision(float x, float y, float width) {
+        TileRoute element = getCurrentRouteObject(x, y);
         if (element == null)
             return null;
         Wall.Type result = element.checkCollision(x, y, width);

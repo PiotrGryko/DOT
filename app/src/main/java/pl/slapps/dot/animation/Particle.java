@@ -1,10 +1,16 @@
 package pl.slapps.dot.animation;
 
+import android.media.AsyncPlayer;
+import android.media.AudioManager;
+import android.net.Uri;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
 import pl.slapps.dot.drawing.Quad;
 import pl.slapps.dot.game.Maze;
-import pl.slapps.dot.model.Wall;
+import pl.slapps.dot.game.Wall;
 import pl.slapps.dot.game.GameView;
 
 
@@ -12,7 +18,7 @@ public class Particle extends Quad {
 
 
     private Maze fence;
-    private long lifeTime = 1000;
+    public long lifeTime = 1000;
     private long creationTime;
     private Explosion explosion;
     float startX;
@@ -27,7 +33,6 @@ public class Particle extends Quad {
 
     public float startWidth;
     public float startHeight;
-    public FloatBuffer bufferedVertex;
     public FloatBuffer explosionBufferedVertex;
     public int bufferStartPosition;
 
@@ -36,11 +41,16 @@ public class Particle extends Quad {
     public float y;
 
 
+    private GameView view;
+
+    private Wall.Type lastCollision;
+
+
     public Particle(GameView view, float centerX, float centerY, int width,
                     int height, Maze fence, long creationTime, Explosion explosion) {
 
         super(centerX, centerY, width, height);
-
+        this.view = view;
         this.centerX = centerX;
         this.centerY = centerY;
         this.width = startWidth = width;
@@ -50,6 +60,11 @@ public class Particle extends Quad {
         this.lifeTime = (long) (Math.random() * 2000);
 
         this.fence = fence;
+
+
+
+        //lab = ByteBuffer.allocateDirect(4 * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
+
 
         /*
         ByteBuffer bytes = ByteBuffer.allocateDirect(vertices.length * 4);
@@ -62,6 +77,7 @@ public class Particle extends Quad {
 
     }
 
+  
     public void initDrawing(FloatBuffer bufferedVertex, int index) {
         explosionBufferedVertex = bufferedVertex;
         initVertexArray(centerX, centerY, width, height);
@@ -124,12 +140,21 @@ public class Particle extends Quad {
         this.x = startX - ((float) elapsedTime / (float) lifeTime) * startX;
         this.y = startY - ((float) elapsedTime / (float) lifeTime) * startY;
 
-        //this.width=startWidth-((float)elapsedTime/(float)lifeTime)*startWidth;
-        //this.height=startHeight-((float)elapsedTime/(float)lifeTime)*startHeight;
+        //this.gridX=startWidth-((float)elapsedTime/(float)lifeTime)*startWidth;
+        //this.gridY=startHeight-((float)elapsedTime/(float)lifeTime)*startHeight;
 
 
         Wall.Type collision = fence.checkCollision(centerX, centerY, width);
-        if (collision != null) {
+        if (collision != null && collision!=lastCollision) {
+            lastCollision=collision;
+
+/*            this.x = -x;
+            this.startX = -startX;
+            this.y = -y;
+            this.startY = -startY;
+
+            /*
+  */
             switch (collision) {
                 case LEFT:
                 case RIGHT:
@@ -142,6 +167,8 @@ public class Particle extends Quad {
                     this.startY = -startY;
                     break;
             }
+            //playCollisionSound();
+           // view.context.getSoundsManager().playRawFile("particle");
         }
 
 

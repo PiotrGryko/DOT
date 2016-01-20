@@ -1,27 +1,27 @@
-package pl.slapps.dot.route;
-
-import android.util.Log;
+package pl.slapps.dot.tile;
 
 import org.json.JSONObject;
 
-import pl.slapps.dot.model.Junction;
-import pl.slapps.dot.model.Wall;
+import pl.slapps.dot.game.GameView;
+import pl.slapps.dot.game.Junction;
+import pl.slapps.dot.game.Wall;
+import pl.slapps.dot.model.Route;
 
 /**
  * Created by piotr on 18.10.15.
  */
-public class RouteStart extends Route {
+public class TileRouteStart extends TileRoute {
 
 
     public Wall lWall;
     public Wall rWall;
 
-    private String TAG = RouteStart.class.getName();
+    private String TAG = TileRouteStart.class.getName();
 
-    public void initRoute(Movement d) {
+    public void initRoute(Route.Movement d) {
         super.initRoute(d);
 
-        Direction f = this.from;
+        Route.Direction f = this.from;
 
         switch (f) {
             case LEFT: {
@@ -58,13 +58,16 @@ public class RouteStart extends Route {
     }
 
 
-    public RouteStart(float screenWidth, float screenHeight, float widthBlocksCount, float heightBlocksCount, JSONObject element, String color) {
+    public TileRouteStart(float screenWidth, float screenHeight, float widthBlocksCount, float heightBlocksCount, Route route) {
 
-        super(screenWidth, screenHeight, widthBlocksCount, heightBlocksCount, element,color);
+        super(screenWidth, screenHeight, widthBlocksCount, heightBlocksCount, route);
+
     }
 
-    public RouteStart(float screenWidth, float screenHeight, float widthBlocksCount, float heightBlocksCount, int widthNumber, int heightNumber, String from, String to) {
-        super(screenWidth, screenHeight, widthBlocksCount, heightBlocksCount, widthNumber, heightNumber, from, to, Type.START);
+
+
+    public TileRouteStart(float screenWidth, float screenHeight, float widthBlocksCount, float heightBlocksCount, int widthNumber, int heightNumber, String from, String to) {
+        super(screenWidth, screenHeight, widthBlocksCount, heightBlocksCount, widthNumber, heightNumber, from, to, Route.Type.START);
     }
 
 

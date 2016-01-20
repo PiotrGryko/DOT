@@ -1,6 +1,7 @@
 package pl.slapps.dot.animation;
 
 import android.graphics.Color;
+import android.util.Log;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -21,7 +22,7 @@ public class Explosion {
     public float y;
     private Random random;
     private GameView view;
-    private long lifeTime = 1500;
+    private long lifeTime = 0;
     private long time = 0;
     public float r, g, b;
     public float size;
@@ -29,6 +30,11 @@ public class Explosion {
     private int bufferSize;
 
     private FloatBuffer bufferedVertex;
+
+    private FloatBuffer lPos;
+
+    private float lightRange = 100f;
+
 
 
     private ArrayList<Particle> particles;
@@ -69,6 +75,8 @@ public class Explosion {
         bytes.order(ByteOrder.nativeOrder());
 
         bufferedVertex = bytes.asFloatBuffer();
+        lPos = ByteBuffer.allocateDirect(4 * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
+
 
         particles = new ArrayList<>();
         for (int i = 0; i < count; i++) {
@@ -77,12 +85,19 @@ public class Explosion {
             int partSize = random.nextInt((int) size);
 
             Particle p = new Particle(view, x, y, partSize, partSize, view.getMaze(), time, this);
+
+            if(p.lifeTime>lifeTime)
+                lifeTime=p.lifeTime;
             p.setMove(randomSign((float) Math.random() * speed * 1.5f),
                     randomSign((float) Math.random() * speed * 1.5f));
             p.initDrawing(bufferedVertex,i);
             particles.add(p);
         }
         bufferedVertex.position(0);
+
+        lPos.position(0);
+        lPos.put(new float[]{x, y, lightRange, 1.0f});
+        lPos.position(0);
 
 
     }
@@ -107,6 +122,17 @@ public class Explosion {
     {
         for (int i = 0; i < particles.size(); i++)
             particles.get(i).update(current);
+
+        //lPos.position(0);
+       /// lPos.put(new float[]{x, y, lightRange-lightRange*getProgress(), 0.0f});
+        //lPos.position(0);
+    }
+
+    public float getProgress()
+    {
+        long elapsedTime = System.currentTimeMillis()-time;
+        float progress = (float)elapsedTime/(float)lifeTime;
+        return progress;
     }
 
 
@@ -120,11 +146,35 @@ public class Explosion {
         //gl.glTranslatef(moveX, moveY, 0);
 
         gl.glVertexPointer(2, GL10.GL_FLOAT, 0, bufferedVertex);
-        gl.glDrawArrays(GL10.GL_TRIANGLES, 0, count*3);
+
+
+
+        gl.glDrawArrays(GL10.GL_TRIANGLES, 0, count * 3);
+
+
+
+
+        //gl.glLightfv(GL10.GL_LIGHT1, GL10.GL_POSITION, lPos);
+
+
+/*
+
+        gl.glEnable(GL10.GL_LIGHTING);
+        gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
+
+        gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_POSITION, bufferedVertex);
+
+        gl.glEnable(GL10.GL_LIGHT0);
+
+        Log.d(TAG, "light added test ");
+*/
+
         //for (int i = 0; i < particles.size(); i++)
         ///    particles.get(i).draw(gl, r, g, b);
 
         //points.draw(gl);
+
+
 
 
     }

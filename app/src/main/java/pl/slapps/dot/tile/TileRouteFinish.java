@@ -1,38 +1,40 @@
-package pl.slapps.dot.route;
+package pl.slapps.dot.tile;
 
 import org.json.JSONObject;
 
-import pl.slapps.dot.model.Junction;
-import pl.slapps.dot.model.Wall;
+import pl.slapps.dot.game.Junction;
+import pl.slapps.dot.game.Wall;
 import pl.slapps.dot.game.GameView;
+import pl.slapps.dot.model.Route;
 
 /**
  * Created by piotr on 17.10.15.
  */
-public class RouteFinish extends Route {
+public class TileRouteFinish extends TileRoute {
 
-    public String TAG = RouteFinish.class.getName();
+    public String TAG = TileRouteFinish.class.getName();
     private GameView view;
     private boolean passed = false;
     private Wall wall;
     private Wall.Type type;
 
 
-    public RouteFinish(float screenWidth, float screenHeight, float widthBlocksCount, float heightBlocksCount,GameView view, JSONObject element,String color) {
 
-        super(screenWidth, screenHeight, widthBlocksCount, heightBlocksCount, element,color);
+    public TileRouteFinish(float screenWidth, float screenHeight, float widthBlocksCount, float heightBlocksCount, GameView view, Route route) {
+
+        super(screenWidth, screenHeight, widthBlocksCount, heightBlocksCount, route);
         this.view=view;
     }
 
-    public RouteFinish(float screenWidth, float screenHeight, float widthBlocksCount, float heightBlocksCount, int widthNumber, int heightNumber,GameView view, String from, String to) {
-        super(screenWidth, screenHeight, widthBlocksCount, heightBlocksCount, widthNumber, heightNumber, from, to, Type.FINISH);
+    public TileRouteFinish(float screenWidth, float screenHeight, float widthBlocksCount, float heightBlocksCount, int widthNumber, int heightNumber, GameView view, String from, String to) {
+        super(screenWidth, screenHeight, widthBlocksCount, heightBlocksCount, widthNumber, heightNumber, from, to, Route.Type.FINISH);
         this.view=view;
     }
 
-    public void initRoute(Movement d) {
+    public void initRoute(Route.Movement d) {
         super.initRoute(d);
 
-        Direction f = this.to;
+        Route.Direction f = this.to;
 
         switch (f) {
             case LEFT: {

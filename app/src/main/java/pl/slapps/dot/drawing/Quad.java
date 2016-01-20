@@ -25,6 +25,9 @@ public class Quad {
         initSharedVerticles();
     }
 
+
+
+
     public void initSharedVerticles() {
         vertices = new float[]{
                 bottomLeft.x, bottomLeft.y, // 0 bottom left
