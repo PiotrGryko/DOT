@@ -1,6 +1,7 @@
 package pl.slapps.dot.animation;
 
 import android.graphics.Color;
+import android.opengl.GLES20;
 import android.util.Log;
 
 import java.nio.ByteBuffer;
@@ -27,20 +28,37 @@ public class Explosion {
     public float r, g, b;
     public float size;
     //private Text points;
-    private int bufferSize;
 
-    private FloatBuffer bufferedVertex;
+    private static FloatBuffer bufferedVertex;
+    private static FloatBuffer bufferedVertexTwo;
+    private static FloatBuffer currentBuffer;
+    private FloatBuffer usedBuffer;
+    private static int count=20;
 
-    private FloatBuffer lPos;
+
+    // private FloatBuffer lPos;
 
     private float lightRange = 100f;
 
 
+    static final int COORDS_PER_VERTEX = 3;
+
+
+
+    float color[] = {0.0f, 0.0f, 0.0f, 1.0f};
+
 
     private ArrayList<Particle> particles;
-    private int count;
 
-    public Explosion(GameView view, int count, float x, float y, long time, float speed, int shipSize, String color_start, String color_end) {
+    public static void initBuffers()
+    {
+        int bufferSize = count * COORDS_PER_VERTEX * 6 * 4;
+
+        bufferedVertex = ByteBuffer.allocateDirect(bufferSize).order(ByteOrder.nativeOrder()).asFloatBuffer();
+        bufferedVertexTwo = ByteBuffer.allocateDirect(bufferSize).order(ByteOrder.nativeOrder()).asFloatBuffer();
+    }
+
+    public Explosion(GameView view, float x, float y, long time, float speed, int shipSize, String color_start, String color_end) {
 
 
         int intColor = Color.parseColor(color_start);
@@ -68,36 +86,41 @@ public class Explosion {
         b = (float) Math.random() * (Math.abs(b_end - b_start)) + b_start;
         //points = new Text(view,"100",x,y,50,50);
 
-        this.count=count;
-        bufferSize = count*2*6*4;
-
-        ByteBuffer bytes = ByteBuffer.allocateDirect(bufferSize);
-        bytes.order(ByteOrder.nativeOrder());
-
-        bufferedVertex = bytes.asFloatBuffer();
-        lPos = ByteBuffer.allocateDirect(4 * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
 
 
+        //  lPos = ByteBuffer.allocateDirect(4 * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
+
+
+        color = new float[]{
+                r, g, b, 1.0f,
+              };
+
+
+        if(currentBuffer!=bufferedVertexTwo) {
+            currentBuffer = bufferedVertexTwo;
+        }else {
+            currentBuffer = bufferedVertex;
+
+        }
+        usedBuffer=currentBuffer;
+        usedBuffer.position(0);
         particles = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             //if(r.nextBoolean())
-
             int partSize = random.nextInt((int) size);
 
             Particle p = new Particle(view, x, y, partSize, partSize, view.getMaze(), time, this);
 
-            if(p.lifeTime>lifeTime)
-                lifeTime=p.lifeTime;
+            if (p.lifeTime > lifeTime)
+                lifeTime = p.lifeTime;
             p.setMove(randomSign((float) Math.random() * speed * 1.5f),
                     randomSign((float) Math.random() * speed * 1.5f));
-            p.initDrawing(bufferedVertex,i);
+            p.initDrawing(usedBuffer, i);
             particles.add(p);
         }
-        bufferedVertex.position(0);
+        usedBuffer.position(0);
 
-        lPos.position(0);
-        lPos.put(new float[]{x, y, lightRange, 1.0f});
-        lPos.position(0);
+
 
 
     }
@@ -118,65 +141,63 @@ public class Explosion {
             view.removeExplosion(this);
     }
 
-    public void update(long current)
-    {
+    public void update(long current) {
         for (int i = 0; i < particles.size(); i++)
             particles.get(i).update(current);
 
         //lPos.position(0);
-       /// lPos.put(new float[]{x, y, lightRange-lightRange*getProgress(), 0.0f});
+        /// lPos.put(new float[]{x, y, lightRange-lightRange*getProgress(), 0.0f});
         //lPos.position(0);
     }
 
-    public float getProgress()
-    {
-        long elapsedTime = System.currentTimeMillis()-time;
-        float progress = (float)elapsedTime/(float)lifeTime;
+    public float getProgress() {
+        long elapsedTime = System.currentTimeMillis() - time;
+        float progress = (float) elapsedTime / (float) lifeTime;
         return progress;
     }
 
 
-    public void draw(GL10 gl) {
-
-        gl.glLoadIdentity();
+    public void drawGl2(float[] mvpMatrix) {
 
 
-        gl.glColor4f(r, g, b, 0.0f);
+        // Add program to OpenGL environment
+        GLES20.glUseProgram(view.mCurrentProgram);
 
-        //gl.glTranslatef(moveX, moveY, 0);
+        // get handle to vertex shader's vPosition member
 
-        gl.glVertexPointer(2, GL10.GL_FLOAT, 0, bufferedVertex);
+        // Enable a handle to the triangle vertices
+        GLES20.glEnableVertexAttribArray(view.mPositionHandle);
 
-
-
-        gl.glDrawArrays(GL10.GL_TRIANGLES, 0, count * 3);
-
-
-
-
-        //gl.glLightfv(GL10.GL_LIGHT1, GL10.GL_POSITION, lPos);
-
-
-/*
-
-        gl.glEnable(GL10.GL_LIGHTING);
-        gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
-
-        gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_POSITION, bufferedVertex);
-
-        gl.glEnable(GL10.GL_LIGHT0);
-
-        Log.d(TAG, "light added test ");
-*/
-
-        //for (int i = 0; i < particles.size(); i++)
-        ///    particles.get(i).draw(gl, r, g, b);
-
-        //points.draw(gl);
+        // Prepare the triangle coordinate data
+        GLES20.glVertexAttribPointer(
+                view.mPositionHandle, COORDS_PER_VERTEX,
+                GLES20.GL_FLOAT, false,
+                0, usedBuffer);
 
 
+        GLES20.glUniform4fv(view.mColorHandle, 1, color, 0);
+
+
+        // get handle to shape's transformation matrix
+        GameView.checkGlError("glGetUniformLocation");
+
+        // Apply the projection and view transformation
+        GLES20.glUniformMatrix4fv(view.mMVPMatrixHandle, 1, false, mvpMatrix, 0);
+        GameView.checkGlError("glUniformMatrix4fv");
+
+        GLES20.glDrawArrays(GL10.GL_TRIANGLES, 0, count * 6);
+
+        // Draw the square
+        // GLES20.glDrawElements(
+        //         GLES20.GL_TRIANGLES, indices.length,
+        //        GLES20.GL_UNSIGNED_SHORT, bufferedIndices);
+
+        // Disable vertex array
+        GLES20.glDisableVertexAttribArray(view.mPositionHandle);
 
 
     }
+
+
 }
 

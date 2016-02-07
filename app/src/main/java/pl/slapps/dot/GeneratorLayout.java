@@ -523,42 +523,42 @@ public class GeneratorLayout {
 
                 switch (id) {
                     case R.id.tv_leftright: {
-                        r = new TileRoute(generator.view.screenWidth, generator.view.screenHeight, generator.gridX, generator.gridY, tile.horizontalPos, tile.verticalPos, Route.Direction.LEFT.name(), Route.Direction.RIGHT.name(), Route.Type.ROUTE);
+                        r = new TileRoute(generator.view.screenWidth, generator.view.screenHeight, generator.gridX, generator.gridY, tile.horizontalPos, tile.verticalPos, Route.Direction.LEFT.name(), Route.Direction.RIGHT.name(), Route.Type.ROUTE,generator.view);
                         break;
                     }
                     case R.id.tv_lefttop: {
-                        r = new TileRoute(generator.view.screenWidth, generator.view.screenHeight, generator.gridX, generator.gridY, tile.horizontalPos, tile.verticalPos, Route.Direction.LEFT.name(), Route.Direction.TOP.name(), Route.Type.ROUTE);
+                        r = new TileRoute(generator.view.screenWidth, generator.view.screenHeight, generator.gridX, generator.gridY, tile.horizontalPos, tile.verticalPos, Route.Direction.LEFT.name(), Route.Direction.TOP.name(), Route.Type.ROUTE,generator.view);
 
                         break;
                     }
 
                     case R.id.tv_righttop: {
-                        r = new TileRoute(generator.view.screenWidth, generator.view.screenHeight, generator.gridX, generator.gridY, tile.horizontalPos, tile.verticalPos, Route.Direction.RIGHT.name(), Route.Direction.TOP.name(), Route.Type.ROUTE);
+                        r = new TileRoute(generator.view.screenWidth, generator.view.screenHeight, generator.gridX, generator.gridY, tile.horizontalPos, tile.verticalPos, Route.Direction.RIGHT.name(), Route.Direction.TOP.name(), Route.Type.ROUTE,generator.view);
 
                         break;
                     }
 
 
                     case R.id.tv_bottomleft: {
-                        r = new TileRoute(generator.view.screenWidth, generator.view.screenHeight, generator.gridX, generator.gridY, tile.horizontalPos, tile.verticalPos, Route.Direction.BOTTOM.name(), Route.Direction.LEFT.name(), Route.Type.ROUTE);
+                        r = new TileRoute(generator.view.screenWidth, generator.view.screenHeight, generator.gridX, generator.gridY, tile.horizontalPos, tile.verticalPos, Route.Direction.BOTTOM.name(), Route.Direction.LEFT.name(), Route.Type.ROUTE,generator.view);
 
                         break;
                     }
                     case R.id.tv_bottomright: {
-                        r = new TileRoute(generator.view.screenWidth, generator.view.screenHeight, generator.gridX, generator.gridY, tile.horizontalPos, tile.verticalPos, Route.Direction.BOTTOM.name(), Route.Direction.RIGHT.name(), Route.Type.ROUTE);
+                        r = new TileRoute(generator.view.screenWidth, generator.view.screenHeight, generator.gridX, generator.gridY, tile.horizontalPos, tile.verticalPos, Route.Direction.BOTTOM.name(), Route.Direction.RIGHT.name(), Route.Type.ROUTE,generator.view);
 
                         break;
                     }
                     case R.id.tv_bottomtop: {
 
-                        r = new TileRoute(generator.view.screenWidth, generator.view.screenHeight, generator.gridX, generator.gridY, tile.horizontalPos, tile.verticalPos, Route.Direction.BOTTOM.name(), Route.Direction.TOP.name(), Route.Type.ROUTE);
+                        r = new TileRoute(generator.view.screenWidth, generator.view.screenHeight, generator.gridX, generator.gridY, tile.horizontalPos, tile.verticalPos, Route.Direction.BOTTOM.name(), Route.Direction.TOP.name(), Route.Type.ROUTE,generator.view);
 
                         break;
                     }
 
 
                     case R.id.tv_blank: {
-                        r = new TileRoute(generator.view.screenWidth, generator.view.screenHeight, generator.gridX, generator.gridY, tile.horizontalPos, tile.verticalPos, Route.Direction.TOP.name(), Route.Direction.RIGHT.name(), Route.Type.TILE);
+                        r = new TileRoute(generator.view.screenWidth, generator.view.screenHeight, generator.gridX, generator.gridY, tile.horizontalPos, tile.verticalPos, Route.Direction.TOP.name(), Route.Direction.RIGHT.name(), Route.Type.TILE,generator.view);
                         break;
                     }
 
@@ -582,23 +582,23 @@ public class GeneratorLayout {
 
 
                     case R.id.tv_starttop: {
-                        r = new TileRouteStart(generator.view.screenWidth, generator.view.screenHeight, generator.gridX, generator.gridY, tile.horizontalPos, tile.verticalPos, Route.Direction.TOP.name(), Route.Direction.BOTTOM.name());
+                        r = new TileRouteStart(generator.view.screenWidth, generator.view.screenHeight, generator.gridX, generator.gridY, tile.horizontalPos, tile.verticalPos, Route.Direction.TOP.name(), Route.Direction.BOTTOM.name(),generator.view);
 
                         break;
                     }
                     case R.id.tv_startbottom: {
-                        r = new TileRouteStart(generator.view.screenWidth, generator.view.screenHeight, generator.gridX, generator.gridY, tile.horizontalPos, tile.verticalPos, Route.Direction.BOTTOM.name(), Route.Direction.TOP.name());
+                        r = new TileRouteStart(generator.view.screenWidth, generator.view.screenHeight, generator.gridX, generator.gridY, tile.horizontalPos, tile.verticalPos, Route.Direction.BOTTOM.name(), Route.Direction.TOP.name(),generator.view);
 
                         break;
                     }
                     case R.id.tv_startleft: {
 
-                        r = new TileRouteStart(generator.view.screenWidth, generator.view.screenHeight, generator.gridX, generator.gridY, tile.horizontalPos, tile.verticalPos, Route.Direction.LEFT.name(), Route.Direction.RIGHT.name());
+                        r = new TileRouteStart(generator.view.screenWidth, generator.view.screenHeight, generator.gridX, generator.gridY, tile.horizontalPos, tile.verticalPos, Route.Direction.LEFT.name(), Route.Direction.RIGHT.name(),generator.view);
                         break;
                     }
                     case R.id.tv_startright: {
 
-                        r = new TileRouteStart(generator.view.screenWidth, generator.view.screenHeight, generator.gridX, generator.gridY, tile.horizontalPos, tile.verticalPos, Route.Direction.RIGHT.name(), Route.Direction.LEFT.name());
+                        r = new TileRouteStart(generator.view.screenWidth, generator.view.screenHeight, generator.gridX, generator.gridY, tile.horizontalPos, tile.verticalPos, Route.Direction.RIGHT.name(), Route.Direction.LEFT.name(),generator.view);
                         break;
                     }
 
@@ -993,7 +993,7 @@ public class GeneratorLayout {
             public void onClick(View view) {
                 context.getSoundsManager().playRawFile("construct");
 
-                TileRoute r = new TileRoute(generator.view.screenWidth, generator.view.screenHeight, generator.gridX, generator.gridY, route.horizontalPos, route.verticalPos, Route.Direction.TOP.name(), Route.Direction.RIGHT.name(), Route.Type.TILE);
+                TileRoute r = new TileRoute(generator.view.screenWidth, generator.view.screenHeight, generator.gridX, generator.gridY, route.horizontalPos, route.verticalPos, Route.Direction.TOP.name(), Route.Direction.RIGHT.name(), Route.Type.TILE,generator.view);
                 generator.tiles.remove(route);
                 generator.tiles.add(r);
                 ArrayList<TileRoute> currentRoutes = generator.getPath();

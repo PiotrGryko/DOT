@@ -1,6 +1,7 @@
 package pl.slapps.dot.drawing;
 
 import android.graphics.Color;
+import android.opengl.GLES20;
 import android.util.Log;
 
 import java.nio.ByteBuffer;
@@ -12,6 +13,7 @@ import java.util.Arrays;
 
 import javax.microedition.khronos.opengles.GL10;
 
+import pl.slapps.dot.game.GameView;
 import pl.slapps.dot.tile.TileRoute;
 import pl.slapps.dot.tile.TileRouteBackground;
 
@@ -27,6 +29,7 @@ public class Path {
     public FloatBuffer roadBufferedVertex;
     public ShortBuffer roadBufferedIndices;
 
+
     private String TAG = Path.class.getName();
 
     public float[] verticles;
@@ -38,26 +41,40 @@ public class Path {
     public float a = 0.0f;
     public String backgroundColor;
 
+    private GameView view;
+
+
+    static final int COORDS_PER_VERTEX = 3;
+
+
+
+    float color[] = {0.0f, 0.0f, 0.0f, 1.0f};
+
     //private ArrayList<Verticle> verticlesArray;
     ArrayList<Quad> quads; //list of quads ordered from beginning to end
 
 
-    public void setColor(String color) {
+    public void setColor(String col) {
 
-        if (color == null)
+        if (col == null)
             backgroundColor = "#B8B8B8";
         else
-            backgroundColor = color;
+            backgroundColor = col;
         int intColor = Color.parseColor(backgroundColor);
         a = (float) Color.alpha(intColor) / 255;
         r = (float) Color.red(intColor) / 255;
         g = (float) Color.green(intColor) / 255;
         b = (float) Color.blue(intColor) / 255;
+        color = new float[]{r, g, b, a,
+              };
 
+
+
+        Log.d(TAG, "test path set color ");
     }
 
-    public Path(ArrayList<TileRoute> routes, String color) {
-
+    public Path(ArrayList<TileRoute> routes, String stringColor, GameView view) {
+        this.view = view;
         ArrayList<TileRouteBackground> backgrounds = new ArrayList<>();
         ArrayList<Quad> data = new ArrayList<>();
 
@@ -70,7 +87,6 @@ public class Path {
             data.add(backgrounds.get(i).quad);
         }
 
-        setColor(color);
         //verticlesArray = new ArrayList<>();
         this.quads = new ArrayList<>();
 
@@ -86,35 +102,40 @@ public class Path {
             //result=connectQuads(result,quads.get(i), Route.Direction.TOP);
         }
 
+        setColor(stringColor);
+
+
         Log.d(TAG, "quads size " + this.quads.size());
 
 
-        verticles = new float[this.quads.size() * 2 * 4];
+        verticles = new float[this.quads.size() * COORDS_PER_VERTEX * 4];
         indices = new short[this.quads.size() * 2 * 3];
+
 
         //Building arrays
 
         for (int j = 0; j < this.quads.size(); j++) {
-            int startVerticlesIndex = j * 8;
+            int startVerticlesIndex = j * COORDS_PER_VERTEX*4;
             int startIncentIndex = j * 6;
+
 
             Quad q = quads.get(j);
             //Log.d(TAG,"strt index "+startVerticlesIndex +" "+startIncentIndex);
             verticles[startVerticlesIndex++] = q.bottomLeft.x;
             verticles[startVerticlesIndex++] = q.bottomLeft.y;
-            //verticles[startVerticlesIndex++]=q.bottomLeft.z;
+            verticles[startVerticlesIndex++]=q.bottomLeft.z;
 
             verticles[startVerticlesIndex++] = q.topLeft.x;
             verticles[startVerticlesIndex++] = q.topLeft.y;
-            //verticles[startVerticlesIndex++]=q.topLeft.z;
+            verticles[startVerticlesIndex++]=q.topLeft.z;
 
             verticles[startVerticlesIndex++] = q.bottomRight.x;
             verticles[startVerticlesIndex++] = q.bottomRight.y;
-            //verticles[startVerticlesIndex++]=q.bottomRight.z;
+            verticles[startVerticlesIndex++]=q.bottomRight.z;
 
             verticles[startVerticlesIndex++] = q.topRight.x;
             verticles[startVerticlesIndex++] = q.topRight.y;
-            //verticles[startVerticlesIndex++]=q.topRight.z;
+            verticles[startVerticlesIndex++]=q.topRight.z;
 
             indices[startIncentIndex++] = q.bottomLeft.index;
             indices[startIncentIndex++] = q.topLeft.index;
@@ -148,16 +169,8 @@ public class Path {
         //indices=result.indices;
 
 
-    }
-
-    public void draw(GL10 gl) {
-        gl.glLoadIdentity();
-        gl.glColor4f(r, g, b, a);
 
 
-        gl.glVertexPointer(2, GL10.GL_FLOAT, 0, roadBufferedVertex);
-        gl.glDrawElements(GL10.GL_TRIANGLES, roadIndices.length,
-                GL10.GL_UNSIGNED_SHORT, roadBufferedIndices);
     }
 
 
@@ -219,6 +232,57 @@ public class Path {
 
 
         quads.add(q);
+
+    }
+
+
+    public void draw(GL10 gl) {
+        gl.glLoadIdentity();
+        gl.glColor4f(r, g, b, a);
+
+
+        gl.glVertexPointer(2, GL10.GL_FLOAT, 0, roadBufferedVertex);
+        gl.glDrawElements(GL10.GL_TRIANGLES, roadIndices.length,
+                GL10.GL_UNSIGNED_SHORT, roadBufferedIndices);
+    }
+
+
+    public void drawGl2(float[] mvpMatrix) {
+
+
+        // Add program to OpenGL environment
+        GLES20.glUseProgram(view.mCurrentProgram);
+
+        // get handle to vertex shader's vPosition member
+
+        // Enable a handle to the triangle vertices
+        GLES20.glEnableVertexAttribArray(view.mPositionHandle);
+
+        // Prepare the triangle coordinate data
+        GLES20.glVertexAttribPointer(
+                view.mPositionHandle, COORDS_PER_VERTEX,
+                GLES20.GL_FLOAT, false,
+                0, roadBufferedVertex);
+
+
+        // get handle to fragment shader's vColor member
+        // Pass in the color information
+        // Set color for drawing the triangle
+        GLES20.glUniform4fv(view.mColorHandle, 1, color, 0);
+
+
+        // Apply the projection and view transformation
+        GLES20.glUniformMatrix4fv(view.mMVPMatrixHandle, 1, false, mvpMatrix, 0);
+        GameView.checkGlError("glUniformMatrix4fv");
+
+        // Draw the square
+        GLES20.glDrawElements(
+                GLES20.GL_TRIANGLES, indices.length,
+                GLES20.GL_UNSIGNED_SHORT, roadBufferedIndices);
+
+        // Disable vertex array
+        GLES20.glDisableVertexAttribArray(view.mPositionHandle);
+
 
     }
 

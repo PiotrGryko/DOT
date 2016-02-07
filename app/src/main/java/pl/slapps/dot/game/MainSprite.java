@@ -6,6 +6,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.util.Log;
 
@@ -22,7 +23,7 @@ public class MainSprite extends Sprite {
 
     private String TAG = MainSprite.class.getName();
     private Maze fence;
-    private Background background;
+
 
     private float angle;
     public float r = 0.0f;
@@ -37,9 +38,20 @@ public class MainSprite extends Sprite {
     public TileRoute currentTile;
 
     public float spriteSpeed = 0;
-
     private FloatBuffer lPos = ByteBuffer.allocateDirect(4 * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
 
+
+    static final int COORDS_PER_VERTEX = 3;
+
+
+    private int mPositionHandle;
+    private int mColorHandle;
+    private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
+    private int mMVPMatrixHandle;
+
+
+
+    float color[] = {0.0f, 0.0f, 0.0f, 1.0f};
 
 
     public void setPrepareToDie(boolean prepareToDie) {
@@ -58,53 +70,24 @@ public class MainSprite extends Sprite {
     }
 
     public MainSprite(GameView view, float centerX, float centerY, int width,
-                      int height, String color) {
+                      int height, String colorString) {
 
         super(centerX, centerY, width, height);
         this.view = view;
         fence = view.getMaze();
-        background = view.getGameBackground();
 
-        int intColor = Color.parseColor(color);
+        int intColor = Color.parseColor(colorString);
         r = (float) Color.red(intColor) / 255;
         g = (float) Color.green(intColor) / 255;
         b = (float) Color.blue(intColor) / 255;
         spriteSpeed = view.context.getResources().getDimension(R.dimen.speed);
+        color = new float[]{r, g, b, 1.0f};
+
+
 
 
     }
 
-    public void loadGLTexture(GL10 gl, Context context) {
-
-        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(),
-                R.drawable.enemy);
-
-        // generate one texture pointer
-
-        // gl.glGenTextures(1, textures, 0);
-
-        // ...and bind it to our array
-
-        // gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[0]);
-
-        // create nearest filtered texture
-
-        gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER,
-                GL10.GL_NEAREST);
-
-        gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER,
-                GL10.GL_LINEAR);
-
-        // Use Android GLUtils to specify a two-dimensional texture image from
-        // our bitmap
-
-        GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bitmap, 0);
-
-        // Clean up
-
-        bitmap.recycle();
-
-    }
 
     public void update() {
         super.update();
@@ -114,7 +97,6 @@ public class MainSprite extends Sprite {
         this.bufferedVertex.position(0);
         this.bufferedVertex.put(this.quad.vertices);
         this.bufferedVertex.position(0);
-
 
 
         lPos.position(0);
@@ -159,14 +141,64 @@ public class MainSprite extends Sprite {
 
     }
 
+    public void drawGl2(float[] mvpMatrix) {
+
+
+        // Add program to OpenGL environment
+        GLES20.glUseProgram(view.mCurrentProgram);
+
+        // get handle to vertex shader's vPosition member
+        mPositionHandle = GLES20.glGetAttribLocation(view.mCurrentProgram, "vPosition");
+
+        // Enable a handle to the triangle vertices
+        GLES20.glEnableVertexAttribArray(mPositionHandle);
+
+        // Prepare the triangle coordinate data
+        GLES20.glVertexAttribPointer(
+                mPositionHandle, COORDS_PER_VERTEX,
+                GLES20.GL_FLOAT, false,
+                vertexStride, bufferedVertex);
+
+
+        mColorHandle = GLES20.glGetUniformLocation(view.mCurrentProgram, "vColor");
+        // Pass in the color information
+        // Set color for drawing the triangle
+        GLES20.glUniform4fv(mColorHandle, 1, color, 0);
+
+
+        // get handle to shape's transformation matrix
+        mMVPMatrixHandle = GLES20.glGetUniformLocation(view.mCurrentProgram, "uMVPMatrix");
+        GameView.checkGlError("glGetUniformLocation");
+
+        // Apply the projection and view transformation
+        GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mvpMatrix, 0);
+        GameView.checkGlError("glUniformMatrix4fv");
+
+
+
+
+
+        // Draw the square
+        GLES20.glDrawElements(
+                GLES20.GL_TRIANGLES, indices.length,
+                GLES20.GL_UNSIGNED_SHORT, bufferedIndices);
+
+
+
+
+
+        // Disable vertex array
+        GLES20.glDisableVertexAttribArray(mPositionHandle);
+
+
+    }
+
     public void draw(GL10 gl) {
 
 
         //gl.glRotatef(angle, centerX, centerY, 0);
 
         gl.glLoadIdentity();
-
-
 
 
         //    gl.glTranslatef(centerX, centerY, 0);
@@ -181,26 +213,10 @@ public class MainSprite extends Sprite {
         gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, vertices.length / 2);
 
 
-
-
-
-
-
-
-
-
-
 //lights
 
 
-
-
-
-
-
-
-       // gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_POSITION, lPos);
-
+        // gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_POSITION, lPos);
 
 
     }

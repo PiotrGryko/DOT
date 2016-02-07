@@ -1,5 +1,7 @@
 package pl.slapps.dot.tile;
 
+import android.util.Log;
+
 import org.json.JSONObject;
 
 import pl.slapps.dot.game.Junction;
@@ -13,7 +15,6 @@ import pl.slapps.dot.model.Route;
 public class TileRouteFinish extends TileRoute {
 
     public String TAG = TileRouteFinish.class.getName();
-    private GameView view;
     private boolean passed = false;
     private Wall wall;
     private Wall.Type type;
@@ -22,13 +23,13 @@ public class TileRouteFinish extends TileRoute {
 
     public TileRouteFinish(float screenWidth, float screenHeight, float widthBlocksCount, float heightBlocksCount, GameView view, Route route) {
 
-        super(screenWidth, screenHeight, widthBlocksCount, heightBlocksCount, route);
-        this.view=view;
+        super(screenWidth, screenHeight, widthBlocksCount, heightBlocksCount, route,view);
+
     }
 
     public TileRouteFinish(float screenWidth, float screenHeight, float widthBlocksCount, float heightBlocksCount, int widthNumber, int heightNumber, GameView view, String from, String to) {
-        super(screenWidth, screenHeight, widthBlocksCount, heightBlocksCount, widthNumber, heightNumber, from, to, Route.Type.FINISH);
-        this.view=view;
+        super(screenWidth, screenHeight, widthBlocksCount, heightBlocksCount, widthNumber, heightNumber, from, to, Route.Type.FINISH,view);
+
     }
 
     public void initRoute(Route.Movement d) {
@@ -36,11 +37,14 @@ public class TileRouteFinish extends TileRoute {
 
         Route.Direction f = this.to;
 
+        if(view==null)
+            Log.d("XXX", "tile route finish view is null " + d.name());
+
         switch (f) {
             case LEFT: {
 
                 wall = new Wall(new Junction(topX, topY + height - borderY, 0),
-                        new Junction(topX, topY + borderY, 0), Wall.Type.LEFT);
+                        new Junction(topX, topY + borderY, 0), Wall.Type.LEFT,view);
 
                 this.walls.add(wall);
                 type = Wall.Type.LEFT;
@@ -50,7 +54,7 @@ public class TileRouteFinish extends TileRoute {
 
             case RIGHT: {
                 wall = new Wall(new Junction(topX + width, topY + height - borderY, 0),
-                        new Junction(topX + width, topY + borderY, 0), Wall.Type.RIGHT);
+                        new Junction(topX + width, topY + borderY, 0), Wall.Type.RIGHT,view);
 
                 walls.add(wall);
                 type = Wall.Type.RIGHT;
@@ -59,7 +63,7 @@ public class TileRouteFinish extends TileRoute {
             }
             case TOP: {
                 wall = new Wall(new Junction(topX + borderX, topY, 0),
-                        new Junction(topX + width - borderX, topY, 0), Wall.Type.TOP);
+                        new Junction(topX + width - borderX, topY, 0), Wall.Type.TOP,view);
 
                 walls.add(wall);
                 type = Wall.Type.TOP;
@@ -68,7 +72,7 @@ public class TileRouteFinish extends TileRoute {
             }
             case BOTTOM: {
                 wall = new Wall(new Junction(topX + borderX, topY + height, 0),
-                        new Junction(topX + width - borderX, topY + height, 0), Wall.Type.BOTTOM);
+                        new Junction(topX + width - borderX, topY + height, 0), Wall.Type.BOTTOM,view);
 
                 walls.add(wall);
                 type = Wall.Type.BOTTOM;

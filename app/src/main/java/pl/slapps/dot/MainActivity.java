@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.facebook.FacebookSdk;
 import com.google.android.gms.ads.AdListener;
@@ -42,6 +43,12 @@ import pl.slapps.dot.game.GameView;
 import pl.slapps.dot.model.Stage;
 
 public class MainActivity extends Activity {
+
+    //////////tmp
+    private TextView tvMax;
+    private TextView tvMin;
+    private TextView tvCur;
+
 
     private String TAG = "MainActivity";
     private GameView game;
@@ -69,6 +76,9 @@ public class MainActivity extends Activity {
     public DrawerLayout drawer;
     public LinearLayout drawerContent;
 
+    public static float screenWidth;
+    public static float screenHeight;
+
 
     public static ArrayList<String> listRaw() {
         ArrayList<String> files = new ArrayList<>();
@@ -81,10 +91,68 @@ public class MainActivity extends Activity {
         return files;
     }
 
+    public void setCurrent(final long value) {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+
+
+                tvCur.setText(Long.toString(value));
+
+
+            }
+        });
+    }
+
+
+    public void setMax(final long value) {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+
+
+                String current = tvMax.getText().toString();
+
+                try {
+                    float v = Long.parseLong(current);
+                    if (value > v)
+                        tvMax.setText(Long.toString(value));
+                } catch (Throwable t) {
+                    tvMax.setText(Long.toString(value));
+
+                }
+
+            }
+        });
+    }
+
+    public void setMin(final long value) {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+
+
+                String current = tvMin.getText().toString();
+
+                try {
+                    float v = Long.parseLong(current);
+                    if (value < v)
+                        tvMin.setText(Long.toString(value));
+                } catch (Throwable t) {
+                    tvMin.setText(Long.toString(value));
+
+                }
+
+            }
+        });
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        screenHeight = this.getResources().getDisplayMetrics().heightPixels;
+        screenWidth = this.getResources().getDisplayMetrics().widthPixels;
         FacebookSdk.sdkInitialize(this.getApplicationContext());
 
         listRaw();
@@ -121,6 +189,12 @@ public class MainActivity extends Activity {
 
 
         setContentView(R.layout.main_activity);
+
+        tvMax = (TextView) findViewById(R.id.tv_max_time);
+        tvMin = (TextView) findViewById(R.id.tv_min_time);
+        tvCur = (TextView) findViewById(R.id.tv_current_time);
+
+
         game = (GameView) findViewById(R.id.game);
 
         mainMenu = new MainMenu(this, game);
@@ -161,8 +235,8 @@ public class MainActivity extends Activity {
         requestNewInterstitial();
 
 
-        drawer = (DrawerLayout)findViewById(R.id.drawer);
-        drawerContent = (LinearLayout)findViewById(R.id.drawer_content);
+        drawer = (DrawerLayout) findViewById(R.id.drawer);
+        drawerContent = (LinearLayout) findViewById(R.id.drawer_content);
         drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
 
@@ -192,9 +266,6 @@ public class MainActivity extends Activity {
         try {
 
 
-
-
-
             soundsManager.configure(stage.sounds);
             soundsManager.playBackgroundSound();
 
@@ -218,9 +289,8 @@ public class MainActivity extends Activity {
         }
     }
 
-    public void toggleMenu()
-    {
-        if(drawer.isDrawerOpen(drawerContent))
+    public void toggleMenu() {
+        if (drawer.isDrawerOpen(drawerContent))
             drawer.closeDrawers();
         else
             drawer.openDrawer(drawerContent);
@@ -304,7 +374,6 @@ public class MainActivity extends Activity {
 
             drawerContent.removeAllViews();
             drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-
 
 
         } else {

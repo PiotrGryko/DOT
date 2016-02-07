@@ -32,7 +32,7 @@ public class Maze {
     public int verticalSize = 0;
     public float width;
     public float height;
-   // public float spriteSpeed;
+    // public float spriteSpeed;
 
     public int defaultVerticalSize = 15;
     public int defaultHorizontalSize = 9;
@@ -44,12 +44,11 @@ public class Maze {
     private Fence fence;
 
 
-    public Path getPath()
-    {
+    public Path getPath() {
         return path;
     }
-    public Fence getFence()
-    {
+
+    public Fence getFence() {
         return fence;
     }
 
@@ -136,11 +135,11 @@ public class Maze {
         float vertRatio = (float) defaultVerticalSize / (float) verticalSize;
         float horizRatio = (float) defaultHorizontalSize / (float) horizontalSize;
 
-       // float ratio = vertRatio;
-       // if (horizRatio < ratio)
+        // float ratio = vertRatio;
+        // if (horizRatio < ratio)
         //    ratio = horizRatio;
 
-       // spriteSpeed = view.spriteSpeed * ratio;
+        // spriteSpeed = view.spriteSpeed * ratio;
 
 
         this.width = view.screenWidth / horizontalSize;
@@ -162,12 +161,12 @@ public class Maze {
                     break;
 
                 case START:
-                    r = new TileRouteStart(view.screenWidth, view.screenHeight, horizontalSize, verticalSize, element);
+                    r = new TileRouteStart(view.screenWidth, view.screenHeight, horizontalSize, verticalSize, element,view);
 
                     this.elements.add(r);
                     break;
                 default:
-                    r = new TileRoute(view.screenWidth, view.screenHeight, horizontalSize, verticalSize, element);
+                    r = new TileRoute(view.screenWidth, view.screenHeight, horizontalSize, verticalSize, element,view);
 
                     this.elements.add(r);
 
@@ -188,8 +187,8 @@ public class Maze {
         sortMaze();
         Log.d(TAG, "elements loaded ");
         //initWallsDrawing();
-        path = new Path(routes, stage.colorRoute);
-        fence = new Fence(routes, "#000000");
+        path = new Path(routes, stage.colorRoute, view);
+        fence = new Fence(routes, "#000000", view);
 
 
     }
@@ -240,10 +239,11 @@ public class Maze {
     }
 
 
-    public void draw(GL10 gl) {
-        path.draw(gl);
+    public void drawGL20(float[] mvpMatrix) {
+        path.drawGl2(mvpMatrix);
+        fence.drawGl2(mvpMatrix);
 
-        fence.draw(gl);
+
 
         /*
         for (int i = 0; i < elements.size(); i++) {
@@ -254,5 +254,7 @@ public class Maze {
 */
 
     }
+
+
 
 }

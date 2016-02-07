@@ -27,6 +27,7 @@ public class Sprite {
 	public float x; // used to increas/decreas sprite position
 	public float y;
 
+
 	public Sprite( float centerX, float centerY, float width,
 			float height) {
 		this.centerX = centerX;
@@ -37,6 +38,12 @@ public class Sprite {
 		quad = new Quad(centerX,centerY,width,height);
 
 
+		initBuffers();
+
+	}
+
+	public void initBuffers()
+	{
 		vertices = quad.vertices;
 		indices = quad.indices;
 
@@ -54,9 +61,7 @@ public class Sprite {
 		bufferedIndices = bytes.asShortBuffer();
 		bufferedIndices.put(indices);
 		bufferedIndices.position(0);
-
 	}
-
 
 
 	public float[] getVertices()

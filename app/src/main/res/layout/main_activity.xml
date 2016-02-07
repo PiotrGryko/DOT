@@ -159,8 +159,7 @@
                                     android:padding="10dp"
                                     android:scaleType="centerInside"
                                     android:src="@drawable/online"
-                                    android:textColor="#ffffff"
-                                     />
+                                    android:textColor="#ffffff" />
 
 
                                 <ImageButton
@@ -222,6 +221,69 @@
 
         </LinearLayout>
     </android.support.v4.widget.DrawerLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:orientation="vertical"
+        android:padding="5dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="max: " />
+
+            <TextView
+                android:id="@+id/tv_max_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="min: " />
+
+            <TextView
+                android:id="@+id/tv_min_time"
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="cur: " />
+
+            <TextView
+                android:id="@+id/tv_current_time"
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+
+    </LinearLayout>
 
 
 </RelativeLayout>

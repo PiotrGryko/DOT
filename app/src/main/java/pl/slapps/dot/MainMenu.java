@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -31,6 +32,7 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -107,6 +109,8 @@ public class MainMenu {
         tvName.setText(stage.name);
         tvDesc.setText(stage.description);
     }
+
+
 
     public String loadWorlds() {
 
@@ -306,11 +310,12 @@ public class MainMenu {
             @Override
             public void onClick(View view) {
 
+                Log.d(TAG,"button online pressed");
 
                 DAO.getWorlds(context, new Response.Listener() {
                     @Override
                     public void onResponse(Object response) {
-
+                        Log.d(TAG,"online stages fetched");
 
                         final Dialog worldsDialog = new Dialog(context);
                         worldsDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
@@ -370,7 +375,8 @@ public class MainMenu {
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-
+                    Log.d(TAG,"error fetching online stages "+error.getMessage());
+                        Log.d(TAG,error.toString());
                     }
                 },true);
 

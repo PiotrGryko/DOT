@@ -97,7 +97,7 @@ public class Generator {
         this.backgroundColor = this.fillColor = view.getGameBackground().backgroundcolor;
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                this.tiles.add(new TileRoute(view.screenWidth, view.screenHeight, width, height, j, i, "LEFT", "RIGHT", Route.Type.TILE));
+                this.tiles.add(new TileRoute(view.screenWidth, view.screenHeight, width, height, j, i, "LEFT", "RIGHT", Route.Type.TILE,view));
 
             }
         }
@@ -527,7 +527,7 @@ public class Generator {
 
         for (int i = 0; i < gridY; i++) {
             for (int j = 0; j < gridX; j++) {
-                this.tiles.add(new TileRoute(view.screenWidth, view.screenHeight, gridX, gridY, j, i, "LEFT", "RIGHT", Route.Type.TILE));
+                this.tiles.add(new TileRoute(view.screenWidth, view.screenHeight, gridX, gridY, j, i, "LEFT", "RIGHT", Route.Type.TILE,view));
 
             }
         }
@@ -571,11 +571,11 @@ public class Generator {
 
                 case START:
                     tiles.remove(tile);
-                    this.tiles.add(new TileRouteStart(view.screenWidth, view.screenHeight, gridX, gridY, element));
+                    this.tiles.add(new TileRouteStart(view.screenWidth, view.screenHeight, gridX, gridY, element,view));
                     break;
                 default:
                     tiles.remove(tile);
-                    this.tiles.add(new TileRoute(view.screenWidth, view.screenHeight, gridX, gridY, element));
+                    this.tiles.add(new TileRoute(view.screenWidth, view.screenHeight, gridX, gridY, element,view));
                     break;
 
             }
@@ -617,6 +617,21 @@ public class Generator {
 
         }
         return false;
+    }
+
+
+
+    public void drawGL20(float[] mvpMatrix) {
+
+        //Log.d(TAG,"draw generator");
+
+        if (tiles == null)
+            return;
+        for (int i = 0; i < tiles.size(); i++) {
+
+            if (tiles.size()>i && tiles.get(i) != null)
+                tiles.get(i).drawGL20(mvpMatrix);
+        }
     }
 
 

@@ -8,19 +8,24 @@ import javax.microedition.khronos.opengles.GL10;
 
 
 import android.graphics.Color;
+import android.opengl.GLES20;
 import android.util.Log;
 
-import pl.slapps.dot.game.GameView;
+import pl.slapps.dot.MainActivity;
 
-public class Background {
+public class Background extends Sprite{
 
     private String TAG = Background.class.getName();
-    private float[] vertices;
-    private float[] textVertices = {0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-            0.0f};
+
+
+
+
+
+
+
     private int textures[] = new int[1];
-    private FloatBuffer vertBuffer;
-    private FloatBuffer textBuffer;
+
+
     private GameView view;
     //private Bitmap bitmap;
 
@@ -32,6 +37,20 @@ public class Background {
     private float b;
     public String backgroundcolor;
 
+    /** Size of the normal data in elements. */
+
+    static final int COORDS_PER_VERTEX = 3;
+
+
+
+
+
+
+    float color[] = { 0.0f, 0.0f, 0.0f, 1.0f
+
+    };
+
+
     public void setColor(String color) {
 
         try {
@@ -42,80 +61,111 @@ public class Background {
             r = (float) Color.red(intColor) / 255;
             g = (float) Color.green(intColor) / 255;
             b = (float) Color.blue(intColor) / 255;
+            Log.d("XXX","color setted "+color);
+            refreashColor();
         } catch (Throwable t) {
             Log.d(TAG, "background color  null " + color);
         }
     }
 
-    public Background(GameView view, String color) {
+    public Background(GameView view, String colorString) {
+        super(MainActivity.screenWidth / 2, MainActivity.screenHeight / 2, MainActivity.screenWidth, MainActivity.screenHeight);
         this.view = view;
 
-        setColor(color);
+        setColor(colorString);
 
 
-        float[] tmp = {-view.screenWidth / 2, 1.5f * view.screenHeight, 0,
-                -view.screenWidth / 2, -view.screenHeight / 2, 0,
-                1.5f * view.screenWidth, 1.5f * view.screenHeight, 0,
-                1.5f * view.screenWidth, -view.screenHeight / 2, 0
 
-        };
-        vertices = tmp;
-        ByteBuffer vertByte = ByteBuffer.allocateDirect(vertices.length * 4);
-        vertByte.order(ByteOrder.nativeOrder());
-        vertBuffer = vertByte.asFloatBuffer();
-        vertBuffer.put(vertices);
-        vertBuffer.position(0);
+        //GLES20.glClearColor(r, g, b, 0);
 
-        ByteBuffer textByte = ByteBuffer.allocateDirect(textVertices.length * 4);
-        textByte.order(ByteOrder.nativeOrder());
-        textBuffer = textByte.asFloatBuffer();
-        textBuffer.put(textVertices);
-        textBuffer.position(0);
 
 
     }
+
+    public void refreashColor()
+    {
+        //GLES20.glClearColor(r, g, b, 0.0f);
+        //color = new float[]{ r,g, b, 0.0f };
+        color = new float[]{
+                // Front face (red)
+
+                r, g, b, a,
+
+
+             //   1.0f, 0.0f, 0.0f, 1.0f,
+             //   1.0f, 0.0f, 0.0f, 1.0f,
+
+
+
+        };
+
+
+        //Log.d("XXX","background color refreashed "+r +" "+g +" "+b );
+
+
+    }
+
 
     public void setMove(float x, float y) {
         moveX += x;
         moveY += y;
     }
 
-    public void loadTexture(GL10 gl) {
-        //bitmap =BitmapFactory.decodeResource(view.getResources(), R.drawable.space);
 
-        gl.glGenTextures(1, textures, 0);
-        gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[0]);
 
-        gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER,
-                GL10.GL_NEAREST);
-        gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER,
-                GL10.GL_LINEAR);
 
-        //GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bitmap, 0);
-        //bitmap.recycle();
+    public void drawGl2(float[] mvpMatrix)
+    {
+
+
+        // Add program to OpenGL environment
+        GLES20.glUseProgram(view.mCurrentProgram);
+
+
+
+        // get handle to vertex shader's vPosition member
+        // Enable a handle to the triangle vertices
+        GLES20.glEnableVertexAttribArray(view.mPositionHandle);
+        // Prepare the triangle coordinate data
+        GLES20.glVertexAttribPointer(
+                view.mPositionHandle, COORDS_PER_VERTEX,
+                GLES20.GL_FLOAT, false,
+                0, bufferedVertex);
+
+
+
+        // get handle to fragment shader's vColor member
+        // Pass in the color information
+        // Set color for drawing the triangle
+        GLES20.glUniform4fv(view.mColorHandle, 1, color, 0);
+
+
+
+        // get handle to shape's transformation matrix
+        GameView.checkGlError("glGetUniformLocation");
+
+        // Apply the projection and view transformation
+        GLES20.glUniformMatrix4fv(view.mMVPMatrixHandle, 1, false, mvpMatrix, 0);
+        GameView.checkGlError("glUniformMatrix4fv");
+
+
+
+
+        // Draw the square
+        GLES20.glDrawElements(
+                GLES20.GL_TRIANGLES, indices.length,
+                GLES20.GL_UNSIGNED_SHORT, bufferedIndices);
+
+        //GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 6);
+
+        // Disable vertex array
+        GLES20.glDisableVertexAttribArray(view.mPositionHandle);
+
+
+
+
     }
 
-    public void draw(GL10 gl) {
 
-        gl.glLoadIdentity();
-
-
-        gl.glEnable(GL10.GL_TEXTURE_2D);
-        gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[0]);
-        gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-
-
-        gl.glColor4f(r, g, b, a);
-        gl.glTranslatef(moveX, moveY, 0);
-        gl.glVertexPointer(3, GL10.GL_FLOAT, 0, vertBuffer);
-        gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, textBuffer);
-
-        gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, vertices.length / 3);
-
-        gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-        gl.glDisable(GL10.GL_TEXTURE_2D);
-
-
-    }
 
 }

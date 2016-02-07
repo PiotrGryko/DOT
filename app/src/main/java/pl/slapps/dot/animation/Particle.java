@@ -63,17 +63,7 @@ public class Particle extends Quad {
 
 
 
-        //lab = ByteBuffer.allocateDirect(4 * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
 
-
-        /*
-        ByteBuffer bytes = ByteBuffer.allocateDirect(vertices.length * 4);
-        bytes.order(ByteOrder.nativeOrder());
-
-        bufferedVertex = bytes.asFloatBuffer();
-        bufferedVertex.put(vertices);
-        bufferedVertex.position(0);
-*/
 
     }
 
@@ -148,13 +138,7 @@ public class Particle extends Quad {
         if (collision != null && collision!=lastCollision) {
             lastCollision=collision;
 
-/*            this.x = -x;
-            this.startX = -startX;
-            this.y = -y;
-            this.startY = -startY;
 
-            /*
-  */
             switch (collision) {
                 case LEFT:
                 case RIGHT:
@@ -174,21 +158,5 @@ public class Particle extends Quad {
 
     }
 
-    /*
 
-    public void draw(GL10 gl, float r, float g, float b) {
-
-
-        gl.glLoadIdentity();
-
-
-        gl.glColor4f(r, g, b, 0.0f);
-
-        gl.glTranslatef(moveX, moveY, 0);
-
-        gl.glVertexPointer(2, GL10.GL_FLOAT, 0, bufferedVertex);
-        gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, vertices.length / 2);
-
-    }
-*/
 }

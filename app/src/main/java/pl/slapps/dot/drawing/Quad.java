@@ -30,11 +30,11 @@ public class Quad {
 
     public void initSharedVerticles() {
         vertices = new float[]{
-                bottomLeft.x, bottomLeft.y, // 0 bottom left
+                bottomLeft.x, bottomLeft.y,0.0f, // 0 bottom left
 
-                topLeft.x, topLeft.y, // 1 top left
-                bottomRight.x, bottomRight.y, // 2 bottom right
-                topRight.x, topRight.y// 3 top right
+                topLeft.x, topLeft.y,0.0f, // 1 top left
+                bottomRight.x, bottomRight.y,0.0f, // 2 bottom right
+                topRight.x, topRight.y,0.0f// 3 top right
 
         };
 
@@ -46,14 +46,17 @@ public class Quad {
 
     public void initVertexArray(float centerX, float centerY, float width,
                                 float height) {
-        vertices = new float[]{
-                centerX - width / 2, centerY + height / 2, // 0 bottom left
-                centerX - width / 2, centerY - height / 2, // 1 top left
-                centerX + width / 2, centerY + height / 2, // 2 bottom right
 
-                centerX + width / 2, centerY - height / 2,// 3 top right
-                centerX - width / 2, centerY - height / 2,// 3 top right
-                centerX + width / 2, centerY + height / 2// 3 top right
+
+
+        vertices = new float[]{
+                centerX - width / 2, centerY + height / 2,0.0f, // 0 bottom left
+                centerX - width / 2, centerY - height / 2,0.0f, // 1 top left
+                centerX + width / 2, centerY + height / 2,0.0f, // 2 bottom right
+
+                centerX + width / 2, centerY + height / 2,0.0f,// 3 bottom right
+                centerX - width / 2, centerY - height / 2,0.0f,// 4 top left
+                centerX + width / 2, centerY - height / 2,0.0f// 3 top right
 
 
         };
