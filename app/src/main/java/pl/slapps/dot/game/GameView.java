@@ -1,7 +1,6 @@
 package pl.slapps.dot.game;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -12,7 +11,6 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.support.v4.widget.DrawerLayout;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -47,9 +45,23 @@ public class GameView extends GLSurfaceView implements GLSurfaceView.Renderer {
 
     private float[] mModelMatrix = new float[16];
 
-    private int mLightPosHandle;
-    private int mLightShinningHandle;
-    private int mLightDistanceHandle;
+    private int mDotLightPosHandle;
+    private int mDotLightShinningHandle;
+    private int mDotLightDistanceHandle;
+
+
+    public int mExplosionLightOnePosHandle;
+    public int mExplosionLightOneShinningHandle;
+    public int mExplosionLightOneDistanceHandle;
+    public int mExplosionLightOneColorHandle;
+
+
+    public int mExplosionLightTwoPosHandle;
+    public int mExplosionLightTwoShinningHandle;
+    public int mExplosionLightTwoDistanceHandle;
+    public int mExplosionLightTwoColorHandle;
+
+
     public int mPositionHandle;
     public int mColorHandle;
     public int mMVPMatrixHandle;
@@ -130,38 +142,41 @@ public class GameView extends GLSurfaceView implements GLSurfaceView.Renderer {
 
 
     public final String fragmentShaderCode =
-        "struct LightSource" +
-                "{" +
-                "vec3 u_LightPos;" +
-                "float lightShinning;" +
-                "float lightDistance;" +
-                "vec3 Color;" +
-                "};"+
+            "struct LightSource" +
+                    "{" +
+                    "vec3 u_LightPos;" +
+                    "float lightShinning;" +
+                    "float lightDistance;" +
+                    "vec4 lightColor;" +
+                    "};" +
 
-                "uniform LightSource lights[1];"+
+                    "uniform LightSource lights[3];" +
 
-            "precision mediump float;       // Set the default precision to medium. We don't need as high of a\n" +
+                    "precision mediump float;       // Set the default precision to medium. We don't need as high of a\n" +
                     "                               // precision in the fragment shader.\n" +
-                    "uniform vec3 u_LightPos;       // The position of the light in eye space.\n" +
                     "varying vec3 v_Position;       // Interpolated position for this fragment.\n" +
                     "uniform vec4 vColor;          // This is the color from the vertex shader interpolated across the\n" +
                     "                               // triangle per fragment.\n" +
 
-                    "uniform float lightShinning;" +
-                    "uniform float lightDistance;" +
 
                     "// The entry point for our fragment shader.\n" +
                     "void main()\n" +
-                    "{\n" +
-                    "    // Will be used for attenuation.\n" +
-                    "    float distance = length(u_LightPos - v_Position);\n" +
+                    "{" +
 
-                    "    // Add attenuation.\n" +
-                    "   float diffuse = lightShinning * (1.0 / (1.0 + (0.00007 * distance * distance*lightDistance)));\n" +
 
-                //"    float diffuse = lightShinning * (1.0 / (1.0 + (0.00007 * distance * distance*lightDistance)));\n" +
+                    "   float dotDistance = length(lights[0].u_LightPos - v_Position);\n" +
+                    "   float dotDiffuse =  lights[0].lightShinning * (1.0 / (1.0 + (0.00007 * dotDistance * dotDistance* lights[0].lightDistance)));\n" +
+
+                    "   float explosionOneDistance = length(lights[1].u_LightPos - v_Position);\n" +
+                    "   float explosionOneDiffuse =  lights[1].lightShinning * (1.0 / (1.0 + (0.00007 * explosionOneDistance * explosionOneDistance* lights[1].lightDistance)));\n" +
+                    "   vec4 explosionOneResult = explosionOneDiffuse * lights[1].lightColor;"+
+
+                    "   float explosionTwoDistance = length(lights[2].u_LightPos - v_Position);\n" +
+                    "   float explosionTwoDiffuse =  lights[2].lightShinning * (1.0 / (1.0 + (0.00007 * explosionTwoDistance * explosionTwoDistance* lights[2].lightDistance)));\n" +
+                    "   vec4 explosionTwoResult = explosionTwoDiffuse * lights[2].lightColor;"+
+
                     "    // Multiply the color by the diffuse illumination level to get final output color.\n" +
-                    "    gl_FragColor = vColor*diffuse;" +
+                    "    gl_FragColor = vColor* dotDiffuse+explosionOneResult + explosionTwoResult;" +
                     "}";
 
 
@@ -250,14 +265,26 @@ public class GameView extends GLSurfaceView implements GLSurfaceView.Renderer {
                 new String[]{"vPosition", "vColor"});
 
 
-        mLightPosHandle = GLES20.glGetUniformLocation(mProgram, "u_LightPos");
-        mLightDistanceHandle = GLES20.glGetUniformLocation(mProgram, "lightDistance");
-        mLightShinningHandle = GLES20.glGetUniformLocation(mProgram, "lightShinning");
+        mDotLightPosHandle = GLES20.glGetUniformLocation(mProgram, "lights[0].u_LightPos");
+        mDotLightDistanceHandle = GLES20.glGetUniformLocation(mProgram, "lights[0].lightDistance");
+        mDotLightShinningHandle = GLES20.glGetUniformLocation(mProgram, "lights[0].lightShinning");
+
+
+        mExplosionLightOnePosHandle = GLES20.glGetUniformLocation(mProgram, "lights[1].u_LightPos");
+        mExplosionLightOneDistanceHandle = GLES20.glGetUniformLocation(mProgram, "lights[1].lightDistance");
+        mExplosionLightOneShinningHandle = GLES20.glGetUniformLocation(mProgram, "lights[1].lightShinning");
+        mExplosionLightOneColorHandle = GLES20.glGetUniformLocation(mProgram, "lights[1].lightColor");
+
+
+        mExplosionLightTwoPosHandle = GLES20.glGetUniformLocation(mProgram, "lights[2].u_LightPos");
+        mExplosionLightTwoDistanceHandle = GLES20.glGetUniformLocation(mProgram, "lights[2].lightDistance");
+        mExplosionLightTwoShinningHandle = GLES20.glGetUniformLocation(mProgram, "lights[2].lightShinning");
+        mExplosionLightTwoColorHandle = GLES20.glGetUniformLocation(mProgram, "lights[2].lightColor");
+
 
         mPositionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
         mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");
         mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
-
 
 
     }
@@ -303,9 +330,13 @@ public class GameView extends GLSurfaceView implements GLSurfaceView.Renderer {
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
 
 
-        GLES20.glUniform3f(mLightPosHandle, mainSprite.getCenterX(), mainSprite.getCenterY(), 0.0f);
-        GLES20.glUniform1f(mLightDistanceHandle, 0.1f);
-        GLES20.glUniform1f(mLightShinningHandle, 1.0f);
+        GLES20.glUniform3f(mDotLightPosHandle, mainSprite.getCenterX(), mainSprite.getCenterY(), 0.0f);
+        GLES20.glUniform1f(mDotLightDistanceHandle, 0.5f);
+        GLES20.glUniform1f(mDotLightShinningHandle, 1.0f);
+
+
+
+
 
 
         if (background != null)
@@ -324,8 +355,8 @@ public class GameView extends GLSurfaceView implements GLSurfaceView.Renderer {
             for (int i = 0; i < explosions.size(); i++) {
                 explosions.get(i).drawGl2(mMVPMatrix);
             }
-            if (currentExplosion != null)
-                toggleColors(currentExplosion.getProgress());
+           // if (currentExplosion != null)
+            //    toggleColors(currentExplosion.getProgress());
 
 
         }

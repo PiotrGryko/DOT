@@ -2,7 +2,6 @@ package pl.slapps.dot.animation;
 
 import android.graphics.Color;
 import android.opengl.GLES20;
-import android.util.Log;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -193,7 +192,24 @@ public class Explosion {
         //        GLES20.GL_UNSIGNED_SHORT, bufferedIndices);
 
         // Disable vertex array
+
+        if(usedBuffer==bufferedVertex) {
+            GLES20.glUniform3f(view.mExplosionLightOnePosHandle, x, y, 0.0f);
+            GLES20.glUniform1f(view.mExplosionLightOneDistanceHandle, 1.0f);
+            GLES20.glUniform1f(view.mExplosionLightOneShinningHandle, 1.0f - getProgress());
+            GLES20.glUniform4fv(view.mExplosionLightOneColorHandle, 1, color, 0);
+        }
+        else
+        {
+            GLES20.glUniform3f(view.mExplosionLightTwoPosHandle, x, y, 0.0f);
+            GLES20.glUniform1f(view.mExplosionLightTwoDistanceHandle, 1.0f);
+            GLES20.glUniform1f(view.mExplosionLightTwoShinningHandle, 1.0f - getProgress());
+            GLES20.glUniform4fv(view.mExplosionLightTwoColorHandle, 1, color, 0);
+        }
         GLES20.glDisableVertexAttribArray(view.mPositionHandle);
+
+
+
 
 
     }
