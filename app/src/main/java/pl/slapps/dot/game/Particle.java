@@ -1,17 +1,9 @@
-package pl.slapps.dot.animation;
+package pl.slapps.dot.game;
 
-import android.media.AsyncPlayer;
-import android.media.AudioManager;
-import android.net.Uri;
-
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
 import pl.slapps.dot.drawing.Quad;
-import pl.slapps.dot.game.Maze;
-import pl.slapps.dot.game.Wall;
-import pl.slapps.dot.game.GameView;
+import pl.slapps.dot.drawing.Wall;
 
 
 public class Particle extends Quad {
@@ -41,12 +33,12 @@ public class Particle extends Quad {
     public float y;
 
 
-    private GameView view;
+    private Game view;
 
     private Wall.Type lastCollision;
 
 
-    public Particle(GameView view, float centerX, float centerY, int width,
+    public Particle(Game view, float centerX, float centerY, int width,
                     int height, Maze fence, long creationTime, Explosion explosion) {
 
         super(centerX, centerY, width, height);
@@ -152,7 +144,7 @@ public class Particle extends Quad {
                     break;
             }
             //playCollisionSound();
-           // view.context.getSoundsManager().playRawFile("particle");
+           // generator.context.getSoundsManager().playRawFile("particle");
         }
 
 

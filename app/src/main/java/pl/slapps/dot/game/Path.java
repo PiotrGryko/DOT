@@ -1,4 +1,4 @@
-package pl.slapps.dot.drawing;
+package pl.slapps.dot.game;
 
 import android.graphics.Color;
 import android.opengl.GLES20;
@@ -13,9 +13,10 @@ import java.util.Arrays;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import pl.slapps.dot.game.GameView;
-import pl.slapps.dot.tile.TileRoute;
-import pl.slapps.dot.tile.TileRouteBackground;
+import pl.slapps.dot.SurfaceRenderer;
+import pl.slapps.dot.drawing.Quad;
+import pl.slapps.dot.generator.TileRoute;
+import pl.slapps.dot.generator.TileRouteBackground;
 
 /**
  * Created by piotr on 01.11.15.
@@ -41,7 +42,7 @@ public class Path {
     public float a = 0.0f;
     public String backgroundColor;
 
-    private GameView view;
+    private Game game;
 
 
     static final int COORDS_PER_VERTEX = 3;
@@ -73,8 +74,8 @@ public class Path {
         Log.d(TAG, "test path set color ");
     }
 
-    public Path(ArrayList<TileRoute> routes, String stringColor, GameView view) {
-        this.view = view;
+    public Path(ArrayList<TileRoute> routes, String stringColor, Game game) {
+        this.game= game;
         ArrayList<TileRouteBackground> backgrounds = new ArrayList<>();
         ArrayList<Quad> data = new ArrayList<>();
 
@@ -251,16 +252,16 @@ public class Path {
 
 
         // Add program to OpenGL environment
-        GLES20.glUseProgram(view.mCurrentProgram);
+        GLES20.glUseProgram(game.mProgram);
 
         // get handle to vertex shader's vPosition member
 
         // Enable a handle to the triangle vertices
-        GLES20.glEnableVertexAttribArray(view.mPositionHandle);
+        GLES20.glEnableVertexAttribArray(game.mPositionHandle);
 
         // Prepare the triangle coordinate data
         GLES20.glVertexAttribPointer(
-                view.mPositionHandle, COORDS_PER_VERTEX,
+                game.mPositionHandle, COORDS_PER_VERTEX,
                 GLES20.GL_FLOAT, false,
                 0, roadBufferedVertex);
 
@@ -268,12 +269,12 @@ public class Path {
         // get handle to fragment shader's vColor member
         // Pass in the color information
         // Set color for drawing the triangle
-        GLES20.glUniform4fv(view.mColorHandle, 1, color, 0);
+        GLES20.glUniform4fv(game.mColorHandle, 1, color, 0);
 
 
-        // Apply the projection and view transformation
-        GLES20.glUniformMatrix4fv(view.mMVPMatrixHandle, 1, false, mvpMatrix, 0);
-        GameView.checkGlError("glUniformMatrix4fv");
+        // Apply the projection and generator transformation
+        GLES20.glUniformMatrix4fv(game.mMVPMatrixHandle, 1, false, mvpMatrix, 0);
+        SurfaceRenderer.checkGlError("glUniformMatrix4fv");
 
         // Draw the square
         GLES20.glDrawElements(
@@ -281,7 +282,7 @@ public class Path {
                 GLES20.GL_UNSIGNED_SHORT, roadBufferedIndices);
 
         // Disable vertex array
-        GLES20.glDisableVertexAttribArray(view.mPositionHandle);
+        GLES20.glDisableVertexAttribArray(game.mPositionHandle);
 
 
     }

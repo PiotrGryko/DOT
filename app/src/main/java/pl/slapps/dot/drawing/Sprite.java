@@ -1,4 +1,4 @@
-package pl.slapps.dot.game;
+package pl.slapps.dot.drawing;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

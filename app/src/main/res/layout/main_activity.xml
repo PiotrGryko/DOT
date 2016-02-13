@@ -17,7 +17,7 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent">
 
-            <pl.slapps.dot.game.GameView
+            <pl.slapps.dot.SurfaceRenderer
                 android:id="@+id/game"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent" />

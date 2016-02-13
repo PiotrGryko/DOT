@@ -3,21 +3,14 @@ package pl.slapps.dot.game;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
-import javax.microedition.khronos.opengles.GL10;
-
 import android.util.Log;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import pl.slapps.dot.drawing.Fence;
-import pl.slapps.dot.drawing.Path;
+import pl.slapps.dot.drawing.Wall;
 import pl.slapps.dot.model.Route;
 import pl.slapps.dot.model.Stage;
-import pl.slapps.dot.tile.TileRoute;
-import pl.slapps.dot.tile.TileRouteFinish;
-import pl.slapps.dot.tile.TileRouteStart;
+import pl.slapps.dot.generator.TileRoute;
+import pl.slapps.dot.generator.TileRouteFinish;
+import pl.slapps.dot.generator.TileRouteStart;
 
 public class Maze {
 
@@ -26,7 +19,7 @@ public class Maze {
 
     ArrayList<TileRoute> elements;
     ArrayList<TileRoute> routes;
-    private GameView view;
+    private Game game;
 
     public int horizontalSize = 0;
     public int verticalSize = 0;
@@ -116,13 +109,13 @@ public class Maze {
     }
 
 
-    public Maze(GameView view, Stage stage) {
+    public Maze(Game game, Stage stage) {
         //this.elements=elements;
 
         Log.d(TAG, "maze created");
 
 
-        this.view = view;
+        this.game = game;
 
         horizontalSize = stage.xMax;
 
@@ -139,11 +132,11 @@ public class Maze {
         // if (horizRatio < ratio)
         //    ratio = horizRatio;
 
-        // spriteSpeed = view.spriteSpeed * ratio;
+        // spriteSpeed = generator.spriteSpeed * ratio;
 
 
-        this.width = view.screenWidth / horizontalSize;
-        this.height = view.screenHeight / verticalSize;
+        this.width = game.gameView.screenWidth / horizontalSize;
+        this.height = game.gameView.screenHeight / verticalSize;
 
 
         for (int i = 0; i < stage.routes.size(); i++) {
@@ -156,17 +149,17 @@ public class Maze {
 
                 case FINISH:
 
-                    r = new TileRouteFinish(view.screenWidth, view.screenHeight, horizontalSize, verticalSize, view, element);
+                    r = new TileRouteFinish(game.gameView.screenWidth, game.gameView.screenHeight, horizontalSize, verticalSize, element);
                     this.elements.add(r);
                     break;
 
                 case START:
-                    r = new TileRouteStart(view.screenWidth, view.screenHeight, horizontalSize, verticalSize, element,view);
+                    r = new TileRouteStart(game.gameView.screenWidth, game.gameView.screenHeight, horizontalSize, verticalSize, element);
 
                     this.elements.add(r);
                     break;
                 default:
-                    r = new TileRoute(view.screenWidth, view.screenHeight, horizontalSize, verticalSize, element,view);
+                    r = new TileRoute(game.gameView.screenWidth, game.gameView.screenHeight, horizontalSize, verticalSize, element);
 
                     this.elements.add(r);
 
@@ -187,8 +180,8 @@ public class Maze {
         sortMaze();
         Log.d(TAG, "elements loaded ");
         //initWallsDrawing();
-        path = new Path(routes, stage.colorRoute, view);
-        fence = new Fence(routes, "#000000", view);
+        path = new Path(routes, stage.colorRoute, game);
+        fence = new Fence(routes, "#000000", game);
 
 
     }

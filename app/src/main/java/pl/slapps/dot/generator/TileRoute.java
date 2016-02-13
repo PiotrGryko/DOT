@@ -1,17 +1,12 @@
-package pl.slapps.dot.tile;
+package pl.slapps.dot.generator;
 
 import android.util.Log;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
+import java.util.Arrays;
 
-import javax.microedition.khronos.opengles.GL10;
-
-import pl.slapps.dot.game.GameView;
-import pl.slapps.dot.game.Junction;
-import pl.slapps.dot.game.Wall;
+import pl.slapps.dot.drawing.Junction;
+import pl.slapps.dot.drawing.Wall;
 import pl.slapps.dot.model.Route;
 
 /**
@@ -51,20 +46,33 @@ public class TileRoute {
     public String sound;
 
     public double speedRatio = 1;
+    public Generator generator;
+    //public SurfaceRenderer generator;
 
-    public GameView view;
 
-
-    public TileRoute(float screenWidth, float screenHeight, float widthBlocksCount, float heightBlocksCount, int widthNumber, int heightNumber, String from, String to, Route.Type t, GameView view) {
-        this.view = view;
+    public TileRoute(float screenWidth, float screenHeight, float widthBlocksCount, float heightBlocksCount, int widthNumber, int heightNumber, String from, String to, Route.Type t, Generator generator) {
+        this.generator = generator;
         initData(screenWidth, screenHeight, widthBlocksCount, heightBlocksCount, widthNumber, heightNumber, from, to, t);
 
     }
 
 
-    public TileRoute(float screenWidth, float screenHeight, float widthBlocksCount, float heightBlocksCount, Route route, GameView view) {
+    public TileRoute(float screenWidth, float screenHeight, float widthBlocksCount, float heightBlocksCount, Route route, Generator generator) {
 
-        this.view = view;
+        this.generator = generator;
+        this.next = Route.Movement.valueOf(route.next.name());
+        backgroundColor = route.backgroundColor;
+        sound = route.sound;
+        speedRatio = route.speedRatio;
+
+
+        initData(screenWidth, screenHeight, widthBlocksCount, heightBlocksCount, route.x, route.y, route.from.name(), route.to.name(), Route.Type.valueOf(route.type.name()));
+
+
+    }
+
+    public TileRoute(float screenWidth, float screenHeight, float widthBlocksCount, float heightBlocksCount, Route route) {
+
         this.next = Route.Movement.valueOf(route.next.name());
         backgroundColor = route.backgroundColor;
         sound = route.sound;
@@ -82,47 +90,44 @@ public class TileRoute {
         if (type == Route.Type.FILL) {
 
 
-            backgroundPartOne = new TileRouteBackground(centerX, centerY, width, height, backgroundColor, view);
+            backgroundPartOne = new TileRouteBackground(centerX, centerY, width, height, backgroundColor, generator);
 
             return;
         }
         if (type == Route.Type.TILE || type == Route.Type.BLOCK) {
             borderX = 0;
             borderY = 0;
-            walls.add(new Wall(new Junction(topX + borderX, topY + height - borderY, 0), new Junction(topX + borderX, topY + borderY, 0), Wall.Type.LEFT, view));
-            walls.add(new Wall(new Junction(topX + borderX, topY + borderY, 0), new Junction(topX + width - borderX, topY + borderY, 0), Wall.Type.TOP, view));
-            walls.add(new Wall(new Junction(topX + width - borderX, topY + borderY, 0), new Junction(topX + width - borderX, topY + height - borderY, 0), Wall.Type.RIGHT, view));
-            walls.add(new Wall(new Junction(topX + width - borderX, topY + height - borderY, 0), new Junction(topX + borderX, topY + height - borderY, 0), Wall.Type.BOTTOM, view));
+            walls.add(new Wall(new Junction(topX + borderX, topY + height - borderY, 0), new Junction(topX + borderX, topY + borderY, 0), Wall.Type.LEFT, generator));
+            walls.add(new Wall(new Junction(topX + borderX, topY + borderY, 0), new Junction(topX + width - borderX, topY + borderY, 0), Wall.Type.TOP, generator));
+            walls.add(new Wall(new Junction(topX + width - borderX, topY + borderY, 0), new Junction(topX + width - borderX, topY + height - borderY, 0), Wall.Type.RIGHT, generator));
+            walls.add(new Wall(new Junction(topX + width - borderX, topY + height - borderY, 0), new Junction(topX + borderX, topY + height - borderY, 0), Wall.Type.BOTTOM, generator));
 
-
-            //backgroundPartOne = new RouteBackground(centerX, centerY, routeWidth, routeHeight, backgroundColor);
+            //backgroundPartOne = new TileRouteBackground(centerX, centerY, routeWidth, routeHeight, backgroundColor,generator);
 
             return;
         }
 
-        if(view==null)
-            Log.d("XXX","tile route view is null "+d.name());
         switch (d) {
 
             case BOTTOMRIGHT:
             case RIGHTBOTTOM: {
                 Wall lWall = new Wall(new Junction(topX + borderX, topY + height, 0),
                         new Junction(topX + borderX, topY + borderY, 0),
-                        Wall.Type.LEFT, view);
+                        Wall.Type.LEFT, generator);
 
 
                 Wall tWall = new Wall(new Junction(topX + borderX, topY + borderY, 0),
                         new Junction(topX + width, topY + borderY, 0),
-                        Wall.Type.TOP, view);
+                        Wall.Type.TOP, generator);
 
 
                 Wall rWall = new Wall(new Junction(topX + width - borderX, topY + height, 0),
                         new Junction(topX + width - borderX, topY + height - borderY, 0),
-                        Wall.Type.RIGHT, view);
+                        Wall.Type.RIGHT, generator);
 
 
                 Wall bWall = new Wall(new Junction(topX + width - borderX, topY + height - borderY, 0),
-                        new Junction(topX + width, topY + height - borderY, 0), Wall.Type.BOTTOM, view);
+                        new Junction(topX + width, topY + height - borderY, 0), Wall.Type.BOTTOM, generator);
 
 
                 walls = new ArrayList<>();
@@ -131,8 +136,8 @@ public class TileRoute {
                 walls.add(rWall);
                 walls.add(bWall);
 
-                backgroundPartOne = new TileRouteBackground(centerX, topY + height - borderY / 2, routeWidth, borderY, backgroundColor, view);
-                backgroundPartTwo = new TileRouteBackground(topX + borderX + (width - borderX) / 2, centerY, width - borderX, routeHeight, backgroundColor, view);
+                backgroundPartOne = new TileRouteBackground(centerX, topY + height - borderY / 2, routeWidth, borderY, backgroundColor, generator);
+                backgroundPartTwo = new TileRouteBackground(topX + borderX + (width - borderX) / 2, centerY, width - borderX, routeHeight, backgroundColor, generator);
 
                 break;
             }
@@ -140,21 +145,21 @@ public class TileRoute {
             case LEFTBOTTOM: {
                 Wall lWall = new Wall(new Junction(topX + borderX, topY + height, 0),
                         new Junction(topX + borderX, topY + height - borderY, 0),
-                        Wall.Type.LEFT, view);
+                        Wall.Type.LEFT, generator);
 
 
                 Wall bWall = new Wall(new Junction(topX, topY + height - borderY, 0), new Junction(topX + borderX, topY + height - borderY, 0),
-                        Wall.Type.BOTTOM, view);
+                        Wall.Type.BOTTOM, generator);
 
                 Wall tWall = new Wall(new Junction(topX, topY + borderY, 0),
                         new Junction(topX + width - borderX, topY + borderY, 0),
 
-                        Wall.Type.TOP, view);
+                        Wall.Type.TOP, generator);
 
                 Wall rWall = new Wall(new Junction(topX + width - borderX, topY + height, 0), new Junction(topX + width - borderX, topY + borderY, 0),
 
 
-                        Wall.Type.RIGHT, view);
+                        Wall.Type.RIGHT, generator);
 
 
                 walls = new ArrayList<>();
@@ -163,8 +168,8 @@ public class TileRoute {
                 walls.add(rWall);
                 walls.add(bWall);
 
-                backgroundPartOne = new TileRouteBackground(centerX, topY + height - borderY / 2, routeWidth, borderY, backgroundColor, view);
-                backgroundPartTwo = new TileRouteBackground(topX + (width - borderX) / 2, centerY, width - borderX, routeHeight, backgroundColor, view);
+                backgroundPartOne = new TileRouteBackground(centerX, topY + height - borderY / 2, routeWidth, borderY, backgroundColor, generator);
+                backgroundPartTwo = new TileRouteBackground(topX + (width - borderX) / 2, centerY, width - borderX, routeHeight, backgroundColor, generator);
 
                 break;
             }
@@ -173,14 +178,14 @@ public class TileRoute {
             case TOPRIGHT: {
                 Wall lWall = new Wall(new Junction(topX + borderX, topY + height - borderY, 0),
                         new Junction(topX + borderX, topY, 0),
-                        Wall.Type.LEFT, view);
+                        Wall.Type.LEFT, generator);
 
 
-                Wall bWall = new Wall(new Junction(topX + borderX, topY + height - borderY, 0), new Junction(topX + width, topY + height - borderY, 0), Wall.Type.BOTTOM, view);
+                Wall bWall = new Wall(new Junction(topX + borderX, topY + height - borderY, 0), new Junction(topX + width, topY + height - borderY, 0), Wall.Type.BOTTOM, generator);
 
-                Wall tWall = new Wall(new Junction(topX + width - borderX, topY + borderY, 0), new Junction(topX + width, topY + borderY, 0), Wall.Type.TOP, view);
+                Wall tWall = new Wall(new Junction(topX + width - borderX, topY + borderY, 0), new Junction(topX + width, topY + borderY, 0), Wall.Type.TOP, generator);
 
-                Wall rWall = new Wall(new Junction(topX + width - borderX, topY + borderY, 0), new Junction(topX + width - borderX, topY, 0), Wall.Type.RIGHT, view);
+                Wall rWall = new Wall(new Junction(topX + width - borderX, topY + borderY, 0), new Junction(topX + width - borderX, topY, 0), Wall.Type.RIGHT, generator);
 
 
                 walls = new ArrayList<>();
@@ -189,8 +194,8 @@ public class TileRoute {
                 walls.add(rWall);
                 walls.add(bWall);
 
-                backgroundPartOne = new TileRouteBackground(centerX, topY + borderY / 2, routeWidth, borderY, backgroundColor, view);
-                backgroundPartTwo = new TileRouteBackground(topX + borderX + (width - borderX) / 2, centerY, width - borderX, routeHeight, backgroundColor, view);
+                backgroundPartOne = new TileRouteBackground(centerX, topY + borderY / 2, routeWidth, borderY, backgroundColor, generator);
+                backgroundPartTwo = new TileRouteBackground(topX + borderX + (width - borderX) / 2, centerY, width - borderX, routeHeight, backgroundColor, generator);
 
                 break;
             }
@@ -198,15 +203,15 @@ public class TileRoute {
             case LEFTTOP:
             case TOPLEFT: {
 
-                Wall tWall = new Wall(new Junction(topX, topY + borderY, 0), new Junction(topX + borderX, topY + borderY, 0), Wall.Type.TOP, view);
+                Wall tWall = new Wall(new Junction(topX, topY + borderY, 0), new Junction(topX + borderX, topY + borderY, 0), Wall.Type.TOP, generator);
 
                 Wall lWall = new Wall(new Junction(topX + borderX, topY + borderY, 0),
                         new Junction(topX + borderX, topY, 0),
-                        Wall.Type.LEFT, view);
+                        Wall.Type.LEFT, generator);
 
-                Wall bWall = new Wall(new Junction(topX, topY + height - borderY, 0), new Junction(topX + width - borderX, topY + height - borderY, 0), Wall.Type.BOTTOM, view);
+                Wall bWall = new Wall(new Junction(topX, topY + height - borderY, 0), new Junction(topX + width - borderX, topY + height - borderY, 0), Wall.Type.BOTTOM, generator);
 
-                Wall rWall = new Wall(new Junction(topX + width - borderX, topY + height - borderY, 0), new Junction(topX + width - borderX, topY, 0), Wall.Type.RIGHT, view);
+                Wall rWall = new Wall(new Junction(topX + width - borderX, topY + height - borderY, 0), new Junction(topX + width - borderX, topY, 0), Wall.Type.RIGHT, generator);
 
                 walls = new ArrayList<>();
                 walls.add(lWall);
@@ -214,8 +219,8 @@ public class TileRoute {
                 walls.add(rWall);
                 walls.add(bWall);
 
-                backgroundPartOne = new TileRouteBackground(centerX, topY + borderY / 2, routeWidth, borderY, backgroundColor, view);
-                backgroundPartTwo = new TileRouteBackground(topX + (width - borderX) / 2, centerY, width - borderX, routeHeight, backgroundColor, view);
+                backgroundPartOne = new TileRouteBackground(centerX, topY + borderY / 2, routeWidth, borderY, backgroundColor, generator);
+                backgroundPartTwo = new TileRouteBackground(topX + (width - borderX) / 2, centerY, width - borderX, routeHeight, backgroundColor, generator);
 
                 break;
             }
@@ -224,16 +229,16 @@ public class TileRoute {
             case RIGHTLEFT: {
 
                 Wall tWall = new Wall(new Junction(topX, topY + borderY, 0),
-                        new Junction(topX + width, topY + borderY, 0), Wall.Type.TOP, view
+                        new Junction(topX + width, topY + borderY, 0), Wall.Type.TOP, generator
                 );
 
                 Wall bWall = new Wall(new Junction(topX, topY + height - borderY, 0),
-                        new Junction(topX + width, topY + height - borderY, 0), Wall.Type.BOTTOM, view);
+                        new Junction(topX + width, topY + height - borderY, 0), Wall.Type.BOTTOM, generator);
 
                 walls.add(tWall);
                 walls.add(bWall);
 
-                backgroundPartOne = new TileRouteBackground(centerX, centerY, width, routeHeight, backgroundColor, view);
+                backgroundPartOne = new TileRouteBackground(centerX, centerY, width, routeHeight, backgroundColor, generator);
 
 
                 break;
@@ -243,14 +248,14 @@ public class TileRoute {
 
                 Wall lWall = new Wall(new Junction(topX + borderX, topY + height, 0),
                         new Junction(topX + borderX, topY, 0),
-                        Wall.Type.LEFT, view);
+                        Wall.Type.LEFT, generator);
 
-                Wall rWall = new Wall(new Junction(topX + width - borderX, topY + height, 0), new Junction(topX + width - borderX, topY, 0), Wall.Type.RIGHT, view);
+                Wall rWall = new Wall(new Junction(topX + width - borderX, topY + height, 0), new Junction(topX + width - borderX, topY, 0), Wall.Type.RIGHT, generator);
 
                 walls.add(lWall);
                 walls.add(rWall);
 
-                backgroundPartOne = new TileRouteBackground(centerX, centerY, routeWidth, height, backgroundColor, view);
+                backgroundPartOne = new TileRouteBackground(centerX, centerY, routeWidth, height, backgroundColor, generator);
 
             }
 
@@ -305,7 +310,6 @@ public class TileRoute {
             backgroundPartTwo.drawGl2(mvpMatrix);
 
 
-
         for (int i = 0; i < walls.size(); i++) {
             walls.get(i).drawGl2(mvpMatrix);
         }
@@ -323,32 +327,18 @@ public class TileRoute {
 
     }
 
-    public void draw(GL10 gl) {
-
-
-        if (!isInitialized)
-            return;
-        gl.glLoadIdentity();
-
-
-        if (backgroundPartOne != null)
-            backgroundPartOne.draw(gl);
-        if (backgroundPartTwo != null)
-            backgroundPartTwo.draw(gl);
-
-
-        for (int i = 0; i < walls.size(); i++) {
-            walls.get(i).draw(gl);
-        }
-
-
-    }
-
 
     public boolean contains(float x, float y) {
+
+
+
         if (x >= topX && x <= topX + width
-                && y >= topY && y <= topY + height)
+                && y >= topY && y <= topY + height) {
+
+
             return true;
+        }
+
 
         return false;
     }

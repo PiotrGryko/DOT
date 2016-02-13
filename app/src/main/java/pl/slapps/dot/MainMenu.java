@@ -14,9 +14,7 @@ import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -32,14 +30,12 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
 import pl.slapps.dot.adapter.AdapterStages;
 import pl.slapps.dot.adapter.AdapterWorlds;
-import pl.slapps.dot.game.GameView;
 import pl.slapps.dot.model.Stage;
 import pl.slapps.dot.model.World;
 
@@ -74,9 +70,9 @@ public class MainMenu {
     private ImageButton btnOnline;
 
     private MainActivity context;
-    private GameView game;
+    private SurfaceRenderer game;
 
-    public MainMenu(MainActivity context, GameView game) {
+    public MainMenu(MainActivity context, SurfaceRenderer game) {
         this.context = context;
         this.game = game;
 
@@ -289,7 +285,7 @@ public class MainMenu {
 
                 listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
-                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    public void onItemClick(AdapterView<?> adapterView, View generator, int i, long l) {
                         currentStage = i;
                         try {
                             loadStage(stages.getJSONObject(i));
@@ -576,7 +572,7 @@ public class MainMenu {
         public void startAnimation(OnAnimationListener listener) {
             this.listener = listener;
             view.startAnimation(animation);
-            //view.setVisibility(View.VISIBLE);
+            //generator.setVisibility(View.VISIBLE);
         }
 
     }

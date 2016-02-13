@@ -1,24 +1,20 @@
-package pl.slapps.dot.drawing;
+package pl.slapps.dot.game;
 
 import android.graphics.Color;
 import android.opengl.GLES20;
 import android.util.Log;
-
-import org.apache.commons.lang3.ArrayUtils;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import pl.slapps.dot.game.GameView;
-import pl.slapps.dot.game.Wall;
-import pl.slapps.dot.tile.TileRoute;
+import pl.slapps.dot.SurfaceRenderer;
+import pl.slapps.dot.drawing.Wall;
+import pl.slapps.dot.generator.TileRoute;
 
 /**
  * Created by piotr on 02.11.15.
@@ -37,7 +33,7 @@ public class Fence {
 
 
 
-    private GameView view;
+    private Game game;
 
 
     float color[] = {0.0f, 0.0f, 0.0f, 1.0f};
@@ -46,9 +42,9 @@ public class Fence {
 
 
 
-    public Fence(ArrayList<TileRoute> routes, String colorString, GameView view) {
+    public Fence(ArrayList<TileRoute> routes, String colorString, Game game) {
         this.colorInt = Color.parseColor(colorString);
-        this.view = view;
+        this.game= game;
         walls = new ArrayList<>();
         ArrayList<Wall> tmp = new ArrayList<>();
 
@@ -57,7 +53,7 @@ public class Fence {
         }
         for (int i = 0; i < tmp.size(); i++) {
             Wall e = tmp.get(i);
-            walls.add(new Wall(e.start, e.end, e.type, view));
+            walls.add(new Wall(e.start, e.end, e.type));
         }
 
         sortWalls();
@@ -165,15 +161,15 @@ public class Fence {
 
 
         // Add program to OpenGL environment
-        GLES20.glUseProgram(view.mCurrentProgram);
+        GLES20.glUseProgram(game.mProgram);
 
         // get handle to vertex shader's vPosition member
 
         // Enable a handle to the triangle vertices
-        GLES20.glEnableVertexAttribArray(view.mPositionHandle);
+        GLES20.glEnableVertexAttribArray(game.mPositionHandle);
         // Prepare the triangle coordinate data
         GLES20.glVertexAttribPointer(
-                view.mPositionHandle, COORDS_PER_VERTEX,
+                game.mPositionHandle, COORDS_PER_VERTEX,
                 GLES20.GL_FLOAT, false,
                 0, bufferedVertex);
 
@@ -181,12 +177,12 @@ public class Fence {
         // get handle to fragment shader's vColor member
         // Pass in the color information
         // Set color for drawing the triangle
-        GLES20.glUniform4fv(view.mColorHandle, 1, color, 0);
+        GLES20.glUniform4fv(game.mColorHandle, 1, color, 0);
 
 
-        // Apply the projection and view transformation
-        GLES20.glUniformMatrix4fv(view.mMVPMatrixHandle, 1, false, mvpMatrix, 0);
-        GameView.checkGlError("glUniformMatrix4fv");
+        // Apply the projection and generator transformation
+        GLES20.glUniformMatrix4fv(game.mMVPMatrixHandle, 1, false, mvpMatrix, 0);
+        SurfaceRenderer.checkGlError("glUniformMatrix4fv");
 
 
         GLES20.glDrawArrays(GL10.GL_LINE_LOOP, 0, this.vert.length / 2);
@@ -197,7 +193,7 @@ public class Fence {
         //        GLES20.GL_UNSIGNED_SHORT, bufferedIndices);
 
         // Disable vertex array
-        GLES20.glDisableVertexAttribArray(view.mPositionHandle);
+        GLES20.glDisableVertexAttribArray(game.mPositionHandle);
 
 
     }

@@ -1,5 +1,8 @@
-package pl.slapps.dot.game;
+package pl.slapps.dot.generator;
 
+import android.graphics.Color;
+import android.opengl.GLES20;
+import android.opengl.Matrix;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -13,16 +16,12 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import javax.microedition.khronos.opengles.GL10;
-
 import pl.slapps.dot.DAO;
-import pl.slapps.dot.GeneratorLayout;
+import pl.slapps.dot.MainActivity;
+import pl.slapps.dot.SurfaceRenderer;
 import pl.slapps.dot.model.Route;
 import pl.slapps.dot.model.Stage;
 import pl.slapps.dot.model.World;
-import pl.slapps.dot.tile.TileRoute;
-import pl.slapps.dot.tile.TileRouteFinish;
-import pl.slapps.dot.tile.TileRouteStart;
 
 /**
  * Created by piotr on 18.10.15.
@@ -37,14 +36,36 @@ public class Generator {
 
     public int gridX;
     public int gridY;
-    public GameView view;
+    public SurfaceRenderer view;
 
     public String _id;
+
+    private float a;
+    private float r;
+    private float g;
+    private float b;
+
+    public void setColor(String color) {
+
+        try {
+            int intColor = Color.parseColor(color);
+
+            backgroundColor = color;
+            a = (float) Color.alpha(intColor) / 255;
+            r = (float) Color.red(intColor) / 255;
+            g = (float) Color.green(intColor) / 255;
+            b = (float) Color.blue(intColor) / 255;
+            Log.d("XXX", "color setted " + color);
+
+        } catch (Throwable t) {
+            Log.d(TAG, "background color  null " + color);
+        }
+    }
 
     public String name = "generated stage";
     public String description = "generated desc";
 
-    public String backgroundColor;
+    public String backgroundColor="#FFFFFF";
     public String fillColor;
 
     public String dotColor = "#000000";
@@ -61,11 +82,15 @@ public class Generator {
 
     public String routeSound = "";
 
-    public TileRoute mCurrentSelectedRoad;
+
+    public int mPositionHandle;
+    public int mColorHandle;
+    public int mMVPMatrixHandle;
+
     private GeneratorLayout layout;
 
 
-    public Generator(final GameView view, int width, int gridY) {
+    public Generator(final SurfaceRenderer view, int width, int gridY) {
         //this.elements=elements;
         this.view = view;
         this.view.context.mainMenu.btnSettings.setOnClickListener(new View.OnClickListener() {
@@ -84,6 +109,77 @@ public class Generator {
 
     }
 
+
+    public static final String generatorVertexShader =
+            "uniform mat4 uMVPMatrix;      " +
+                    // A constant representing the combined model/generator/projection matrix
+                    "attribute vec4 vPosition;     " +
+                    // Per-vertex position information we will pass in.
+                    // Per-vertex color information we will pass in.
+                    // This will be passed into the fragment shader.
+                    // This will be passed into the fragment shader.
+                    // The entry point for our vertex shader.
+                    "void main()" +
+                    "{" +
+                    // Transform the vertex into eye space.
+                    // Pass through the color.
+
+                    // gl_Position is a special variable used to store the final position.
+                    // Multiply the vertex by the matrix to get the final point in normalized screen coordinates. +
+                    "    gl_Position = uMVPMatrix * vPosition;" +
+                    "}";
+
+    public static final String generatorFragmentShader =
+
+
+
+                    "precision mediump float;       // Set the default precision to medium. We don't need as high of a\n" +
+                    "                               // precision in the fragment shader.\n" +
+                    "uniform vec4 vColor;          // This is the color from the vertex shader interpolated across the\n" +
+                    "                               // triangle per fragment.\n" +
+
+
+                    "// The entry point for our fragment shader.\n" +
+                    "void main()\n" +
+                    "{" +
+
+
+                    "    gl_FragColor = vColor;" +
+                    "}";
+
+
+
+
+    private int mGeneratorProgram;
+
+    public void initGeneratorShaders() {
+
+
+
+
+
+        int genVertexShader = SurfaceRenderer.loadShader(
+                GLES20.GL_VERTEX_SHADER,
+                generatorVertexShader);
+        int genFragmentShader = SurfaceRenderer.loadShader(
+                GLES20.GL_FRAGMENT_SHADER,
+                generatorFragmentShader);
+
+        mGeneratorProgram = view.createAndLinkProgram(genVertexShader, genFragmentShader,
+                new String[]{"vPosition"});
+
+
+        mPositionHandle = GLES20.glGetAttribLocation(mGeneratorProgram, "vPosition");
+        mColorHandle = GLES20.glGetUniformLocation(mGeneratorProgram, "vColor");
+        mMVPMatrixHandle = GLES20.glGetUniformLocation(mGeneratorProgram, "uMVPMatrix");
+
+        setColor(backgroundColor);
+
+
+
+    }
+
+
     public GeneratorLayout getLayout() {
         return layout;
     }
@@ -94,10 +190,9 @@ public class Generator {
 
 
         this.tiles = new ArrayList<>();
-        this.backgroundColor = this.fillColor = view.getGameBackground().backgroundcolor;
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                this.tiles.add(new TileRoute(view.screenWidth, view.screenHeight, width, height, j, i, "LEFT", "RIGHT", Route.Type.TILE,view));
+                this.tiles.add(new TileRoute(view.screenWidth, view.screenHeight, width, height, j, i, "LEFT", "RIGHT", Route.Type.TILE,this));
 
             }
         }
@@ -387,8 +482,9 @@ public class Generator {
     }
 
     public void refreashMaze() {
-        view.getGameBackground().setColor(backgroundColor);
+        //generator.getGameBackground().setColor(backgroundColor);
 
+        setColor(backgroundColor);
         for (int i = 0; i < tiles.size(); i++) {
             TileRoute t = tiles.get(i);
             if (t.getType() != Route.Type.TILE && t.getType() != Route.Type.BLOCK && t.getType() != Route.Type.FILL) {
@@ -474,7 +570,7 @@ public class Generator {
             //layout.addWorld(currentWorld);
             layout.updateWorld();
 
-            Toast.makeText(view.context, "Stage saved!", Toast.LENGTH_LONG).show();
+            Toast.makeText(generator.context, "Stage saved!", Toast.LENGTH_LONG).show();
 */
 
             DAO.addStage(view.context, output, new Response.Listener() {
@@ -511,11 +607,11 @@ public class Generator {
         explosionEndColor=currentWorld.colorExplosionEnd;
         explosionStartColor=currentWorld.colorExplosionStart;
         routeColor=currentWorld.colorRoute;
-        Log.d(TAG,"load world "+backgroundColor);
-        Log.d(TAG,"load world json "+currentWorld.toJson().toString());
+        Log.d(TAG, "load world " + backgroundColor);
+        Log.d(TAG, "load world json " + currentWorld.toJson().toString());
 
-
-        view.getGameBackground().setColor(backgroundColor);
+        setColor(backgroundColor);
+        //generator.getGameBackground().setColor(backgroundColor);
 
     }
 
@@ -527,7 +623,7 @@ public class Generator {
 
         for (int i = 0; i < gridY; i++) {
             for (int j = 0; j < gridX; j++) {
-                this.tiles.add(new TileRoute(view.screenWidth, view.screenHeight, gridX, gridY, j, i, "LEFT", "RIGHT", Route.Type.TILE,view));
+                this.tiles.add(new TileRoute(view.screenWidth, view.screenHeight, gridX, gridY, j, i, "LEFT", "RIGHT", Route.Type.TILE,this));
 
             }
         }
@@ -566,16 +662,16 @@ public class Generator {
 
                 case FINISH:
                     tiles.remove(tile);
-                    this.tiles.add(new TileRouteFinish(view.screenWidth, view.screenHeight, gridX, gridY, view, element));
+                    this.tiles.add(new TileRouteFinish(view.screenWidth, view.screenHeight, gridX, gridY, element,this));
                     break;
 
                 case START:
                     tiles.remove(tile);
-                    this.tiles.add(new TileRouteStart(view.screenWidth, view.screenHeight, gridX, gridY, element,view));
+                    this.tiles.add(new TileRouteStart(view.screenWidth, view.screenHeight, gridX, gridY, element,this));
                     break;
                 default:
                     tiles.remove(tile);
-                    this.tiles.add(new TileRoute(view.screenWidth, view.screenHeight, gridX, gridY, element,view));
+                    this.tiles.add(new TileRoute(view.screenWidth, view.screenHeight, gridX, gridY, element,this));
                     break;
 
             }
@@ -591,11 +687,13 @@ public class Generator {
     public boolean onTouch(MotionEvent event) {
 
 
-        Log.d(TAG, "ont touch " + event.getX());
+        float x = event.getX();
+        float y = event.getY();
+
 
         for (int i = 0; i < tiles.size(); i++) {
             TileRoute t = tiles.get(i);
-            if (t.contains(event.getX(), event.getY())) {
+            if (t.contains(x, y)) {
                 //showGeneratorMenuDialog(t);
                 //GeneratorDialog.showPathDialog(this, t, null);
                 layout.setCurrentTile(t);
@@ -621,29 +719,26 @@ public class Generator {
 
 
 
-    public void drawGL20(float[] mvpMatrix) {
+    public void onDraw(float[] mMVPMatrix) {
 
         //Log.d(TAG,"draw generator");
 
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
+        GLES20.glClearColor(r, g, b, a);
+        GLES20.glUseProgram(mGeneratorProgram);
+
+
+
         if (tiles == null)
             return;
         for (int i = 0; i < tiles.size(); i++) {
 
             if (tiles.size()>i && tiles.get(i) != null)
-                tiles.get(i).drawGL20(mvpMatrix);
-        }
-    }
-
-
-    public void draw(GL10 gl) {
-        if (tiles == null)
-            return;
-        for (int i = 0; i < tiles.size(); i++) {
-
-            if (tiles.size()>i && tiles.get(i) != null)
-                tiles.get(i).draw(gl);
+                tiles.get(i).drawGL20(mMVPMatrix);
         }
 
     }
+
+
 
 }

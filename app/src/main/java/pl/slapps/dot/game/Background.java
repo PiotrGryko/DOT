@@ -1,19 +1,15 @@
 package pl.slapps.dot.game;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-
-import javax.microedition.khronos.opengles.GL10;
-
 
 import android.graphics.Color;
 import android.opengl.GLES20;
 import android.util.Log;
 
 import pl.slapps.dot.MainActivity;
+import pl.slapps.dot.SurfaceRenderer;
+import pl.slapps.dot.drawing.Sprite;
 
-public class Background extends Sprite{
+public class Background extends Sprite {
 
     private String TAG = Background.class.getName();
 
@@ -26,7 +22,7 @@ public class Background extends Sprite{
     private int textures[] = new int[1];
 
 
-    private GameView view;
+    private Game view;
     //private Bitmap bitmap;
 
     private float moveX = 0;
@@ -68,7 +64,7 @@ public class Background extends Sprite{
         }
     }
 
-    public Background(GameView view, String colorString) {
+    public Background(Game view, String colorString) {
         super(MainActivity.screenWidth / 2, MainActivity.screenHeight / 2, MainActivity.screenWidth, MainActivity.screenHeight);
         this.view = view;
 
@@ -119,7 +115,7 @@ public class Background extends Sprite{
 
 
         // Add program to OpenGL environment
-        GLES20.glUseProgram(view.mCurrentProgram);
+        GLES20.glUseProgram(view.mProgram);
 
 
 
@@ -142,11 +138,11 @@ public class Background extends Sprite{
 
 
         // get handle to shape's transformation matrix
-        GameView.checkGlError("glGetUniformLocation");
+        SurfaceRenderer.checkGlError("glGetUniformLocation");
 
-        // Apply the projection and view transformation
+        // Apply the projection and generator transformation
         GLES20.glUniformMatrix4fv(view.mMVPMatrixHandle, 1, false, mvpMatrix, 0);
-        GameView.checkGlError("glUniformMatrix4fv");
+        SurfaceRenderer.checkGlError("glUniformMatrix4fv");
 
 
 

@@ -13,7 +13,6 @@ import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Base64;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -39,7 +38,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
-import pl.slapps.dot.game.GameView;
 import pl.slapps.dot.model.Stage;
 
 public class MainActivity extends Activity {
@@ -51,7 +49,7 @@ public class MainActivity extends Activity {
 
 
     private String TAG = "MainActivity";
-    private GameView game;
+    private SurfaceRenderer game;
 
 
     private final String STAGES_FILE = "stages.json";
@@ -195,7 +193,7 @@ public class MainActivity extends Activity {
         tvCur = (TextView) findViewById(R.id.tv_current_time);
 
 
-        game = (GameView) findViewById(R.id.game);
+        game = (SurfaceRenderer) findViewById(R.id.game);
 
         mainMenu = new MainMenu(this, game);
 

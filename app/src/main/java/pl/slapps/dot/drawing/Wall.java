@@ -1,7 +1,6 @@
-package pl.slapps.dot.game;
+package pl.slapps.dot.drawing;
 
 import android.opengl.GLES20;
-import android.util.Log;
 
 import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
@@ -11,6 +10,9 @@ import java.nio.FloatBuffer;
 
 
 import javax.microedition.khronos.opengles.GL10;
+
+import pl.slapps.dot.SurfaceRenderer;
+import pl.slapps.dot.generator.Generator;
 
 /**
  * Created by piotr on 14.10.15.
@@ -32,21 +34,15 @@ public class Wall {
     public Type type;
 
 
-    private int mPositionHandle;
-    private int mColorHandle;
+
     static final int COORDS_PER_VERTEX = 3;
 
     private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
-    private int mMVPMatrixHandle;
-    private GameView view;
-    private final FloatBuffer mWallColor;
+    private Generator generator;
 
 
 
-    public float color[] = { 0.0f, 0.0f, 0.0f, 1.0f,
-            0.0f, 0.0f, 0.0f, 1.0f,
-            0.0f, 0.0f, 0.0f, 1.0f,
-            0.0f, 0.0f, 0.0f, 1.0f,};
+    public float color[] = { 0.0f, 0.0f, 0.0f, 1.0f};
 
     public static float[] concatenate(float[] a, float[] b) {
         int aLen = a.length;
@@ -60,14 +56,19 @@ public class Wall {
         return c;
     }
 
-    public Wall(Junction start, Junction end, Type type,GameView view) {
+    public Wall(Junction start, Junction end, Type type)
+    {
         this.start = start;
         this.end = end;
         this.type = type;
-        this.view=view;
+    }
 
-        if(view==null)
-            Log.d("XXX","wall constructor view is null "+type.name());
+    public Wall(Junction start, Junction end, Type type, Generator generator) {
+        this.start = start;
+        this.end = end;
+        this.type = type;
+        this.generator=generator;
+
 
 
         float[] tab = new float[2 * 3];
@@ -87,12 +88,12 @@ public class Wall {
         bufferedVertex.position(0);
 
 
-        mWallColor = ByteBuffer.allocateDirect(color.length * 4)
-                .order(ByteOrder.nativeOrder()).asFloatBuffer();
-        mWallColor.put(color).position(0);
+
 
 
     }
+
+    public float[] getColor() {return color;}
 
     public float[] getVert()
     {
@@ -100,17 +101,6 @@ public class Wall {
     }
 
 
-    public void draw(GL10 gl) {
-
-
-        gl.glColor4f(0.0f, 0.0f, 0.0f, 0.0f);
-
-
-        gl.glVertexPointer(3, GL10.GL_FLOAT, 0, bufferedVertex);
-        gl.glDrawArrays(GL10.GL_LINES, 0, this.vert.length / 3);
-
-
-    }
 
 
 
@@ -118,42 +108,30 @@ public class Wall {
     public void drawGl2(float[] mvpMatrix)
     {
 
-        if(view==null)
-            Log.d("XXX","view is null");
 
 
-        //Log.d("XXX","wall view: "+view);
-        // Add program to OpenGL environment
-        GLES20.glUseProgram(view.mCurrentProgram);
 
         // get handle to vertex shader's vPosition member
-        mPositionHandle = GLES20.glGetAttribLocation(view.mCurrentProgram, "vPosition");
         // Enable a handle to the triangle vertices
-        GLES20.glEnableVertexAttribArray(mPositionHandle);
+        GLES20.glEnableVertexAttribArray(generator.mPositionHandle);
         // Prepare the triangle coordinate data
         GLES20.glVertexAttribPointer(
-                mPositionHandle, COORDS_PER_VERTEX,
+                generator.mPositionHandle, COORDS_PER_VERTEX,
                 GLES20.GL_FLOAT, false,
                 vertexStride, bufferedVertex);
 
 
 
 
-        // get handle to fragment shader's vColor member
-        mColorHandle = GLES20.glGetAttribLocation(view.mCurrentProgram, "vColor");
-        GLES20.glEnableVertexAttribArray(mColorHandle);
-        // Pass in the color information
-        GLES20.glVertexAttribPointer(mColorHandle, 4, GLES20.GL_FLOAT, false,
-                0, mWallColor);
+        GLES20.glUniform4fv(generator.mColorHandle, 1, color, 0);
 
 
         // get handle to shape's transformation matrix
-        mMVPMatrixHandle = GLES20.glGetUniformLocation(view.mCurrentProgram, "uMVPMatrix");
-        GameView.checkGlError("glGetUniformLocation");
+        SurfaceRenderer.checkGlError("glGetUniformLocation");
 
-        // Apply the projection and view transformation
-        GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mvpMatrix, 0);
-        GameView.checkGlError("glUniformMatrix4fv");
+        // Apply the projection and generator transformation
+        GLES20.glUniformMatrix4fv(generator.mMVPMatrixHandle, 1, false, mvpMatrix, 0);
+        SurfaceRenderer.checkGlError("glUniformMatrix4fv");
         GLES20.glDrawArrays(GL10.GL_LINES, 0, this.vert.length / 3);
 
         // Draw the square
@@ -162,7 +140,7 @@ public class Wall {
         //        GLES20.GL_UNSIGNED_SHORT, bufferedIndices);
 
         // Disable vertex array
-        GLES20.glDisableVertexAttribArray(mPositionHandle);
+        GLES20.glDisableVertexAttribArray(generator.mPositionHandle);
 
 
 

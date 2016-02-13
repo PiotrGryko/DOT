@@ -2,21 +2,18 @@ package pl.slapps.dot.game;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.opengl.GLES20;
-import android.opengl.GLUtils;
-import android.util.Log;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
 import pl.slapps.dot.R;
-import pl.slapps.dot.tile.TileRoute;
-import pl.slapps.dot.tile.TileRouteFinish;
+import pl.slapps.dot.SurfaceRenderer;
+import pl.slapps.dot.drawing.Sprite;
+import pl.slapps.dot.generator.TileRoute;
+import pl.slapps.dot.generator.TileRouteFinish;
 
 
 public class MainSprite extends Sprite {
@@ -32,7 +29,7 @@ public class MainSprite extends Sprite {
 
     public boolean prepareToDie;
 
-    private GameView view;
+    private Game game;
 
     public TileRoute lastChangeRoute;
     public TileRoute currentTile;
@@ -69,11 +66,11 @@ public class MainSprite extends Sprite {
             return false;
     }
 
-    public MainSprite(GameView view, float centerX, float centerY, int width,
+    public MainSprite(Game view, float centerX, float centerY, int width,
                       int height, String colorString) {
 
         super(centerX, centerY, width, height);
-        this.view = view;
+        this.game = view;
         fence = view.getMaze();
 
         int intColor = Color.parseColor(colorString);
@@ -125,16 +122,16 @@ public class MainSprite extends Sprite {
 
         if (collision != null) {
             if (collision instanceof TileRouteFinish) {
-                view.explodeDot(false);
-                view.destroyDot();
+                game.explodeDot(false);
+                game.destroyDot();
             } else if (!prepareToDie) {
-                view.crashDot(true);
-                //    view.toggleColors();
+                game.crashDot(true);
+                //    game.toggleColors();
             } else {
-                view.explodeDot(true);
+                game.explodeDot(true);
 
-                view.resetDot();
-                //   view.toggleColors();
+                game.resetDot();
+                //   game.toggleColors();
             }
 
         }
@@ -145,10 +142,10 @@ public class MainSprite extends Sprite {
 
 
         // Add program to OpenGL environment
-        GLES20.glUseProgram(view.mCurrentProgram);
+        GLES20.glUseProgram(game.mProgram);
 
         // get handle to vertex shader's vPosition member
-        mPositionHandle = GLES20.glGetAttribLocation(view.mCurrentProgram, "vPosition");
+        mPositionHandle = GLES20.glGetAttribLocation(game.mProgram, "vPosition");
 
         // Enable a handle to the triangle vertices
         GLES20.glEnableVertexAttribArray(mPositionHandle);
@@ -160,19 +157,19 @@ public class MainSprite extends Sprite {
                 vertexStride, bufferedVertex);
 
 
-        mColorHandle = GLES20.glGetUniformLocation(view.mCurrentProgram, "vColor");
+        mColorHandle = GLES20.glGetUniformLocation(game.mProgram, "vColor");
         // Pass in the color information
         // Set color for drawing the triangle
         GLES20.glUniform4fv(mColorHandle, 1, color, 0);
 
 
         // get handle to shape's transformation matrix
-        mMVPMatrixHandle = GLES20.glGetUniformLocation(view.mCurrentProgram, "uMVPMatrix");
-        GameView.checkGlError("glGetUniformLocation");
+        mMVPMatrixHandle = GLES20.glGetUniformLocation(game.mProgram, "uMVPMatrix");
+        SurfaceRenderer.checkGlError("glGetUniformLocation");
 
-        // Apply the projection and view transformation
+        // Apply the projection and game transformation
         GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mvpMatrix, 0);
-        GameView.checkGlError("glUniformMatrix4fv");
+        SurfaceRenderer.checkGlError("glUniformMatrix4fv");
 
 
 

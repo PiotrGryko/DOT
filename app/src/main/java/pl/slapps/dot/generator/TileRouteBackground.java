@@ -1,12 +1,12 @@
-package pl.slapps.dot.tile;
+package pl.slapps.dot.generator;
 
 import android.graphics.Color;
 import android.opengl.GLES20;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import pl.slapps.dot.game.GameView;
-import pl.slapps.dot.game.Sprite;
+import pl.slapps.dot.SurfaceRenderer;
+import pl.slapps.dot.drawing.Sprite;
 
 /**
  * Created by piotr on 20.10.15.
@@ -24,18 +24,13 @@ public class TileRouteBackground extends Sprite {
 
     public boolean prepareToDie;
 
-    GameView view;
+    public Generator generator;
 
 
-    static final int COORDS_PER_VERTEX = 2;
+    static final int COORDS_PER_VERTEX = 3;
 
 
-
-
-    private int mPositionHandle;
-    private int mColorHandle;
     private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
-    private int mMVPMatrixHandle;
 
     float color[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
@@ -56,10 +51,10 @@ public class TileRouteBackground extends Sprite {
 
 
     public TileRouteBackground(float centerX, float centerY, float width,
-                               float height, String color, GameView view) {
+                               float height, String color, Generator generator) {
 
         super(centerX, centerY, width, height);
-        this.view=view;
+        this.generator=generator;
         setColor(color);
 
 
@@ -70,57 +65,33 @@ public class TileRouteBackground extends Sprite {
         super.update();
     }
 
-    public void draw(GL10 gl) {
 
-
-        gl.glLoadIdentity();
-
-
-
-        gl.glColor4f(r, g, b, a);
-        gl.glVertexPointer(2, GL10.GL_FLOAT, 0, bufferedVertex);
-        gl.glDrawElements(GL10.GL_TRIANGLES, indices.length,
-                GL10.GL_UNSIGNED_SHORT, bufferedIndices);
-
-
-        //gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, vertices.length / 3);
-
-
-    }
 
 
     public void drawGl2(float[] mvpMatrix)
     {
 
 
-        // Add program to OpenGL environment
-        GLES20.glUseProgram(view.mCurrentProgram);
-
-        // get handle to vertex shader's vPosition member
-        mPositionHandle = GLES20.glGetAttribLocation(view.mCurrentProgram, "vPosition");
-
         // Enable a handle to the triangle vertices
-        GLES20.glEnableVertexAttribArray(mPositionHandle);
+        GLES20.glEnableVertexAttribArray(generator.mPositionHandle);
 
         // Prepare the triangle coordinate data
         GLES20.glVertexAttribPointer(
-                mPositionHandle, COORDS_PER_VERTEX,
+                generator.mPositionHandle, COORDS_PER_VERTEX,
                 GLES20.GL_FLOAT, false,
                 vertexStride, bufferedVertex);
 
         // get handle to fragment shader's vColor member
-        mColorHandle = GLES20.glGetUniformLocation(view.mCurrentProgram, "vColor");
 
         // Set color for drawing the triangle
-        GLES20.glUniform4fv(mColorHandle, 1, color, 0);
+        GLES20.glUniform4fv(generator.mColorHandle, 1, color, 0);
 
         // get handle to shape's transformation matrix
-        mMVPMatrixHandle = GLES20.glGetUniformLocation(view.mCurrentProgram, "uMVPMatrix");
-        GameView.checkGlError("glGetUniformLocation");
+        SurfaceRenderer.checkGlError("glGetUniformLocation");
 
-        // Apply the projection and view transformation
-        GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mvpMatrix, 0);
-        GameView.checkGlError("glUniformMatrix4fv");
+        // Apply the projection and generator transformation
+        GLES20.glUniformMatrix4fv(generator.mMVPMatrixHandle, 1, false, mvpMatrix, 0);
+        SurfaceRenderer.checkGlError("glUniformMatrix4fv");
 
         // Draw the square
         GLES20.glDrawElements(
@@ -128,7 +99,7 @@ public class TileRouteBackground extends Sprite {
                 GLES20.GL_UNSIGNED_SHORT, bufferedIndices);
 
         // Disable vertex array
-        GLES20.glDisableVertexAttribArray(mPositionHandle);
+        GLES20.glDisableVertexAttribArray(generator.mPositionHandle);
 
 
 

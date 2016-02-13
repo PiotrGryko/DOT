@@ -1,4 +1,4 @@
-package pl.slapps.dot.game;
+package pl.slapps.dot.drawing;
 
 /**
  * Created by piotr on 12.10.15.

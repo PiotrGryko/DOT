@@ -1,4 +1,4 @@
-package pl.slapps.dot.animation;
+package pl.slapps.dot.game;
 
 import android.graphics.Color;
 import android.opengl.GLES20;
@@ -11,7 +11,7 @@ import java.util.Random;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import pl.slapps.dot.game.GameView;
+import pl.slapps.dot.SurfaceRenderer;
 
 
 public class Explosion {
@@ -21,7 +21,7 @@ public class Explosion {
     public float x;
     public float y;
     private Random random;
-    private GameView view;
+    private Game view;
     private long lifeTime = 0;
     private long time = 0;
     public float r, g, b;
@@ -57,7 +57,7 @@ public class Explosion {
         bufferedVertexTwo = ByteBuffer.allocateDirect(bufferSize).order(ByteOrder.nativeOrder()).asFloatBuffer();
     }
 
-    public Explosion(GameView view, float x, float y, long time, float speed, int shipSize, String color_start, String color_end) {
+    public Explosion(Game view, float x, float y, long time, float speed, int shipSize, String color_start, String color_end) {
 
 
         int intColor = Color.parseColor(color_start);
@@ -83,7 +83,7 @@ public class Explosion {
         r = (float) Math.random() * (Math.abs(r_end - r_start)) + r_start;
         g = (float) Math.random() * (Math.abs(g_end - g_start)) + g_start;
         b = (float) Math.random() * (Math.abs(b_end - b_start)) + b_start;
-        //points = new Text(view,"100",x,y,50,50);
+        //points = new Text(generator,"100",x,y,50,50);
 
 
 
@@ -160,7 +160,7 @@ public class Explosion {
 
 
         // Add program to OpenGL environment
-        GLES20.glUseProgram(view.mCurrentProgram);
+        GLES20.glUseProgram(view.mProgram);
 
         // get handle to vertex shader's vPosition member
 
@@ -178,11 +178,11 @@ public class Explosion {
 
 
         // get handle to shape's transformation matrix
-        GameView.checkGlError("glGetUniformLocation");
+        SurfaceRenderer.checkGlError("glGetUniformLocation");
 
-        // Apply the projection and view transformation
+        // Apply the projection and generator transformation
         GLES20.glUniformMatrix4fv(view.mMVPMatrixHandle, 1, false, mvpMatrix, 0);
-        GameView.checkGlError("glUniformMatrix4fv");
+        SurfaceRenderer.checkGlError("glUniformMatrix4fv");
 
         GLES20.glDrawArrays(GL10.GL_TRIANGLES, 0, count * 6);
 
