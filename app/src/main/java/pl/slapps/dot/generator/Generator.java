@@ -2,7 +2,6 @@ package pl.slapps.dot.generator;
 
 import android.graphics.Color;
 import android.opengl.GLES20;
-import android.opengl.Matrix;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -17,8 +16,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import pl.slapps.dot.DAO;
-import pl.slapps.dot.MainActivity;
 import pl.slapps.dot.SurfaceRenderer;
+import pl.slapps.dot.generator.gui.GeneratorLayout;
 import pl.slapps.dot.model.Route;
 import pl.slapps.dot.model.Stage;
 import pl.slapps.dot.model.World;
@@ -74,6 +73,9 @@ public class Generator {
 
     public String explosionStartColor = "#000000";
     public String explosionEndColor = "#FFFFFF";
+
+    public String explosionLightColor = "#ff66ff";
+    public String dotLightColor = "#FFFFFF";
 
     public String backgrounSound = "";
     public String pressSound = "";
@@ -517,6 +519,8 @@ public class Generator {
             colors.put("explosion_start", explosionStartColor);
             colors.put("explosion_end", explosionEndColor);
             colors.put("route", routeColor);
+            colors.put("dot_light", dotLightColor);
+            colors.put("explosion_light", explosionLightColor);
             output.put("colors", colors);
 
             JSONObject sounds = new JSONObject();

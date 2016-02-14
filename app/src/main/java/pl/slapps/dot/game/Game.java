@@ -47,9 +47,11 @@ public class Game {
     public float dotSize;
 
 
-    private int mDotLightPosHandle;
-    private int mDotLightShinningHandle;
-    private int mDotLightDistanceHandle;
+    public int mDotLightPosHandle;
+    public int mDotLightShinningHandle;
+    public int mDotLightDistanceHandle;
+    public int mDotLightColorHandle;
+
 
 
     public int mExplosionLightOnePosHandle;
@@ -125,6 +127,7 @@ public class Game {
 
                     "   float dotDistance = length(lights[0].u_LightPos - v_Position);\n" +
                     "   float dotDiffuse =  lights[0].lightShinning * (1.0 / (1.0 + (0.00007 * dotDistance * dotDistance* lights[0].lightDistance)));\n" +
+                    "   vec4 dotResult = dotDiffuse * lights[0].lightColor;"+
 
                     "   float explosionOneDistance = length(lights[1].u_LightPos - v_Position);\n" +
                     "   float explosionOneDiffuse =  lights[1].lightShinning * (1.0 / (1.0 + (0.00007 * explosionOneDistance * explosionOneDistance* lights[1].lightDistance)));\n" +
@@ -135,7 +138,7 @@ public class Game {
                     "   vec4 explosionTwoResult = explosionTwoDiffuse * lights[2].lightColor;"+
 
                     "    // Multiply the color by the diffuse illumination level to get final output color.\n" +
-                    "    gl_FragColor = vColor* dotDiffuse+explosionOneResult + explosionTwoResult;" +
+                    "    gl_FragColor = vColor *dotDiffuse  +explosionOneResult + explosionTwoResult;" +
                     "}";
 
 
@@ -168,6 +171,7 @@ public class Game {
         mDotLightPosHandle = GLES20.glGetUniformLocation(mProgram, "lights[0].u_LightPos");
         mDotLightDistanceHandle = GLES20.glGetUniformLocation(mProgram, "lights[0].lightDistance");
         mDotLightShinningHandle = GLES20.glGetUniformLocation(mProgram, "lights[0].lightShinning");
+        mDotLightColorHandle = GLES20.glGetUniformLocation(mProgram, "lights[0].lightColor");
 
 
         mExplosionLightOnePosHandle = GLES20.glGetUniformLocation(mProgram, "lights[1].u_LightPos");
@@ -217,9 +221,6 @@ public class Game {
 
 
 
-        GLES20.glUniform3f(mDotLightPosHandle, mainSprite.getCenterX(), mainSprite.getCenterY(), 0.0f);
-        GLES20.glUniform1f(mDotLightDistanceHandle, 0.5f);
-        GLES20.glUniform1f(mDotLightShinningHandle, 1.0f);
 
 
 

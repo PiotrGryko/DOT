@@ -197,7 +197,7 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
         game.initStage(currentStage);
         game.initGameShaders();
         generator.initGeneratorShaders();
-      
+
 
 
         startMonitoring = true;

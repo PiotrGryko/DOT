@@ -1,62 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="20dp">
-
-
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
     <LinearLayout
+        android:id="@+id/layout_world"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:id="@+id/btn_settings"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_margin="5dp"
-            android:adjustViewBounds="true"
-            android:src="@drawable/cogs" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
         android:orientation="vertical"
-        android:padding="5dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="name" />
-
-        <EditText
-            android:id="@+id/et_name"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:hint="world name" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:padding="10dp">
 
         <LinearLayout
-            android:layout_width="0dip"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="5dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="name" />
+
+            <EditText
+                android:id="@+id/et_world_name"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
 
 
             <LinearLayout
-                android:id="@+id/tv_route_color"
+                android:id="@+id/tv_world_route_color"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/abc_list_selector_holo_light"
 
                 android:orientation="horizontal">
+
+                <View
+                    android:id="@+id/color_world_route"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+
+                    android:layout_margin="5dp"></View>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -65,22 +56,23 @@
                     android:padding="5dp"
                     android:text="Route" />
 
-                <View
-                    android:id="@+id/color_route"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-
-                    android:layout_margin="5dp"></View>
 
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/tv_background_color"
+                android:id="@+id/tv_world_background_color"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/abc_list_selector_holo_light"
 
                 android:orientation="horizontal">
+
+                <View
+                    android:id="@+id/color_world_background"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+
+                    android:layout_margin="5dp"></View>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -88,23 +80,24 @@
                     android:padding="5dp"
                     android:text="Background" />
 
-                <View
-                    android:id="@+id/color_background"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-
-                    android:layout_margin="5dp"></View>
 
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/tv_dot_color"
+                android:id="@+id/tv_dot_world_color"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/abc_list_selector_holo_light"
 
 
                 android:orientation="horizontal">
+
+                <View
+                    android:id="@+id/color_world_dot"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+
+                    android:layout_margin="5dp"></View>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -114,22 +107,22 @@
                     android:text="Dot" />
 
 
-                <View
-                    android:id="@+id/color_dot"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-
-                    android:layout_margin="5dp"></View>
-
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/tv_explosion_start_color"
+                android:id="@+id/tv_world_explosion_start_color"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/abc_list_selector_holo_light"
 
                 android:orientation="horizontal">
+
+                <View
+                    android:id="@+id/color_world_explosion_start"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+
+                    android:layout_margin="5dp"></View>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -139,21 +132,21 @@
                     android:text="Explosion start" />
 
 
-                <View
-                    android:id="@+id/color_explosion_start"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-
-                    android:layout_margin="5dp"></View>
-
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/tv_explosion_end_color"
+                android:id="@+id/tv_world_explosion_end_color"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/abc_list_selector_holo_light"
                 android:orientation="horizontal">
+
+                <View
+                    android:id="@+id/color_world_explosion_end"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+
+                    android:layout_margin="5dp"></View>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -162,12 +155,6 @@
                     android:padding="5dp"
                     android:text="Explosion end" />
 
-                <View
-                    android:id="@+id/color_explosion_end"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-
-                    android:layout_margin="5dp"></View>
 
             </LinearLayout>
 
@@ -175,14 +162,13 @@
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="0dip"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1">
+            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
                 android:orientation="vertical">
 
                 <LinearLayout
@@ -205,21 +191,20 @@
                         android:gravity="center"
                         android:orientation="horizontal">
 
-
-                        <TextView
-
-                            android:id="@+id/btn_choose_background"
-                            android:layout_width="120dp"
-                            android:layout_height="wrap_content"
-                            android:padding="5dp"
-                            android:text="choose sound" />
-
                         <ImageView
-                            android:id="@+id/btn_play_background"
+                            android:id="@+id/btn_play_world_background"
                             android:layout_width="20dp"
                             android:layout_height="20dp"
                             android:soundEffectsEnabled="false"
                             android:src="@drawable/play_btn" />
+
+                        <TextView
+
+                            android:id="@+id/btn_choose_world_background"
+                            android:layout_width="120dp"
+                            android:layout_height="wrap_content"
+                            android:padding="5dp"
+                            android:text="choose sound" />
 
 
                     </LinearLayout>
@@ -246,22 +231,21 @@
                         android:gravity="center"
                         android:orientation="horizontal">
 
-
-                        <TextView
-                            android:id="@+id/btn_choose_press"
-
-                            android:layout_width="120dp"
-                            android:layout_height="wrap_content"
-                            android:padding="5dp"
-                            android:text="choose sound" />
-
                         <ImageView
-                            android:id="@+id/btn_play_press"
+                            android:id="@+id/btn_play_world_press"
                             android:layout_width="20dp"
 
                             android:layout_height="20dp"
                             android:soundEffectsEnabled="false"
                             android:src="@drawable/play_btn" />
+
+                        <TextView
+                            android:id="@+id/btn_choose_world_press"
+
+                            android:layout_width="120dp"
+                            android:layout_height="wrap_content"
+                            android:padding="5dp"
+                            android:text="choose sound" />
 
 
                     </LinearLayout>
@@ -289,22 +273,21 @@
                         android:gravity="center"
                         android:orientation="horizontal">
 
-
-                        <TextView
-
-                            android:id="@+id/btn_choose_crash"
-                            android:layout_width="120dp"
-                            android:layout_height="wrap_content"
-                            android:padding="5dp"
-                            android:text="choose sound" />
-
                         <ImageView
-                            android:id="@+id/btn_play_crash"
+                            android:id="@+id/btn_play_world_crash"
                             android:layout_width="20dp"
 
                             android:layout_height="20dp"
                             android:soundEffectsEnabled="false"
                             android:src="@drawable/play_btn" />
+
+                        <TextView
+
+                            android:id="@+id/btn_choose_world_crash"
+                            android:layout_width="120dp"
+                            android:layout_height="wrap_content"
+                            android:padding="5dp"
+                            android:text="choose sound" />
 
 
                     </LinearLayout>
@@ -332,22 +315,21 @@
                         android:gravity="center"
                         android:orientation="horizontal">
 
-
-                        <TextView
-
-                            android:id="@+id/btn_choose_finish"
-                            android:layout_width="120dp"
-                            android:layout_height="wrap_content"
-                            android:padding="5dp"
-                            android:text="choose sound" />
-
                         <ImageView
-                            android:id="@+id/btn_play_finish"
+                            android:id="@+id/btn_play_world_finish"
                             android:layout_width="20dp"
 
                             android:layout_height="20dp"
                             android:soundEffectsEnabled="false"
                             android:src="@drawable/play_btn" />
+
+                        <TextView
+
+                            android:id="@+id/btn_choose_world_finish"
+                            android:layout_width="120dp"
+                            android:layout_height="wrap_content"
+                            android:padding="5dp"
+                            android:text="choose sound" />
 
 
                     </LinearLayout>
@@ -358,15 +340,16 @@
 
         </LinearLayout>
 
+
+        <ImageView
+            android:id="@+id/btn_save_world"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/circle_btn_selector"
+            android:padding="10dp"
+            android:src="@drawable/floppydisc" />
+
+
     </LinearLayout>
-
-    <ImageView
-        android:id="@+id/btn_save"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:background="@drawable/circle_btn_selector"
-        android:padding="10dp"
-        android:src="@drawable/floppydisc" />
-
 
 </LinearLayout>

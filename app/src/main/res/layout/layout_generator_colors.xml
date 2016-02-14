@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/layout_colors"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/tv_dot_light_color"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/abc_list_selector_holo_light"
+            android:orientation="horizontal"
+
+            android:padding="5dp">
+
+            <View
+                android:id="@+id/color_dot_light"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+
+                android:layout_margin="5dp"></View>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="Dot light color" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/tv_explosion_ligh_color"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/abc_list_selector_holo_light"
+            android:orientation="horizontal"
+
+            android:padding="5dp">
+
+            <View
+                android:id="@+id/color_explosion_light"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+
+                android:layout_margin="5dp"></View>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="Explosion light color" />
+
+
+        </LinearLayout>
+
+
+
+        <LinearLayout
+            android:id="@+id/tv_route_color"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/abc_list_selector_holo_light"
+            android:orientation="horizontal"
+
+            android:padding="5dp">
+
+            <View
+                android:id="@+id/color_route"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+
+                android:layout_margin="5dp"></View>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="Route color" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/tv_background_color"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/abc_list_selector_holo_light"
+
+            android:orientation="horizontal"
+
+            android:padding="5dp">
+
+            <View
+                android:id="@+id/color_background"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+
+                android:layout_margin="5dp"></View>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="Background color" />
+
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/tv_dot_color"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/abc_list_selector_holo_light"
+            android:orientation="horizontal"
+
+
+            android:padding="5dp">
+
+            <View
+                android:id="@+id/color_dot"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+
+                android:layout_margin="5dp"></View>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="Dot color" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/tv_explosion_start_color"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/abc_list_selector_holo_light"
+            android:orientation="horizontal"
+
+            android:padding="5dp">
+
+            <View
+                android:id="@+id/color_explosion_start"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+
+                android:layout_margin="5dp"></View>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="Explosion start" />
+
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/tv_explosion_end_color"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/abc_list_selector_holo_light"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <View
+                android:id="@+id/color_explosion_end"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+
+                android:layout_margin="5dp"></View>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="Explosion end" />
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+</LinearLayout>

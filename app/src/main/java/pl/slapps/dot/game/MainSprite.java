@@ -174,6 +174,12 @@ public class MainSprite extends Sprite {
 
 
 
+        GLES20.glUniform3f(game.mDotLightPosHandle, getCenterX(), getCenterY(), 0.0f);
+        GLES20.glUniform1f(game.mDotLightDistanceHandle, 0.5f);
+        GLES20.glUniform1f(game.mDotLightShinningHandle, 1.0f);
+        GLES20.glUniform4fv(game.mDotLightColorHandle, 1, color, 0);
+
+
 
         // Draw the square
         GLES20.glDrawElements(
@@ -190,32 +196,5 @@ public class MainSprite extends Sprite {
 
     }
 
-    public void draw(GL10 gl) {
-
-
-        //gl.glRotatef(angle, centerX, centerY, 0);
-
-        gl.glLoadIdentity();
-
-
-        //    gl.glTranslatef(centerX, centerY, 0);
-        //    gl.glRotatef(angle, 0, 0, 1);
-        //   gl.glTranslatef(-centerX, -centerY, 0);
-
-        //  gl.glTranslatef(moveX, moveY, 0);
-
-        gl.glColor4f(r, g, b, 0.0f);
-        gl.glVertexPointer(2, GL10.GL_FLOAT, 0, bufferedVertex);
-
-        gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, vertices.length / 2);
-
-
-//lights
-
-
-        // gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_POSITION, lPos);
-
-
-    }
 
 }
