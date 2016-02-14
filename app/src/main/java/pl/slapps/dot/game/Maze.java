@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import android.util.Log;
 
 import pl.slapps.dot.drawing.Wall;
+import pl.slapps.dot.model.Config;
 import pl.slapps.dot.model.Route;
 import pl.slapps.dot.model.Stage;
 import pl.slapps.dot.generator.TileRoute;
@@ -35,6 +36,8 @@ public class Maze {
 
     private Path path;
     private Fence fence;
+
+    private Config config;
 
 
     public Path getPath() {
@@ -180,8 +183,8 @@ public class Maze {
         sortMaze();
         Log.d(TAG, "elements loaded ");
         //initWallsDrawing();
-        path = new Path(routes, stage.colorRoute, game);
-        fence = new Fence(routes, "#000000", game);
+        path = new Path(routes,  game,stage.config);
+        fence = new Fence(routes, game,stage.config);
 
 
     }

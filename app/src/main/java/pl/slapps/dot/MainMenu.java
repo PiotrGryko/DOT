@@ -82,7 +82,7 @@ public class MainMenu {
 
     public void loadStage(Stage stage) {
 
-        final int color = Color.parseColor(stage.colorBackground);
+        final int color = Color.parseColor(stage.config.colors.colorBackground);
 
 
         layoutMenu.clearAnimation();
@@ -200,7 +200,8 @@ public class MainMenu {
             @Override
             public void onClick(View view) {
                 context.getSoundsManager().stopBackgroundPlayer();
-                game.initGenerator(9, 15);
+                game.initGenerator();
+                game.setRunnig(true);
                 btnSettings.setVisibility(View.VISIBLE);
                 menuHideAnimation.startAnimation();
                 context.mAdView.setVisibility(View.GONE);
@@ -403,14 +404,14 @@ public class MainMenu {
             @Override
             public void onAnimationEnd(Animation animation) {
 
-
+                game.setRunnig(true);
                 layoutMenu.setVisibility(View.GONE);
                 //menuHideAnimation.clearAnimation();
                 entranceAnimation.clearAnimation();
                 btnsHideAnimation.clearAnimation();
                 headerHideAnimation.clearAnimation();
 
-                game.setRunnig(true);
+
             }
 
             @Override

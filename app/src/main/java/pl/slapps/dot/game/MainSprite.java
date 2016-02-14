@@ -12,8 +12,10 @@ import java.nio.FloatBuffer;
 import pl.slapps.dot.R;
 import pl.slapps.dot.SurfaceRenderer;
 import pl.slapps.dot.drawing.Sprite;
+import pl.slapps.dot.drawing.Util;
 import pl.slapps.dot.generator.TileRoute;
 import pl.slapps.dot.generator.TileRouteFinish;
+import pl.slapps.dot.model.Config;
 
 
 public class MainSprite extends Sprite {
@@ -23,9 +25,7 @@ public class MainSprite extends Sprite {
 
 
     private float angle;
-    public float r = 0.0f;
-    public float g = 0.0f;
-    public float b = 0.0f;
+
 
     public boolean prepareToDie;
 
@@ -67,18 +67,16 @@ public class MainSprite extends Sprite {
     }
 
     public MainSprite(Game view, float centerX, float centerY, int width,
-                      int height, String colorString) {
+                      int height, Config config) {
 
-        super(centerX, centerY, width, height);
+        super(centerX, centerY, width, height,true);
         this.game = view;
         fence = view.getMaze();
 
-        int intColor = Color.parseColor(colorString);
-        r = (float) Color.red(intColor) / 255;
-        g = (float) Color.green(intColor) / 255;
-        b = (float) Color.blue(intColor) / 255;
+
         spriteSpeed = view.context.getResources().getDimension(R.dimen.speed);
-        color = new float[]{r, g, b, 1.0f};
+        color = Util.parseColor(config.colors.colorShip);
+
 
 
 
@@ -175,7 +173,7 @@ public class MainSprite extends Sprite {
 
 
         GLES20.glUniform3f(game.mDotLightPosHandle, getCenterX(), getCenterY(), 0.0f);
-        GLES20.glUniform1f(game.mDotLightDistanceHandle, 0.5f);
+        GLES20.glUniform1f(game.mDotLightDistanceHandle, 0.3f);
         GLES20.glUniform1f(game.mDotLightShinningHandle, 1.0f);
         GLES20.glUniform4fv(game.mDotLightColorHandle, 1, color, 0);
 

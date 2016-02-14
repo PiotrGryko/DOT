@@ -1,5 +1,6 @@
 package pl.slapps.dot.drawing;
 
+import android.net.Uri;
 import android.opengl.GLES20;
 
 import java.lang.reflect.Array;
@@ -13,6 +14,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 import pl.slapps.dot.SurfaceRenderer;
 import pl.slapps.dot.generator.Generator;
+import pl.slapps.dot.model.Config;
 
 /**
  * Created by piotr on 14.10.15.
@@ -42,6 +44,7 @@ public class Wall {
 
 
 
+
     public float color[] = { 0.0f, 0.0f, 0.0f, 1.0f};
 
     public static float[] concatenate(float[] a, float[] b) {
@@ -67,6 +70,7 @@ public class Wall {
         this.start = start;
         this.end = end;
         this.type = type;
+
         this.generator=generator;
 
 
@@ -93,6 +97,10 @@ public class Wall {
 
     }
 
+    public void configure(Config config)
+    {
+        this.color = Util.parseColor(config.colors.colorFence);
+    }
     public float[] getColor() {return color;}
 
     public float[] getVert()

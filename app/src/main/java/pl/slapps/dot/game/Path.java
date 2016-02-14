@@ -15,8 +15,10 @@ import javax.microedition.khronos.opengles.GL10;
 
 import pl.slapps.dot.SurfaceRenderer;
 import pl.slapps.dot.drawing.Quad;
+import pl.slapps.dot.drawing.Util;
 import pl.slapps.dot.generator.TileRoute;
 import pl.slapps.dot.generator.TileRouteBackground;
+import pl.slapps.dot.model.Config;
 
 /**
  * Created by piotr on 01.11.15.
@@ -36,10 +38,7 @@ public class Path {
     public float[] verticles;
     public short[] indices;
 
-    public float r = 0.0f;
-    public float g = 0.0f;
-    public float b = 0.0f;
-    public float a = 0.0f;
+
     public String backgroundColor;
 
     private Game game;
@@ -55,26 +54,21 @@ public class Path {
     ArrayList<Quad> quads; //list of quads ordered from beginning to end
 
 
-    public void setColor(String col) {
+    public void configure(Config config) {
 
-        if (col == null)
+
+        if (config.colors.colorRoute == null)
             backgroundColor = "#B8B8B8";
         else
-            backgroundColor = col;
-        int intColor = Color.parseColor(backgroundColor);
-        a = (float) Color.alpha(intColor) / 255;
-        r = (float) Color.red(intColor) / 255;
-        g = (float) Color.green(intColor) / 255;
-        b = (float) Color.blue(intColor) / 255;
-        color = new float[]{r, g, b, a,
-              };
+            backgroundColor = config.colors.colorRoute;
+        color = Util.parseColor(backgroundColor);
 
 
 
         Log.d(TAG, "test path set color ");
     }
 
-    public Path(ArrayList<TileRoute> routes, String stringColor, Game game) {
+    public Path(ArrayList<TileRoute> routes, Game game, Config config) {
         this.game= game;
         ArrayList<TileRouteBackground> backgrounds = new ArrayList<>();
         ArrayList<Quad> data = new ArrayList<>();
@@ -93,17 +87,13 @@ public class Path {
 
         verticles = data.get(0).vertices;
         indices = data.get(0).indices;
-        Quad result = data.get(0);
 
 
         for (int i = 0; i < data.size(); i++) {
-
-
             addQuad(data.get(i));
-            //result=connectQuads(result,quads.get(i), Route.Direction.TOP);
         }
 
-        setColor(stringColor);
+       configure(config);
 
 
         Log.d(TAG, "quads size " + this.quads.size());
@@ -236,16 +226,6 @@ public class Path {
 
     }
 
-
-    public void draw(GL10 gl) {
-        gl.glLoadIdentity();
-        gl.glColor4f(r, g, b, a);
-
-
-        gl.glVertexPointer(2, GL10.GL_FLOAT, 0, roadBufferedVertex);
-        gl.glDrawElements(GL10.GL_TRIANGLES, roadIndices.length,
-                GL10.GL_UNSIGNED_SHORT, roadBufferedIndices);
-    }
 
 
     public void drawGl2(float[] mvpMatrix) {

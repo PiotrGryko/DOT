@@ -9,6 +9,8 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import pl.slapps.dot.model.Sounds;
+
 /**
  * Created by piotr on 17.11.15.
  */
@@ -36,42 +38,30 @@ public class SoundsManager {
     public static String DEFAULT_FINISH = "finish";
 
 
+    public void configure(Sounds sounds) {
+        Log.d(TAG, "configure : " + sounds.toString());
 
 
-    public void configure(JSONObject sounds) {
-        Log.d(TAG,"configure : "+sounds.toString());
-        try {
+        if (!sounds.soundBackground.equals(""))
+            backgroundSound = Uri.parse("android.resource://" + context.getPackageName() + "/raw/" + sounds.soundBackground);
+        else
+            backgroundSound = null;
 
+        if (!sounds.soundPress.equals(""))
+            moveSound = Uri.parse("android.resource://" + context.getPackageName() + "/raw/" + sounds.soundPress);
+        else
+            moveSound = Uri.parse("android.resource://" + context.getPackageName() + "/raw/" + DEFAULT_PRESS);
 
-            String background = sounds.has("background") ? sounds.getString("background") : "";
+        if (!sounds.soundCrash.equals(""))
+            crashSound = Uri.parse("android.resource://" + context.getPackageName() + "/raw/" + sounds.soundCrash);
+        else
+            crashSound = Uri.parse("android.resource://" + context.getPackageName() + "/raw/" + DEFAULT_CRASH);
 
-            String press = sounds.has("press") ? sounds.getString("press") : "";
-            String crash = sounds.has("crash") ? sounds.getString("crash") : "";
-            String finish = sounds.has("finish") ? sounds.getString("finish") : "";
+        if (!sounds.soundFinish.equals(""))
+            soundFinish = Uri.parse("android.resource://" + context.getPackageName() + "/raw/" + sounds.soundFinish);
+        else
+            soundFinish = Uri.parse("android.resource://" + context.getPackageName() + "/raw/" + DEFAULT_FINISH);
 
-            if (!background.equals(""))
-                backgroundSound = Uri.parse("android.resource://" + context.getPackageName() + "/raw/" + background);
-            else
-                backgroundSound=null;
-
-            if (!press.equals(""))
-                moveSound = Uri.parse("android.resource://" + context.getPackageName() + "/raw/" + press);
-            else
-                moveSound = Uri.parse("android.resource://" + context.getPackageName() + "/raw/"+DEFAULT_PRESS);
-
-            if (!crash.equals(""))
-                crashSound = Uri.parse("android.resource://" + context.getPackageName() + "/raw/" + crash);
-            else
-                crashSound = Uri.parse("android.resource://" + context.getPackageName() + "/raw/"+DEFAULT_CRASH);
-
-            if (!finish.equals(""))
-                soundFinish = Uri.parse("android.resource://" + context.getPackageName() + "/raw/" + finish);
-            else
-                soundFinish = Uri.parse("android.resource://" + context.getPackageName() + "/raw/"+DEFAULT_FINISH);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
     }
 
@@ -103,7 +93,7 @@ public class SoundsManager {
 
     public void playMoveSound() {
         asyncPlayerPress.play(context, moveSound, false, AudioManager.STREAM_MUSIC);
-        Log.d(TAG,"play move sound "+moveSound.toString());
+        Log.d(TAG, "play move sound " + moveSound.toString());
         //  mediaPlayerMove.start();
     }
 
@@ -113,8 +103,7 @@ public class SoundsManager {
         //  mediaPlayerCrash.start();
     }
 
-    public AsyncPlayer getAsyncPlayer()
-    {
+    public AsyncPlayer getAsyncPlayer() {
         return asyncPlayer;
     }
 
@@ -133,28 +122,8 @@ public class SoundsManager {
     public void playRawFile(String filename) {
         Uri custom = Uri.parse("android.resource://" + context.getPackageName() + "/raw/" + filename);
         asyncPlayer.play(context, custom, false, AudioManager.STREAM_MUSIC);
-        Log.d(TAG,"play raw file "+filename);
+        Log.d(TAG, "play raw file " + filename);
 
     }
 
-    public void playBackgroundBirds() {
-        asyncPlayerBackground.stop();
-        asyncPlayerBackground.play(context, soundBackgroundBirds, true, AudioManager.STREAM_MUSIC);
-
-        //  mediaPlayerCrash.start();
-    }
-
-    public void playBackgroundBeach() {
-        asyncPlayerBackground.stop();
-        asyncPlayerBackground.play(context, soundBackgroundBeach, true, AudioManager.STREAM_MUSIC);
-
-        //  mediaPlayerCrash.start();
-    }
-
-    public void playBackgroundWaves() {
-        asyncPlayerBackground.stop();
-        asyncPlayerBackground.play(context, soundBackgroundWater, true, AudioManager.STREAM_MUSIC);
-
-        //  mediaPlayerCrash.start();
-    }
 }

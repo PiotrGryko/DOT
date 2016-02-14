@@ -46,21 +46,21 @@ public class GeneratorLayoutSounds {
 
 
     public void refreashLayout() {
-        if (!generator.backgrounSound.trim().equals(""))
-            btnSoundBackground.setText(generator.backgrounSound);
+        if (!generator.getConfig().sounds.soundBackground.trim().equals(""))
+            btnSoundBackground.setText(generator.getConfig().sounds.soundBackground);
 
-        if (!generator.pressSound.trim().equals(""))
-            btnSoundPress.setText(generator.pressSound);
-        else
-            btnSoundPress.setText(SoundsManager.DEFAULT_PRESS);
-        if (!generator.crashSound.trim().equals(""))
-            btnSoundCrash.setText(generator.crashSound);
-        else
-            btnSoundCrash.setText(SoundsManager.DEFAULT_CRASH);
-        if (!generator.finishSound.trim().equals(""))
-            btnSoundFinish.setText(generator.finishSound);
-        else
-            btnSoundFinish.setText(SoundsManager.DEFAULT_FINISH);
+        if (!generator.getConfig().sounds.soundPress.trim().equals(""))
+            btnSoundPress.setText(generator.getConfig().sounds.soundPress);
+        //else
+        //    btnSoundPress.setText(SoundsManager.DEFAULT_PRESS);
+        if (!generator.getConfig().sounds.soundCrash.trim().equals(""))
+            btnSoundCrash.setText(generator.getConfig().sounds.soundCrash);
+        //else
+        //    btnSoundCrash.setText(SoundsManager.DEFAULT_CRASH);
+        if (!generator.getConfig().sounds.soundFinish.trim().equals(""))
+            btnSoundFinish.setText(generator.getConfig().sounds.soundFinish);
+        //else
+        //    btnSoundFinish.setText(SoundsManager.DEFAULT_FINISH);
 
     }
 
@@ -85,44 +85,44 @@ public class GeneratorLayoutSounds {
         btnPlayBackground.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View vie) {
-                if (generator.backgrounSound.trim().equals("")) {
+                if (generator.getConfig().sounds.soundBackground.trim().equals("")) {
                     Toast.makeText(generator.view.context, "Select file first", Toast.LENGTH_LONG).show();
                     return;
                 }
 
-                generator.view.context.getSoundsManager().playRawFile(generator.backgrounSound);
+                generator.view.context.getSoundsManager().playRawFile(generator.getConfig().sounds.soundBackground);
             }
         });
         btnPlayPress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View vie) {
-                if (generator.pressSound.trim().equals("")) {
+                if (generator.getConfig().sounds.soundPress.trim().equals("")) {
                     Toast.makeText(generator.view.context, "Select file first", Toast.LENGTH_LONG).show();
                     return;
                 }
-                generator.view.context.getSoundsManager().playRawFile(generator.pressSound);
+                generator.view.context.getSoundsManager().playRawFile(generator.getConfig().sounds.soundPress);
 
             }
         });
         btnPlayCrash.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View vie) {
-                if (generator.crashSound.trim().equals("")) {
+                if (generator.getConfig().sounds.soundCrash.trim().equals("")) {
                     Toast.makeText(generator.view.context, "Select file first", Toast.LENGTH_LONG).show();
                     return;
                 }
-                generator.view.context.getSoundsManager().playRawFile(generator.crashSound);
+                generator.view.context.getSoundsManager().playRawFile(generator.getConfig().sounds.soundCrash);
 
             }
         });
         btnPlayFinish.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View vie) {
-                if (generator.finishSound.trim().equals("")) {
+                if (generator.getConfig().sounds.soundFinish.trim().equals("")) {
                     Toast.makeText(generator.view.context, "Select file first", Toast.LENGTH_LONG).show();
                     return;
                 }
-                generator.view.context.getSoundsManager().playRawFile(generator.finishSound);
+                generator.view.context.getSoundsManager().playRawFile(generator.getConfig().sounds.soundFinish);
 
             }
         });
@@ -140,8 +140,8 @@ public class GeneratorLayoutSounds {
                 lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                        generator.backgrounSound = adapterView.getItemAtPosition(i).toString();
-                        btnSoundBackground.setText(generator.backgrounSound);
+                        generator.getConfig().sounds.soundBackground = adapterView.getItemAtPosition(i).toString();
+                        btnSoundBackground.setText(generator.getConfig().sounds.soundBackground);
                         dialogChooseSound.dismiss();
                     }
                 });
@@ -162,8 +162,8 @@ public class GeneratorLayoutSounds {
                 lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                        generator.pressSound = adapterView.getItemAtPosition(i).toString();
-                        btnSoundPress.setText(generator.pressSound);
+                        generator.getConfig().sounds.soundPress = adapterView.getItemAtPosition(i).toString();
+                        btnSoundPress.setText(generator.getConfig().sounds.soundPress);
 
                         dialogChooseSound.dismiss();
                     }
@@ -185,8 +185,8 @@ public class GeneratorLayoutSounds {
                 lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                        generator.crashSound = adapterView.getItemAtPosition(i).toString();
-                        btnSoundCrash.setText(generator.crashSound);
+                        generator.getConfig().sounds.soundCrash = adapterView.getItemAtPosition(i).toString();
+                        btnSoundCrash.setText(generator.getConfig().sounds.soundCrash);
 
                         dialogChooseSound.dismiss();
                     }
@@ -208,8 +208,8 @@ public class GeneratorLayoutSounds {
                 lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                        generator.finishSound = adapterView.getItemAtPosition(i).toString();
-                        btnSoundFinish.setText(generator.finishSound);
+                        generator.getConfig().sounds.soundFinish = adapterView.getItemAtPosition(i).toString();
+                        btnSoundFinish.setText(generator.getConfig().sounds.soundFinish);
 
                         dialogChooseSound.dismiss();
                     }

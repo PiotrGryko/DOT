@@ -7,6 +7,7 @@ import java.util.Arrays;
 
 import pl.slapps.dot.drawing.Junction;
 import pl.slapps.dot.drawing.Wall;
+import pl.slapps.dot.model.Config;
 import pl.slapps.dot.model.Route;
 
 /**
@@ -90,7 +91,11 @@ public class TileRoute {
         if (type == Route.Type.FILL) {
 
 
-            backgroundPartOne = new TileRouteBackground(centerX, centerY, width, height, backgroundColor, generator);
+            if(generator!=null)
+            backgroundPartOne = new TileRouteBackground(centerX, centerY, width, height,  generator);
+            else
+                backgroundPartOne = new TileRouteBackground(centerX, centerY, width, height);
+
 
             return;
         }
@@ -135,10 +140,16 @@ public class TileRoute {
                 walls.add(tWall);
                 walls.add(rWall);
                 walls.add(bWall);
+                if(generator!=null) {
+                    backgroundPartOne = new TileRouteBackground(centerX, topY + height - borderY / 2, routeWidth, borderY, generator);
+                    backgroundPartTwo = new TileRouteBackground(topX + borderX + (width - borderX) / 2, centerY, width - borderX, routeHeight, generator);
+                }
+                else
+                {
 
-                backgroundPartOne = new TileRouteBackground(centerX, topY + height - borderY / 2, routeWidth, borderY, backgroundColor, generator);
-                backgroundPartTwo = new TileRouteBackground(topX + borderX + (width - borderX) / 2, centerY, width - borderX, routeHeight, backgroundColor, generator);
-
+                    backgroundPartOne = new TileRouteBackground(centerX, topY + height - borderY / 2, routeWidth, borderY);
+                    backgroundPartTwo = new TileRouteBackground(topX + borderX + (width - borderX) / 2, centerY, width - borderX, routeHeight);
+                }
                 break;
             }
             case BOTTOMLEFT:
@@ -167,10 +178,16 @@ public class TileRoute {
                 walls.add(tWall);
                 walls.add(rWall);
                 walls.add(bWall);
+                if(generator!=null) {
+                    backgroundPartOne = new TileRouteBackground(centerX, topY + height - borderY / 2, routeWidth, borderY, generator);
+                    backgroundPartTwo = new TileRouteBackground(topX + (width - borderX) / 2, centerY, width - borderX, routeHeight, generator);
+                }
+                else
+                {
 
-                backgroundPartOne = new TileRouteBackground(centerX, topY + height - borderY / 2, routeWidth, borderY, backgroundColor, generator);
-                backgroundPartTwo = new TileRouteBackground(topX + (width - borderX) / 2, centerY, width - borderX, routeHeight, backgroundColor, generator);
-
+                    backgroundPartOne = new TileRouteBackground(centerX, topY + height - borderY / 2, routeWidth, borderY);
+                    backgroundPartTwo = new TileRouteBackground(topX + (width - borderX) / 2, centerY, width - borderX, routeHeight);
+                }
                 break;
             }
 
@@ -193,10 +210,16 @@ public class TileRoute {
                 walls.add(tWall);
                 walls.add(rWall);
                 walls.add(bWall);
+                if(generator!=null) {
+                    backgroundPartOne = new TileRouteBackground(centerX, topY + borderY / 2, routeWidth, borderY, generator);
+                    backgroundPartTwo = new TileRouteBackground(topX + borderX + (width - borderX) / 2, centerY, width - borderX, routeHeight, generator);
+                }
+                else
+                {
 
-                backgroundPartOne = new TileRouteBackground(centerX, topY + borderY / 2, routeWidth, borderY, backgroundColor, generator);
-                backgroundPartTwo = new TileRouteBackground(topX + borderX + (width - borderX) / 2, centerY, width - borderX, routeHeight, backgroundColor, generator);
-
+                    backgroundPartOne = new TileRouteBackground(centerX, topY + borderY / 2, routeWidth, borderY);
+                    backgroundPartTwo = new TileRouteBackground(topX + borderX + (width - borderX) / 2, centerY, width - borderX, routeHeight);
+                }
                 break;
             }
 
@@ -218,10 +241,16 @@ public class TileRoute {
                 walls.add(tWall);
                 walls.add(rWall);
                 walls.add(bWall);
+                if(generator!=null) {
+                    backgroundPartOne = new TileRouteBackground(centerX, topY + borderY / 2, routeWidth, borderY, generator);
+                    backgroundPartTwo = new TileRouteBackground(topX + (width - borderX) / 2, centerY, width - borderX, routeHeight, generator);
+                }
+                else
+                {
 
-                backgroundPartOne = new TileRouteBackground(centerX, topY + borderY / 2, routeWidth, borderY, backgroundColor, generator);
-                backgroundPartTwo = new TileRouteBackground(topX + (width - borderX) / 2, centerY, width - borderX, routeHeight, backgroundColor, generator);
-
+                    backgroundPartOne = new TileRouteBackground(centerX, topY + borderY / 2, routeWidth, borderY);
+                    backgroundPartTwo = new TileRouteBackground(topX + (width - borderX) / 2, centerY, width - borderX, routeHeight);
+                }
                 break;
             }
 
@@ -237,9 +266,14 @@ public class TileRoute {
 
                 walls.add(tWall);
                 walls.add(bWall);
+                if(generator!=null) {
+                    backgroundPartOne = new TileRouteBackground(centerX, centerY, width, routeHeight, generator);
+                }
+                else
+                {
+                    backgroundPartOne = new TileRouteBackground(centerX, centerY, width, routeHeight);
 
-                backgroundPartOne = new TileRouteBackground(centerX, centerY, width, routeHeight, backgroundColor, generator);
-
+                }
 
                 break;
             }
@@ -254,9 +288,14 @@ public class TileRoute {
 
                 walls.add(lWall);
                 walls.add(rWall);
+                if(generator!=null) {
+                    backgroundPartOne = new TileRouteBackground(centerX, centerY, routeWidth, height, generator);
+                }
+                else
+                {
+                    backgroundPartOne = new TileRouteBackground(centerX, centerY, routeWidth, height);
 
-                backgroundPartOne = new TileRouteBackground(centerX, centerY, routeWidth, height, backgroundColor, generator);
-
+                }
             }
 
         }
@@ -290,12 +329,19 @@ public class TileRoute {
     }
 
 
-    public void setRouteColor(String color) {
+    public void configure(Config config)
+    {
         if (backgroundPartOne != null)
-            backgroundPartOne.setColor(color);
+            backgroundPartOne.configure(config);
         if (backgroundPartTwo != null)
-            backgroundPartTwo.setColor(color);
+            backgroundPartTwo.configure(config);
+
+        for(int i=0;i<walls.size();i++)
+        {
+            walls.get(i).configure(config);
+        }
     }
+
 
     public void drawGL20(float[] mvpMatrix) {
 
@@ -315,15 +361,6 @@ public class TileRoute {
         }
 
 
-
-
-        /*
-        for (int i = 0; i < elements.size(); i++) {
-
-            if (elements.get(i) != null)
-                elements.get(i).draw(gl);
-        }
-*/
 
     }
 

@@ -198,7 +198,7 @@ public class Game {
         currentStage=stage;
         background = null;
         Explosion.initBuffers();
-        background = new Background(this, stage.colorBackground);
+        background = new Background(this, stage.config);
 
         maze = null;
         maze = new Maze(this, stage);
@@ -217,13 +217,6 @@ public class Game {
 
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
         GLES20.glUseProgram(mProgram);
-
-
-
-
-
-
-
 
 
 
@@ -341,9 +334,6 @@ public class Game {
         return maze;
     }
 
-    public Background getGameBackground() {
-        return background;
-    }
 
 
     public void addExplosion(Explosion e) {
@@ -436,8 +426,8 @@ public class Game {
 
         Log.d(TAG, "toggle colors " + progress);
 
-        background.setColor(estimateColors(currentStage.colorRoute, currentStage.colorBackground, progress));
-        maze.getPath().setColor(estimateColors(currentStage.colorRoute, currentStage.colorBackground, 1 - progress));
+       // background.setColor(estimateColors(currentStage.colorRoute, currentStage.colorBackground, progress));
+       // maze.getPath().setColor(estimateColors(currentStage.colorRoute, currentStage.colorBackground, 1 - progress));
 
     }
 
@@ -478,7 +468,7 @@ public class Game {
         float startX = startRoute.topX + startRoute.width / 2;
         float startY = startRoute.topY + startRoute.height / 2;
         mainSprite = new MainSprite(this, startX, startY,
-                (int) dotSize, (int) dotSize, currentStage.colorShip);
+                (int) dotSize, (int) dotSize, currentStage.config);
 
         stopDot();
     }
@@ -489,13 +479,13 @@ public class Game {
         float startX = startRoute.topX + startRoute.width / 2;
         float startY = startRoute.topY + startRoute.height / 2;
         mainSprite = new MainSprite(this, startX, startY,
-                0, 0, currentStage.colorShip);
+                0, 0, currentStage.config);
 
         stopDot();
     }
 
     public Explosion explodeDot(boolean sound) {
-        Explosion e = new Explosion(this, mainSprite.centerX, mainSprite.centerY, System.currentTimeMillis(), mainSprite.spriteSpeed, (int) dotSize, currentStage.colorExplosionStart, currentStage.colorExplosionEnd);
+        Explosion e = new Explosion(this, mainSprite.centerX, mainSprite.centerY, System.currentTimeMillis(), mainSprite.spriteSpeed, (int) dotSize, currentStage.config);
 
         //generator.resetDot();
         addExplosion(e);
@@ -515,11 +505,9 @@ public class Game {
         mainSprite = null;
 
         mainSprite = new MainSprite(this, e.x, e.y,
-                (int) dotSize, (int) dotSize, currentStage.colorShip);
+                (int) dotSize, (int) dotSize, currentStage.config);
         mainSprite.setPrepareToDie(true);
-        //mainSprite.r = e.r;
-        //mainSprite.g = e.g;
-        //mainSprite.b = e.b;
+
         TileRoute current = maze.getCurrentRouteObject(mainSprite.centerX, mainSprite.centerY);
 
         if (current != null)

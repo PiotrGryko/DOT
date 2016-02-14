@@ -90,6 +90,32 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/tv_fence_color"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/abc_list_selector_holo_light"
+            android:orientation="horizontal"
+
+            android:padding="5dp">
+
+            <View
+                android:id="@+id/color_fence"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+
+                android:layout_margin="5dp"></View>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="Fence color" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/tv_background_color"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"

@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import pl.slapps.dot.DAO;
 import pl.slapps.dot.SurfaceRenderer;
 import pl.slapps.dot.generator.gui.GeneratorLayout;
+import pl.slapps.dot.model.Config;
 import pl.slapps.dot.model.Route;
 import pl.slapps.dot.model.Stage;
 import pl.slapps.dot.model.World;
@@ -35,6 +36,9 @@ public class Generator {
 
     public int gridX;
     public int gridY;
+    public String name = "generated stage";
+    public String description = "generated desc";
+
     public SurfaceRenderer view;
 
     public String _id;
@@ -44,12 +48,20 @@ public class Generator {
     private float g;
     private float b;
 
-    public void setColor(String color) {
+    private Config config;
+
+    public Config getConfig()
+    {
+        return  config;
+    }
+
+    public void configure(Config config) {
 
         try {
+            String color = config.colors.colorBackground;
             int intColor = Color.parseColor(color);
 
-            backgroundColor = color;
+            config.colors.colorBackground = color;
             a = (float) Color.alpha(intColor) / 255;
             r = (float) Color.red(intColor) / 255;
             g = (float) Color.green(intColor) / 255;
@@ -57,32 +69,13 @@ public class Generator {
             Log.d("XXX", "color setted " + color);
 
         } catch (Throwable t) {
-            Log.d(TAG, "background color  null " + color);
+            Log.d(TAG, "background color  null ");
         }
     }
 
-    public String name = "generated stage";
-    public String description = "generated desc";
 
-    public String backgroundColor="#FFFFFF";
-    public String fillColor;
 
-    public String dotColor = "#000000";
-    public String routeColor = "#8b2323";
-    public String blockColor = "#8b2323";
 
-    public String explosionStartColor = "#000000";
-    public String explosionEndColor = "#FFFFFF";
-
-    public String explosionLightColor = "#ff66ff";
-    public String dotLightColor = "#FFFFFF";
-
-    public String backgrounSound = "";
-    public String pressSound = "";
-    public String crashSound = "";
-    public String finishSound = "";
-
-    public String routeSound = "";
 
 
     public int mPositionHandle;
@@ -94,6 +87,7 @@ public class Generator {
 
     public Generator(final SurfaceRenderer view, int width, int gridY) {
         //this.elements=elements;
+        this.config=new Config();
         this.view = view;
         this.view.context.mainMenu.btnSettings.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -175,7 +169,7 @@ public class Generator {
         mColorHandle = GLES20.glGetUniformLocation(mGeneratorProgram, "vColor");
         mMVPMatrixHandle = GLES20.glGetUniformLocation(mGeneratorProgram, "uMVPMatrix");
 
-        setColor(backgroundColor);
+        configure(config);
 
 
 
@@ -484,13 +478,12 @@ public class Generator {
     }
 
     public void refreashMaze() {
-        //generator.getGameBackground().setColor(backgroundColor);
 
-        setColor(backgroundColor);
+        configure(config);
         for (int i = 0; i < tiles.size(); i++) {
             TileRoute t = tiles.get(i);
             if (t.getType() != Route.Type.TILE && t.getType() != Route.Type.BLOCK && t.getType() != Route.Type.FILL) {
-                t.setRouteColor(routeColor);
+                t.configure(config);
 
             }
 
@@ -513,22 +506,9 @@ public class Generator {
             output.put("y_max", gridY);
             output.put("x_max", gridX);
 
-            JSONObject colors = new JSONObject();
-            colors.put("ship", dotColor);
-            colors.put("background", backgroundColor);
-            colors.put("explosion_start", explosionStartColor);
-            colors.put("explosion_end", explosionEndColor);
-            colors.put("route", routeColor);
-            colors.put("dot_light", dotLightColor);
-            colors.put("explosion_light", explosionLightColor);
-            output.put("colors", colors);
 
-            JSONObject sounds = new JSONObject();
-            sounds.put("background", backgrounSound);
-            sounds.put("press", pressSound);
-            sounds.put("crash", crashSound);
-            sounds.put("finish", finishSound);
-            output.put("sounds", sounds);
+            output.put("colors", config.colors.toJson());
+            output.put("sounds", config.sounds.toJson());
 
             Log.d(TAG, output.toString());
 
@@ -602,20 +582,20 @@ public class Generator {
 
     public void loadWorld(World currentWorld)
     {
-        backgrounSound=currentWorld.soundBackground;
-        crashSound=currentWorld.soundCrash;
-        pressSound=currentWorld.soundPress;
-        finishSound=currentWorld.soundFinish;
-        backgroundColor=currentWorld.colorBackground;
-        dotColor=currentWorld.colorShip;
-        explosionEndColor=currentWorld.colorExplosionEnd;
-        explosionStartColor=currentWorld.colorExplosionStart;
-        routeColor=currentWorld.colorRoute;
-        Log.d(TAG, "load world " + backgroundColor);
-        Log.d(TAG, "load world json " + currentWorld.toJson().toString());
 
-        setColor(backgroundColor);
-        //generator.getGameBackground().setColor(backgroundColor);
+
+        config.sounds.soundBackground=currentWorld.soundBackground;
+        config.sounds.soundCrash=currentWorld.soundCrash;
+        config.sounds.soundPress=currentWorld.soundPress;
+        config.sounds.soundFinish=currentWorld.soundFinish;
+        config.colors.colorBackground=currentWorld.colorBackground;
+        config.colors.colorShip=currentWorld.colorShip;
+        config.colors.colorExplosionEnd=currentWorld.colorExplosionEnd;
+        config.colors.colorExplosionStart=currentWorld.colorExplosionStart;
+        config.colors.colorRoute=currentWorld.colorRoute;
+
+
+        configure(config);
 
     }
 
@@ -634,25 +614,15 @@ public class Generator {
 
 
         gridX = maze.xMax;
-
         gridY = maze.yMax;
 
         _id = maze.id;
 
         initGrid((int) gridX, (int) gridY);
 
+        config=maze.config;
 
-        routeColor = maze.colorRoute;
-        backgroundColor = maze.colorBackground;
-        dotColor = maze.colorShip;
-        explosionStartColor = maze.colorExplosionStart;
 
-        explosionEndColor = maze.colorExplosionEnd;
-
-        backgrounSound = maze.sounBackground;
-        pressSound = maze.soundPress;
-        crashSound = maze.soundCrash;
-        finishSound = maze.soundFinish;
 
 
         for (int i = 0; i < maze.routes.size(); i++) {
@@ -698,8 +668,6 @@ public class Generator {
         for (int i = 0; i < tiles.size(); i++) {
             TileRoute t = tiles.get(i);
             if (t.contains(x, y)) {
-                //showGeneratorMenuDialog(t);
-                //GeneratorDialog.showPathDialog(this, t, null);
                 layout.setCurrentTile(t);
 
                 return true;
@@ -725,7 +693,6 @@ public class Generator {
 
     public void onDraw(float[] mMVPMatrix) {
 
-        //Log.d(TAG,"draw generator");
 
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
         GLES20.glClearColor(r, g, b, a);

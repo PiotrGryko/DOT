@@ -29,7 +29,7 @@ public class Sprite {
 
 
 	public Sprite( float centerX, float centerY, float width,
-			float height) {
+			float height,boolean init) {
 		this.centerX = centerX;
 		this.centerY = centerY;
 		this.width = width;
@@ -37,7 +37,7 @@ public class Sprite {
 
 		quad = new Quad(centerX,centerY,width,height);
 
-
+		if(init)
 		initBuffers();
 
 	}

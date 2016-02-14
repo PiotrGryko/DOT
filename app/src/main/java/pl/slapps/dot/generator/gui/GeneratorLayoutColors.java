@@ -24,6 +24,8 @@ public class GeneratorLayoutColors {
   */
     private View colorBackground;
     private View colorRoute;
+    private View colorFence;
+
     private View colorDot;
     private View colorExplosionStart;
     private View colorExplosionEnd;
@@ -37,13 +39,13 @@ public class GeneratorLayoutColors {
     }
 
     public void refreashLayout() {
-        colorBackground.setBackgroundColor(Color.parseColor(generator.backgroundColor));
-        colorRoute.setBackgroundColor(Color.parseColor(generator.routeColor));
-        colorDot.setBackgroundColor(Color.parseColor(generator.dotColor));
-        colorExplosionStart.setBackgroundColor(Color.parseColor(generator.explosionStartColor));
-        colorExplosionEnd.setBackgroundColor(Color.parseColor(generator.explosionEndColor));
-        colorDotLight.setBackgroundColor(Color.parseColor(generator.dotLightColor));
-        colorExplosionLight.setBackgroundColor(Color.parseColor(generator.explosionLightColor));
+        colorBackground.setBackgroundColor(Color.parseColor(generator.getConfig().colors.colorBackground));
+        colorRoute.setBackgroundColor(Color.parseColor(generator.getConfig().colors.colorRoute));
+        colorDot.setBackgroundColor(Color.parseColor(generator.getConfig().colors.colorShip));
+        colorExplosionStart.setBackgroundColor(Color.parseColor(generator.getConfig().colors.colorExplosionStart));
+        colorExplosionEnd.setBackgroundColor(Color.parseColor(generator.getConfig().colors.colorExplosionEnd));
+        colorDotLight.setBackgroundColor(Color.parseColor(generator.getConfig().colors.colorShipLight));
+        colorExplosionLight.setBackgroundColor(Color.parseColor(generator.getConfig().colors.colorExplosionLight));
 
     }
 
@@ -55,7 +57,7 @@ public class GeneratorLayoutColors {
 
         final LinearLayout tvDotLightColor = (LinearLayout) layoutColors.findViewById(R.id.tv_dot_light_color);
         final LinearLayout tvExplosionLightColor = (LinearLayout) layoutColors.findViewById(R.id.tv_explosion_ligh_color);
-
+        final LinearLayout tvFenceColor = (LinearLayout) layoutColors.findViewById(R.id.tv_fence_color);
         final LinearLayout tvBackgroundColor = (LinearLayout) layoutColors.findViewById(R.id.tv_background_color);
         final LinearLayout tvRouteColor = (LinearLayout) layoutColors.findViewById(R.id.tv_route_color);
         final LinearLayout tvDotColor = (LinearLayout) layoutColors.findViewById(R.id.tv_dot_color);
@@ -69,6 +71,7 @@ public class GeneratorLayoutColors {
         colorDot = layoutColors.findViewById(R.id.color_dot);
         colorExplosionStart = layoutColors.findViewById(R.id.color_explosion_start);
         colorExplosionEnd = layoutColors.findViewById(R.id.color_explosion_end);
+        colorFence = layoutColors.findViewById(R.id.color_fence);
 
 
         refreashLayout();
@@ -76,13 +79,14 @@ public class GeneratorLayoutColors {
         tvDotLightColor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AmbilWarnaDialog dialog = new AmbilWarnaDialog(generator.view.context, Color.parseColor(generator.dotLightColor), new AmbilWarnaDialog.OnAmbilWarnaListener() {
+
+                AmbilWarnaDialog dialog = new AmbilWarnaDialog(generator.view.context, Color.parseColor(generator.getConfig().colors.colorShip), new AmbilWarnaDialog.OnAmbilWarnaListener() {
                     @Override
                     public void onOk(AmbilWarnaDialog dialog, int color) {
                         // color is the color selected by the user.
 
                         colorDotLight.setBackgroundColor(color);
-                        generator.dotLightColor = "#" + Integer.toHexString(color);
+                        generator.getConfig().colors.colorShip = "#" + Integer.toHexString(color);
 
 
                         generator.refreashMaze();
@@ -95,19 +99,20 @@ public class GeneratorLayoutColors {
                     }
                 });
 
+
                 dialog.show();
             }
         });
         tvExplosionLightColor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AmbilWarnaDialog dialog = new AmbilWarnaDialog(generator.view.context, Color.parseColor(generator.explosionLightColor), new AmbilWarnaDialog.OnAmbilWarnaListener() {
+                AmbilWarnaDialog dialog = new AmbilWarnaDialog(generator.view.context, Color.parseColor(generator.getConfig().colors.colorExplosionLight), new AmbilWarnaDialog.OnAmbilWarnaListener() {
                     @Override
                     public void onOk(AmbilWarnaDialog dialog, int color) {
                         // color is the color selected by the user.
 
                         colorDotLight.setBackgroundColor(color);
-                        generator.explosionLightColor = "#" + Integer.toHexString(color);
+                        generator.getConfig().colors.colorExplosionLight = "#" + Integer.toHexString(color);
 
                         dialog.getDialog().dismiss();
                     }
@@ -125,13 +130,14 @@ public class GeneratorLayoutColors {
         tvBackgroundColor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AmbilWarnaDialog dialog = new AmbilWarnaDialog(generator.view.context, Color.parseColor(generator.backgroundColor), new AmbilWarnaDialog.OnAmbilWarnaListener() {
+                AmbilWarnaDialog dialog = new AmbilWarnaDialog(generator.view.context, Color.parseColor(generator.getConfig().colors.colorBackground), new AmbilWarnaDialog.OnAmbilWarnaListener() {
                     @Override
                     public void onOk(AmbilWarnaDialog dialog, int color) {
                         // color is the color selected by the user.
 
                         colorBackground.setBackgroundColor(color);
-                        generator.backgroundColor = "#" + Integer.toHexString(color);
+                        generator.getConfig().colors.colorBackground = "#" + Integer.toHexString(color);
+                        generator.refreashMaze();
 
 
                         dialog.getDialog().dismiss();
@@ -149,13 +155,13 @@ public class GeneratorLayoutColors {
         tvRouteColor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AmbilWarnaDialog dialog = new AmbilWarnaDialog(generator.view.context, Color.parseColor(generator.routeColor), new AmbilWarnaDialog.OnAmbilWarnaListener() {
+                AmbilWarnaDialog dialog = new AmbilWarnaDialog(generator.view.context, Color.parseColor(generator.getConfig().colors.colorRoute), new AmbilWarnaDialog.OnAmbilWarnaListener() {
                     @Override
                     public void onOk(AmbilWarnaDialog dialog, int color) {
                         // color is the color selected by the user.
 
                         colorRoute.setBackgroundColor(color);
-                        generator.routeColor = "#" + Integer.toHexString(color);
+                        generator.getConfig().colors.colorRoute = "#" + Integer.toHexString(color);
 
                         generator.refreashMaze();
                         dialog.getDialog().dismiss();
@@ -173,13 +179,13 @@ public class GeneratorLayoutColors {
         tvDotColor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AmbilWarnaDialog dialog = new AmbilWarnaDialog(generator.view.context, Color.parseColor(generator.dotColor), new AmbilWarnaDialog.OnAmbilWarnaListener() {
+                AmbilWarnaDialog dialog = new AmbilWarnaDialog(generator.view.context, Color.parseColor(generator.getConfig().colors.colorShip), new AmbilWarnaDialog.OnAmbilWarnaListener() {
                     @Override
                     public void onOk(AmbilWarnaDialog dialog, int color) {
                         // color is the color selected by the user.
 
                         colorDot.setBackgroundColor(color);
-                        generator.dotColor = "#" + Integer.toHexString(color);
+                        generator.getConfig().colors.colorShip = "#" + Integer.toHexString(color);
 
 
                         generator.refreashMaze();
@@ -204,7 +210,7 @@ public class GeneratorLayoutColors {
                         // color is the color selected by the user.
 
                         colorExplosionStart.setBackgroundColor(color);
-                        generator.explosionStartColor = "#" + Integer.toHexString(color);
+                        generator.getConfig().colors.colorExplosionStart = "#" + Integer.toHexString(color);
 
 
                         generator.refreashMaze();
@@ -224,15 +230,40 @@ public class GeneratorLayoutColors {
             @Override
             public void onClick(View view) {
 
-                AmbilWarnaDialog dialog = new AmbilWarnaDialog(generator.view.context, Color.parseColor(generator.explosionEndColor), new AmbilWarnaDialog.OnAmbilWarnaListener() {
+                AmbilWarnaDialog dialog = new AmbilWarnaDialog(generator.view.context, Color.parseColor(generator.getConfig().colors.colorExplosionEnd), new AmbilWarnaDialog.OnAmbilWarnaListener() {
                     @Override
                     public void onOk(AmbilWarnaDialog dialog, int color) {
                         // color is the color selected by the user.
 
                         colorExplosionEnd.setBackgroundColor(color);
-                        generator.explosionEndColor = "#" + Integer.toHexString(color);
+                        generator.getConfig().colors.colorExplosionEnd = "#" + Integer.toHexString(color);
 
 
+                        generator.refreashMaze();
+                        dialog.getDialog().dismiss();
+                    }
+
+                    @Override
+                    public void onCancel(AmbilWarnaDialog dialog) {
+                        // cancel was selected by the user
+                    }
+                });
+
+                dialog.show();
+            }
+        });
+
+        tvFenceColor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                AmbilWarnaDialog dialog = new AmbilWarnaDialog(generator.view.context, Color.parseColor(generator.getConfig().colors.colorFence), new AmbilWarnaDialog.OnAmbilWarnaListener() {
+                    @Override
+                    public void onOk(AmbilWarnaDialog dialog, int color) {
+                        // color is the color selected by the user.
+
+                        colorFence.setBackgroundColor(color);
+                        generator.getConfig().colors.colorFence = "#" + Integer.toHexString(color);
                         generator.refreashMaze();
                         dialog.getDialog().dismiss();
                     }

@@ -13,8 +13,10 @@ import java.util.Arrays;
 import javax.microedition.khronos.opengles.GL10;
 
 import pl.slapps.dot.SurfaceRenderer;
+import pl.slapps.dot.drawing.Util;
 import pl.slapps.dot.drawing.Wall;
 import pl.slapps.dot.generator.TileRoute;
+import pl.slapps.dot.model.Config;
 
 /**
  * Created by piotr on 02.11.15.
@@ -26,13 +28,9 @@ public class Fence {
     private float vert[];
     private FloatBuffer bufferedVertex;
     private ArrayList<Wall> walls;
-    private int colorInt;
 
 
     static final int COORDS_PER_VERTEX = 2;
-
-
-
     private Game game;
 
 
@@ -42,9 +40,9 @@ public class Fence {
 
 
 
-    public Fence(ArrayList<TileRoute> routes, String colorString, Game game) {
-        this.colorInt = Color.parseColor(colorString);
+    public Fence(ArrayList<TileRoute> routes,  Game game, Config config) {
         this.game= game;
+        this.color= Util.parseColor(config.colors.colorFence);
         walls = new ArrayList<>();
         ArrayList<Wall> tmp = new ArrayList<>();
 

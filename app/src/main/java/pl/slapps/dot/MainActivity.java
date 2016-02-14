@@ -103,6 +103,12 @@ public class MainActivity extends Activity {
     }
 
 
+    public void resetLogs()
+    {
+        tvMax.setText(Integer.toString(0));
+        tvCur.setText(Integer.toString(0));
+        tvMin.setText(Integer.toString(0));
+    }
     public void setMax(final long value) {
         handler.post(new Runnable() {
             @Override
@@ -264,11 +270,11 @@ public class MainActivity extends Activity {
         try {
 
 
-            soundsManager.configure(stage.sounds);
+            soundsManager.configure(stage.config.sounds);
             soundsManager.playBackgroundSound();
 
 
-            final int color = Color.parseColor(stage.colorBackground);
+            final int color = Color.parseColor(stage.config.colors.colorBackground);
             int c = Color.argb(100, Color.red(color), Color.green(color), Color.blue(color));
             mainMenu.menuBkg.setBackgroundColor(c);
 

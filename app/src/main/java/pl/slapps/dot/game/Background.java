@@ -8,37 +8,23 @@ import android.util.Log;
 import pl.slapps.dot.MainActivity;
 import pl.slapps.dot.SurfaceRenderer;
 import pl.slapps.dot.drawing.Sprite;
+import pl.slapps.dot.drawing.Util;
+import pl.slapps.dot.model.Config;
 
 public class Background extends Sprite {
 
     private String TAG = Background.class.getName();
 
 
-
-
-
-
-
-    private int textures[] = new int[1];
-
-
     private Game view;
-    //private Bitmap bitmap;
 
-    private float moveX = 0;
-    private float moveY = 0;
-    private float a;
-    private float r;
-    private float g;
-    private float b;
-    public String backgroundcolor;
 
     /** Size of the normal data in elements. */
 
     static final int COORDS_PER_VERTEX = 3;
 
 
-
+    private Config config;
 
 
 
@@ -47,59 +33,25 @@ public class Background extends Sprite {
     };
 
 
-    public void setColor(String color) {
+    public void configure(Config config) {
 
-        try {
-            int intColor = Color.parseColor(color);
+        color= Util.parseColor(config.colors.colorBackground);
 
-            backgroundcolor = color;
-            a = (float) Color.alpha(intColor) / 255;
-            r = (float) Color.red(intColor) / 255;
-            g = (float) Color.green(intColor) / 255;
-            b = (float) Color.blue(intColor) / 255;
-            Log.d("XXX","color setted "+color);
-            refreashColor();
-        } catch (Throwable t) {
-            Log.d(TAG, "background color  null " + color);
-        }
     }
 
-    public Background(Game view, String colorString) {
-        super(MainActivity.screenWidth / 2, MainActivity.screenHeight / 2, MainActivity.screenWidth, MainActivity.screenHeight);
+    public Background(Game view, Config config) {
+        super(MainActivity.screenWidth / 2, MainActivity.screenHeight / 2, MainActivity.screenWidth, MainActivity.screenHeight,true);
         this.view = view;
+        this.config=config;
+        configure(config);
 
-        setColor(colorString);
 
-
-
-        //GLES20.glClearColor(r, g, b, 0);
 
 
 
     }
 
-    public void refreashColor()
-    {
-        //GLES20.glClearColor(r, g, b, 0.0f);
-        //color = new float[]{ r,g, b, 0.0f };
-        color = new float[]{
-                // Front face (red)
 
-                r, g, b, a,
-
-
-             //   1.0f, 0.0f, 0.0f, 1.0f,
-             //   1.0f, 0.0f, 0.0f, 1.0f,
-
-
-
-        };
-
-
-        //Log.d("XXX","background color refreashed "+r +" "+g +" "+b );
-
-
-    }
 
 
     public void setMove(float x, float y) {

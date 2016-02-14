@@ -59,6 +59,7 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
 
     private boolean drawGenerator = false;
     private boolean startMonitoring = false;
+    private boolean isRunning = false;
 
 
 
@@ -133,15 +134,16 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
 
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
 
-        if(drawGenerator && generator!=null)
-            generator.onDraw(mMVPMatrix);
-        else if(game!=null)
-            game.onDraw(mMVPMatrix);
-
+        if(isRunning) {
+            if (drawGenerator && generator != null)
+                generator.onDraw(mMVPMatrix);
+            else if (game != null)
+                game.onDraw(mMVPMatrix);
+        }
 
         long renderTime = System.currentTimeMillis() - currentTime;
 
-        if (startMonitoring) {
+        if (startMonitoring && isRunning) {
             context.setMax(renderTime);
             context.setMin(renderTime);
             context.setCurrent(renderTime);
@@ -250,12 +252,18 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
 
 
     public void setRunnig(boolean isRunnig) {
-        //this.isRunnig = isRunnig;
+        this.isRunning = isRunnig;
 
+        if(!isRunnig)
+        {
+            context.resetLogs();
+        }
         if (!isRunnig && drawGenerator) {
             context.drawerContent.removeAllViews();
 
             context.clearStageState();
+
+
         }
 
     }
@@ -263,20 +271,16 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
     public void loadStageData(Stage stage) {
 
         drawGenerator=false;
-
         currentStage = stage;
-
         game.initStage(stage);
 
     }
 
 
 
-    public void initGenerator(int widht, int height) {
+    public void initGenerator() {
 
 
-
-        //generator.initGeneratorShaders();
         drawGenerator=true;
         context.drawerContent.addView(generator.getLayout().onCreateView(generator));
         context.drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
@@ -333,12 +337,12 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
             case MotionEvent.ACTION_DOWN: {
 
 
-                if (drawGenerator && generator != null) {
-                    return generator.onTouch(event);
+                if(isRunning) {
+                    if (drawGenerator && generator != null) {
+                        return generator.onTouch(event);
+                    } else if (game != null)
+                        return game.onTouchEvent(event);
                 }
-                else if(game!=null)
-                    return game.onTouchEvent(event);
-
                 break;
             }
             case MotionEvent.ACTION_UP: {

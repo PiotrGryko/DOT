@@ -64,18 +64,18 @@ public class GeneratorLayoutWorlds {
         final View colorExplosionEnd = layoutWorld.findViewById(R.id.color_world_explosion_end);
 
 
-        colorBackground.setBackgroundColor(Color.parseColor(generator.backgroundColor));
-        colorRoute.setBackgroundColor(Color.parseColor(generator.routeColor));
-        colorDot.setBackgroundColor(Color.parseColor(generator.dotColor));
-        colorExplosionStart.setBackgroundColor(Color.parseColor(generator.explosionStartColor));
-        colorExplosionEnd.setBackgroundColor(Color.parseColor(generator.explosionEndColor));
+        colorBackground.setBackgroundColor(Color.parseColor(generator.getConfig().colors.colorBackground));
+        colorRoute.setBackgroundColor(Color.parseColor(generator.getConfig().colors.colorRoute));
+        colorDot.setBackgroundColor(Color.parseColor(generator.getConfig().colors.colorShip));
+        colorExplosionStart.setBackgroundColor(Color.parseColor(generator.getConfig().colors.colorExplosionStart));
+        colorExplosionEnd.setBackgroundColor(Color.parseColor(generator.getConfig().colors.colorExplosionEnd));
 
 
 
         tvBackgroundColor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AmbilWarnaDialog dialog = new AmbilWarnaDialog(generator.view.context, Color.parseColor(generator.backgroundColor), new AmbilWarnaDialog.OnAmbilWarnaListener() {
+                AmbilWarnaDialog dialog = new AmbilWarnaDialog(generator.view.context, Color.parseColor(generator.getConfig().colors.colorBackground), new AmbilWarnaDialog.OnAmbilWarnaListener() {
                     @Override
                     public void onOk(AmbilWarnaDialog dialog, int color) {
                         // color is the color selected by the user.
@@ -100,7 +100,7 @@ public class GeneratorLayoutWorlds {
         tvRouteColor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AmbilWarnaDialog dialog = new AmbilWarnaDialog(generator.view.context, Color.parseColor(generator.routeColor), new AmbilWarnaDialog.OnAmbilWarnaListener() {
+                AmbilWarnaDialog dialog = new AmbilWarnaDialog(generator.view.context, Color.parseColor(generator.getConfig().colors.colorRoute), new AmbilWarnaDialog.OnAmbilWarnaListener() {
                     @Override
                     public void onOk(AmbilWarnaDialog dialog, int color) {
                         // color is the color selected by the user.
@@ -124,7 +124,7 @@ public class GeneratorLayoutWorlds {
         tvDotColor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AmbilWarnaDialog dialog = new AmbilWarnaDialog(generator.view.context, Color.parseColor(generator.dotColor), new AmbilWarnaDialog.OnAmbilWarnaListener() {
+                AmbilWarnaDialog dialog = new AmbilWarnaDialog(generator.view.context, Color.parseColor(generator.getConfig().colors.colorShip), new AmbilWarnaDialog.OnAmbilWarnaListener() {
                     @Override
                     public void onOk(AmbilWarnaDialog dialog, int color) {
                         // color is the color selected by the user.
@@ -172,7 +172,7 @@ public class GeneratorLayoutWorlds {
         tvExplosionEndColor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AmbilWarnaDialog dialog = new AmbilWarnaDialog(generator.view.context, Color.parseColor(generator.explosionEndColor), new AmbilWarnaDialog.OnAmbilWarnaListener() {
+                AmbilWarnaDialog dialog = new AmbilWarnaDialog(generator.view.context, Color.parseColor(generator.getConfig().colors.colorExplosionEnd), new AmbilWarnaDialog.OnAmbilWarnaListener() {
                     @Override
                     public void onOk(AmbilWarnaDialog dialog, int color) {
                         // color is the color selected by the user.

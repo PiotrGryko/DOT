@@ -70,8 +70,8 @@ public class AdapterStages extends BaseAdapter {
 
         holder.tvIndex.setText("#" + Integer.toString(position));
         holder.tvName.setText(data.get(position).name);
-        holder.tvIndex.setTextColor(Color.parseColor(data.get(position).colorBackground));
-        holder.tvName.setTextColor(Color.parseColor(data.get(position).colorRoute));
+        holder.tvIndex.setTextColor(Color.parseColor(data.get(position).config.colors.colorBackground));
+        holder.tvName.setTextColor(Color.parseColor(data.get(position).config.colors.colorRoute));
 
 
         return convertView;

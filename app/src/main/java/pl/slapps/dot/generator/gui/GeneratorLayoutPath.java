@@ -285,24 +285,20 @@ public class GeneratorLayoutPath {
 
 
 
-                    if (!generator.routeSound.equals(""))
-                        r.sound = generator.routeSound;
+                    if (!generator.getConfig().sounds.soundPress.equals(""))
+                        r.sound = generator.getConfig().sounds.soundPress;
                     switch (r.getType()) {
-                        case BLOCK:
-                            r.setRouteColor(generator.blockColor);
-                            break;
+
                         case ROUTE:
-                            r.setRouteColor(generator.routeColor);
+                            r.configure(generator.getConfig());
                             break;
                         case START:
-                            r.setRouteColor(generator.routeColor);
+                            r.configure(generator.getConfig());
                             break;
                         case FINISH:
-                            r.setRouteColor(generator.routeColor);
+                            r.configure(generator.getConfig());
                             break;
-                        case FILL:
-                            r.setRouteColor(generator.fillColor);
-                            break;
+
 
 
                     }
