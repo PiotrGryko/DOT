@@ -14,6 +14,8 @@ import java.util.ArrayList;
 public class Stage {
 
 
+    private static final  String TAG = Stage.class.getName();
+
     public String id;
     public String name;
     public String description;
@@ -67,7 +69,7 @@ public class Stage {
             int start = i * maxLogSize;
             int end = (i+1) * maxLogSize;
             end = end > object.toString().length() ? object.toString().length() : end;
-            Log.v("zzz", object.toString().substring(start, end));
+            Log.v(TAG, object.toString().substring(start, end));
         }
 
         try {

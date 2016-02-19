@@ -23,7 +23,6 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
     private static String TAG = SurfaceRenderer.class.getName();
 
 
-
     public MainActivity context;
     public int screenWidth;
     public int screenHeight;
@@ -35,23 +34,14 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
     private Handler handler = new Handler();
 
 
-
-
-
-
     public final float[] mProjectionMatrix = new float[16];
     public final float[] mViewMatrix = new float[16];
     public final float[] mMVPMatrix = new float[16];
-    private float[] mModelMatrix = new float[16];
-
-
-
+    public final float[] mModelMatrix = new float[16];
 
 
     //private String explosionColorStart;
     ///private String explosionColorEnd;
-
-
 
 
     //public String shipColor = "#000000";
@@ -60,11 +50,24 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
     private boolean drawGenerator = false;
     private boolean startMonitoring = false;
     private boolean isRunning = false;
+    private boolean isDrawing = true;
+    public boolean isInitialized = false;
 
 
+    public Game getGame() {
+        return game;
+    }
 
+    public boolean onBackPressed() {
+        if (generator.getPreview()) {
+            generator.stopPreview();
+            return false;
+        }
+        generator.getPathPopup().dissmiss();
+        return true;
+    }
 
-    public  int createAndLinkProgram(final int vertexShaderHandle, final int fragmentShaderHandle, final String[] attributes) {
+    public int createAndLinkProgram(final int vertexShaderHandle, final int fragmentShaderHandle, final String[] attributes) {
         int programHandle = GLES20.glCreateProgram();
 
         if (programHandle != 0) {
@@ -105,12 +108,12 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
     }
 
 
-
     public SurfaceRenderer(MainActivity context) {
         super(context);
         setEGLContextClientVersion(2);
         this.setRenderer(this);
         this.context = context;
+
 
 
     }
@@ -120,6 +123,7 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
         setEGLContextClientVersion(2);
         this.setRenderer(this);
         this.context = (MainActivity) context;
+
 
 
     }
@@ -134,7 +138,7 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
 
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
 
-        if(isRunning) {
+        if (isDrawing) {
             if (drawGenerator && generator != null)
                 generator.onDraw(mMVPMatrix);
             else if (game != null)
@@ -159,7 +163,7 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
         GLES20.glViewport(0, 0, width, height);
 
 
-        Matrix.orthoM(mProjectionMatrix, 0, 0, width, height,0, -1, 1);
+        Matrix.orthoM(mProjectionMatrix, 0, 0, width, height, 0, -1, 1);
 
     }
 
@@ -195,12 +199,15 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
         Matrix.setLookAtM(mViewMatrix, 0, eyeX, eyeY, eyeZ, lookX, lookY, lookZ, upX, upY, upZ);
 
 
-        init(context);
-        game.initStage(currentStage);
+        Log.d("zzz", "init game elmenets ");
+
         game.initGameShaders();
         generator.initGeneratorShaders();
 
-
+        if(!isInitialized) {
+            game.initStage(currentStage);
+            isInitialized = true;
+        }
 
         startMonitoring = true;
 
@@ -250,12 +257,17 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
         }
     }
 
+    public void setDrawing(boolean isDrawing)
+    {
+        this.isDrawing=isDrawing;
+    }
+
 
     public void setRunnig(boolean isRunnig) {
         this.isRunning = isRunnig;
+        this.isDrawing=isRunnig;
 
-        if(!isRunnig)
-        {
+        if (!isRunnig) {
             context.resetLogs();
         }
         if (!isRunnig && drawGenerator) {
@@ -270,34 +282,33 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
 
     public void loadStageData(Stage stage) {
 
-        drawGenerator=false;
+        drawGenerator = false;
         currentStage = stage;
         game.initStage(stage);
 
     }
 
 
-
     public void initGenerator() {
 
-
-        drawGenerator=true;
-        context.drawerContent.addView(generator.getLayout().onCreateView(generator));
+        drawGenerator = true;
+        context.drawerContent.addView(generator.getLayout().onCreateView());
         context.drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+        generator.reset();
+
+        context.drawer.openDrawer(context.drawerContent);
+        //context.drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
     }
 
 
-    private void init(MainActivity context) {
+    public void init(MainActivity context) {
 
 
         screenWidth = this.getResources().getDisplayMetrics().widthPixels;
         screenHeight = this.getResources().getDisplayMetrics().heightPixels;
 
-        game = new Game(context,this);
+        game = new Game(context, this);
         generator = new Generator(this, 9, 15);
-
-
-
 
 
     }
@@ -322,11 +333,6 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
     }
 
 
-
-
-
-
-
     // touch events
 
     public boolean onTouchEvent(MotionEvent event) {
@@ -337,7 +343,7 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
             case MotionEvent.ACTION_DOWN: {
 
 
-                if(isRunning) {
+                if (isRunning) {
                     if (drawGenerator && generator != null) {
                         return generator.onTouch(event);
                     } else if (game != null)

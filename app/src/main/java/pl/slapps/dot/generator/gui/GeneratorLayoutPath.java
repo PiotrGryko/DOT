@@ -343,6 +343,9 @@ public class GeneratorLayoutPath {
                     if (nextTile != null) {
                         GeneratorLayoutPath.this.generatorLayout.tile = nextTile;
                         GeneratorLayoutPath.this.generatorLayout.oldTile = r;
+                        GeneratorLayoutPath.this.generatorLayout.tile.setCurrentTile(true);
+                        GeneratorLayoutPath.this.generatorLayout.oldTile.setCurrentTile(false);
+
                         refreashLayout();
                         generatorLayout.refreashCurrentTileLabels();
 

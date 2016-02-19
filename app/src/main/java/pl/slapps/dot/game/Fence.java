@@ -38,12 +38,17 @@ public class Fence {
 
 
 
+    public void configure(Config config)
+    {
+        this.color= Util.parseColor(config.colors.colorFence);
+
+    }
 
 
     public Fence(ArrayList<TileRoute> routes,  Game game, Config config) {
         this.game= game;
-        this.color= Util.parseColor(config.colors.colorFence);
         walls = new ArrayList<>();
+        configure(config);
         ArrayList<Wall> tmp = new ArrayList<>();
 
         for (int i = 0; i < routes.size(); i++) {

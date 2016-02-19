@@ -134,10 +134,10 @@
 
     <LinearLayout
         android:id="@+id/layout_details"
+        android:visibility="gone"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:animateLayoutChanges="true"
-        android:visibility="gone"
         android:orientation="vertical"
         android:padding="10dp"
        >
@@ -145,6 +145,7 @@
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <TextView
@@ -152,11 +153,10 @@
                 android:layout_height="wrap_content"
                 android:text="speed ratio: " />
 
-            <EditText
+            <pl.slapps.dot.generator.widget.NumberPickerTextView
+                android:layout_width="wrap_content"
                 android:id="@+id/et_speed_ratio"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:inputType="numberDecimal" />
+                android:layout_height="wrap_content"></pl.slapps.dot.generator.widget.NumberPickerTextView>
         </LinearLayout>
 
         <TextView

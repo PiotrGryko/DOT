@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import android.util.Log;
 
+import pl.slapps.dot.drawing.Util;
 import pl.slapps.dot.drawing.Wall;
 import pl.slapps.dot.model.Config;
 import pl.slapps.dot.model.Route;
@@ -28,24 +29,18 @@ public class Maze {
     public float height;
     // public float spriteSpeed;
 
-    public int defaultVerticalSize = 15;
-    public int defaultHorizontalSize = 9;
 
-    public float[] wallsVert;
-    public FloatBuffer wallsBufferedVertex;
 
     private Path path;
     private Fence fence;
 
-    private Config config;
 
 
-    public Path getPath() {
-        return path;
-    }
+    public void configure(Config config)
+    {
+        path.configure(config);
+        fence.configure(config);
 
-    public Fence getFence() {
-        return fence;
     }
 
     public TileRoute getStartRoute() {
@@ -126,18 +121,6 @@ public class Maze {
 
         this.elements = new ArrayList<>();
         this.routes = new ArrayList<>();
-
-
-        float vertRatio = (float) defaultVerticalSize / (float) verticalSize;
-        float horizRatio = (float) defaultHorizontalSize / (float) horizontalSize;
-
-        // float ratio = vertRatio;
-        // if (horizRatio < ratio)
-        //    ratio = horizRatio;
-
-        // spriteSpeed = generator.spriteSpeed * ratio;
-
-
         this.width = game.gameView.screenWidth / horizontalSize;
         this.height = game.gameView.screenHeight / verticalSize;
 
@@ -187,6 +170,23 @@ public class Maze {
         fence = new Fence(routes, game,stage.config);
 
 
+    }
+
+
+    private TileRoute findTile(int x, int y) {
+        for (int i = 0; i < routes.size(); i++) {
+            TileRoute t = routes.get(i);
+            if (t.horizontalPos == x && t.verticalPos == y)
+                return t;
+        }
+        return null;
+    }
+
+    public void configRoute(TileRoute route)
+    {
+        TileRoute t = findTile(route.horizontalPos,route.verticalPos);
+        if(t!=null)
+        t.configRoute(route);
     }
 
 

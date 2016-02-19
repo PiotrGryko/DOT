@@ -2,15 +2,16 @@ package pl.slapps.dot.generator;
 
 import android.graphics.Color;
 import android.opengl.GLES20;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import com.android.volley.Response;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import pl.slapps.dot.DAO;
 import pl.slapps.dot.SurfaceRenderer;
 import pl.slapps.dot.generator.gui.GeneratorLayout;
+import pl.slapps.dot.generator.widget.PathPopup;
 import pl.slapps.dot.model.Config;
 import pl.slapps.dot.model.Route;
 import pl.slapps.dot.model.Stage;
@@ -50,14 +52,22 @@ public class Generator {
 
     private Config config;
 
-    public Config getConfig()
+    private boolean runPreview;
+
+    private PathPopup pathPopup;
+
+    public PathPopup getPathPopup()
     {
-        return  config;
+        return pathPopup;
+    }
+    public Config getConfig() {
+        return config;
     }
 
     public void configure(Config config) {
-
+            Log.d("xxx","xonfigure");
         try {
+            this.config=config;
             String color = config.colors.colorBackground;
             int intColor = Color.parseColor(color);
 
@@ -74,10 +84,6 @@ public class Generator {
     }
 
 
-
-
-
-
     public int mPositionHandle;
     public int mColorHandle;
     public int mMVPMatrixHandle;
@@ -87,7 +93,7 @@ public class Generator {
 
     public Generator(final SurfaceRenderer view, int width, int gridY) {
         //this.elements=elements;
-        this.config=new Config();
+        this.config = new Config();
         this.view = view;
         this.view.context.mainMenu.btnSettings.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -100,8 +106,50 @@ public class Generator {
         initGrid(width, gridY);
 
         Log.d(TAG, "generator loaded " + this.tiles.size());
-        layout = new GeneratorLayout(view.context, tiles.get(tiles.size() / 2));
 
+
+        layout = new GeneratorLayout(view.context,this, tiles.get(10));
+
+        this.pathPopup = new PathPopup(this);
+
+        this.view.context.drawer.setDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+
+                pathPopup.onDrawerSlide(slideOffset);
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                pathPopup.dissmiss();
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+
+            }
+        });
+
+
+    }
+
+    public void reset()
+    {
+        //int currentX = this.getLayout().tile.horizontalPos;
+        //int currentY = this.getLayout().tile.verticalPos;
+        view.getGame().setPreview(false);
+        getPathPopup().dissmiss();
+        initGrid( 9, 15);
+        configure(new Config());
+        getLayout().setCurrentWorld(null);
+
+        getLayout().tile=tiles.get(10);
+        //getLayout().tile.setCurrentTile(true);
 
     }
 
@@ -128,8 +176,7 @@ public class Generator {
     public static final String generatorFragmentShader =
 
 
-
-                    "precision mediump float;       // Set the default precision to medium. We don't need as high of a\n" +
+            "precision mediump float;       // Set the default precision to medium. We don't need as high of a\n" +
                     "                               // precision in the fragment shader.\n" +
                     "uniform vec4 vColor;          // This is the color from the vertex shader interpolated across the\n" +
                     "                               // triangle per fragment.\n" +
@@ -144,14 +191,9 @@ public class Generator {
                     "}";
 
 
-
-
     private int mGeneratorProgram;
 
     public void initGeneratorShaders() {
-
-
-
 
 
         int genVertexShader = SurfaceRenderer.loadShader(
@@ -172,7 +214,6 @@ public class Generator {
         configure(config);
 
 
-
     }
 
 
@@ -188,7 +229,7 @@ public class Generator {
         this.tiles = new ArrayList<>();
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                this.tiles.add(new TileRoute(view.screenWidth, view.screenHeight, width, height, j, i, "LEFT", "RIGHT", Route.Type.TILE,this));
+                this.tiles.add(new TileRoute(view.screenWidth, view.screenHeight, width, height, j, i, "LEFT", "RIGHT", Route.Type.TILE, this));
 
             }
         }
@@ -479,21 +520,29 @@ public class Generator {
 
     public void refreashMaze() {
 
+        Log.d("zzz","refreash maze");
         configure(config);
-        for (int i = 0; i < tiles.size(); i++) {
-            TileRoute t = tiles.get(i);
-            if (t.getType() != Route.Type.TILE && t.getType() != Route.Type.BLOCK && t.getType() != Route.Type.FILL) {
-                t.configure(config);
+
+        if (runPreview) {
+            view.getGame().getCurrentStage().config = config;
+            view.getGame().configure();
+        } else {
+
+            for (int i = 0; i < tiles.size(); i++) {
+                TileRoute t = tiles.get(i);
+                if (t.getType() != Route.Type.TILE && t.getType() != Route.Type.BLOCK && t.getType() != Route.Type.FILL) {
+                    t.configure(config);
+
+                }
 
             }
-
         }
+
+
     }
 
 
-    public void saveMaze() {
-
-
+    private JSONObject dumpMaze() {
         startRouteConfiguration();
 
         JSONObject output = new JSONObject();
@@ -509,6 +558,8 @@ public class Generator {
 
             output.put("colors", config.colors.toJson());
             output.put("sounds", config.sounds.toJson());
+            output.put("settings", config.settings.toJson());
+
 
             Log.d(TAG, output.toString());
 
@@ -527,7 +578,7 @@ public class Generator {
                     step.put("from", t.from);
                     step.put("to", t.to);
                     step.put("background_color", t.backgroundColor);
-                    step.put("ratio",t.speedRatio);
+                    step.put("ratio", t.speedRatio);
                     if (t.sound != null)
                         step.put("sound", t.sound);
 
@@ -538,8 +589,25 @@ public class Generator {
             }
             output.put("route", route);
             output.put("world_id", layout.getCurrentWorld().id);
+            int maxLogSize = 1000;
 
-            //Stages.stages.add(output.toString());
+            for (int i = 0; i <= output.toString().length() / maxLogSize; i++) {
+                int start = i * maxLogSize;
+                int end = (i + 1) * maxLogSize;
+                end = end > output.toString().length() ? output.toString().length() : end;
+                Log.v(TAG, output.toString().substring(start, end));
+            }
+
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+        return output;
+    }
+
+    public void saveMaze() {
+
+
+        //Stages.stages.add(output.toString());
 
             /*
 
@@ -557,42 +625,29 @@ public class Generator {
             Toast.makeText(generator.context, "Stage saved!", Toast.LENGTH_LONG).show();
 */
 
-            DAO.addStage(view.context, output, new Response.Listener() {
-                @Override
-                public void onResponse(Object response) {
-                    Log.d(TAG, response.toString());
-                    Toast.makeText(view.context, "Stage saved!", Toast.LENGTH_LONG).show();
-                }
-            }, _id);
-            int maxLogSize = 1000;
-
-
-            for (int i = 0; i <= output.toString().length() / maxLogSize; i++) {
-                int start = i * maxLogSize;
-                int end = (i + 1) * maxLogSize;
-                end = end > output.toString().length() ? output.toString().length() : end;
-                Log.v(TAG, output.toString().substring(start, end));
+        DAO.addStage(view.context, dumpMaze(), new Response.Listener() {
+            @Override
+            public void onResponse(Object response) {
+                Log.d(TAG, response.toString());
+                Toast.makeText(view.context, "Stage saved!", Toast.LENGTH_LONG).show();
             }
+        }, _id);
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
     }
 
-    public void loadWorld(World currentWorld)
-    {
+    public void loadWorld(World currentWorld) {
 
 
-        config.sounds.soundBackground=currentWorld.soundBackground;
-        config.sounds.soundCrash=currentWorld.soundCrash;
-        config.sounds.soundPress=currentWorld.soundPress;
-        config.sounds.soundFinish=currentWorld.soundFinish;
-        config.colors.colorBackground=currentWorld.colorBackground;
-        config.colors.colorShip=currentWorld.colorShip;
-        config.colors.colorExplosionEnd=currentWorld.colorExplosionEnd;
-        config.colors.colorExplosionStart=currentWorld.colorExplosionStart;
-        config.colors.colorRoute=currentWorld.colorRoute;
+        config.sounds.soundBackground = currentWorld.soundBackground;
+        config.sounds.soundCrash = currentWorld.soundCrash;
+        config.sounds.soundPress = currentWorld.soundPress;
+        config.sounds.soundFinish = currentWorld.soundFinish;
+        config.colors.colorBackground = currentWorld.colorBackground;
+        config.colors.colorShip = currentWorld.colorShip;
+        config.colors.colorExplosionEnd = currentWorld.colorExplosionEnd;
+        config.colors.colorExplosionStart = currentWorld.colorExplosionStart;
+        config.colors.colorRoute = currentWorld.colorRoute;
 
 
         configure(config);
@@ -607,7 +662,7 @@ public class Generator {
 
         for (int i = 0; i < gridY; i++) {
             for (int j = 0; j < gridX; j++) {
-                this.tiles.add(new TileRoute(view.screenWidth, view.screenHeight, gridX, gridY, j, i, "LEFT", "RIGHT", Route.Type.TILE,this));
+                this.tiles.add(new TileRoute(view.screenWidth, view.screenHeight, gridX, gridY, j, i, "LEFT", "RIGHT", Route.Type.TILE, this));
 
             }
         }
@@ -620,9 +675,7 @@ public class Generator {
 
         initGrid((int) gridX, (int) gridY);
 
-        config=maze.config;
-
-
+        config = maze.config;
 
 
         for (int i = 0; i < maze.routes.size(); i++) {
@@ -636,16 +689,16 @@ public class Generator {
 
                 case FINISH:
                     tiles.remove(tile);
-                    this.tiles.add(new TileRouteFinish(view.screenWidth, view.screenHeight, gridX, gridY, element,this));
+                    this.tiles.add(new TileRouteFinish(view.screenWidth, view.screenHeight, gridX, gridY, element, this));
                     break;
 
                 case START:
                     tiles.remove(tile);
-                    this.tiles.add(new TileRouteStart(view.screenWidth, view.screenHeight, gridX, gridY, element,this));
+                    this.tiles.add(new TileRouteStart(view.screenWidth, view.screenHeight, gridX, gridY, element, this));
                     break;
                 default:
                     tiles.remove(tile);
-                    this.tiles.add(new TileRoute(view.screenWidth, view.screenHeight, gridX, gridY, element,this));
+                    this.tiles.add(new TileRoute(view.screenWidth, view.screenHeight, gridX, gridY, element, this));
                     break;
 
             }
@@ -660,20 +713,27 @@ public class Generator {
 
     public boolean onTouch(MotionEvent event) {
 
+        if(getLayout().getCurrentWorld()==null)
+            return true;
 
-        float x = event.getX();
-        float y = event.getY();
+        if (runPreview) {
+            view.getGame().onTouchEvent(event);
+        } else {
+            float x = event.getX();
+            float y = event.getY();
 
 
-        for (int i = 0; i < tiles.size(); i++) {
-            TileRoute t = tiles.get(i);
-            if (t.contains(x, y)) {
-                layout.setCurrentTile(t);
+            for (int i = 0; i < tiles.size(); i++) {
+                TileRoute t = tiles.get(i);
+                if (t.contains(x, y)) {
+                    layout.setCurrentTile(t);
 
-                return true;
+                    pathPopup.show(event.getX(),event.getY());
+
+                    return true;
+                }
             }
         }
-
 
         return true;
     }
@@ -689,27 +749,49 @@ public class Generator {
         return false;
     }
 
+    public boolean getPreview() {
+        return runPreview;
+    }
 
+
+    public void startPreview() {
+        view.getGame().setPreview(true);
+        view.getGame().initStage(Stage.valueOf(dumpMaze()));
+        //view.context.drawer.closeDrawer(view.context.drawerContent);
+        runPreview = true;
+        getLayout().showPreviewControlls();
+
+    }
+
+    public void stopPreview() {
+        view.getGame().setPreview(false);
+        runPreview = false;
+        getLayout().showGeneratorConstrolls();
+
+
+    }
 
     public void onDraw(float[] mMVPMatrix) {
 
 
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-        GLES20.glClearColor(r, g, b, a);
-        GLES20.glUseProgram(mGeneratorProgram);
 
 
+        if (!runPreview) {
+            GLES20.glClearColor(r, g, b, a);
+            GLES20.glUseProgram(mGeneratorProgram);
 
-        if (tiles == null)
-            return;
-        for (int i = 0; i < tiles.size(); i++) {
+            if (tiles == null)
+                return;
+            for (int i = 0; i < tiles.size(); i++) {
 
-            if (tiles.size()>i && tiles.get(i) != null)
-                tiles.get(i).drawGL20(mMVPMatrix);
+                if (tiles.size() > i && tiles.get(i) != null)
+                    tiles.get(i).drawGL20(mMVPMatrix);
+            }
+        } else {
+            view.getGame().onDraw(mMVPMatrix);
         }
-
     }
-
 
 
 }

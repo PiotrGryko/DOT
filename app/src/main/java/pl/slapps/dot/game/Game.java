@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 import pl.slapps.dot.MainActivity;
 import pl.slapps.dot.SurfaceRenderer;
+import pl.slapps.dot.model.Config;
 import pl.slapps.dot.model.Route;
 import pl.slapps.dot.model.Stage;
 import pl.slapps.dot.generator.TileRoute;
@@ -73,7 +74,16 @@ public class Game {
     public int mProgram;
 
 
-    private boolean isRunnig = true;
+    private boolean isPreview = false;
+
+    public void setPreview(boolean preview)
+    {
+        this.isPreview=preview;
+    }
+    public boolean getPreview()
+    {
+        return isPreview;
+    }
 
 
 
@@ -213,34 +223,30 @@ public class Game {
 
 
 
+            GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
+            GLES20.glUseProgram(mProgram);
 
 
-        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-        GLES20.glUseProgram(mProgram);
+            if (background != null)
+                background.drawGl2(mMVPMatrix);
 
 
+            if (maze != null && mainSprite != null) {
 
-        if (background != null)
-            background.drawGl2(mMVPMatrix);
-
-
-
-        if (maze != null && mainSprite != null && isRunnig) {
-
-            maze.drawGL20(mMVPMatrix);
+                maze.drawGL20(mMVPMatrix);
 
 
-            mainSprite.drawGl2(mMVPMatrix);
+                mainSprite.drawGl2(mMVPMatrix);
 
-            for (int i = 0; i < explosions.size(); i++) {
-                explosions.get(i).drawGl2(mMVPMatrix);
+                for (int i = 0; i < explosions.size(); i++) {
+                    explosions.get(i).drawGl2(mMVPMatrix);
+                }
+                //if (currentExplosion != null)
+                //   toggleColors(currentExplosion.getProgress());
+
+
             }
-             //if (currentExplosion != null)
-             //   toggleColors(currentExplosion.getProgress());
-
-
-        }
-        update();
+            update();
 
 
 
@@ -288,14 +294,13 @@ public class Game {
     public boolean onTouchEvent(MotionEvent event) {
 
 
-        Log.d("zzz","game on touch");
         switch (event.getActionMasked()) {
 
             case MotionEvent.ACTION_DOWN: {
 
 
 
-                if (mainSprite != null && isRunnig) {
+                if (mainSprite != null) {
                     if (!mainSprite.isMoving()) {
 
                         startDot();
@@ -335,6 +340,26 @@ public class Game {
     }
 
 
+    public Stage getCurrentStage()
+    {
+        return currentStage;
+    }
+
+    public void configRoute(TileRoute route)
+    {
+        if(maze!=null)
+            maze.configRoute(route);
+    }
+
+    public void configure()
+    {
+        if(background!=null)
+            background.configure(currentStage.config);
+        if(mainSprite!=null)
+            mainSprite.configure(currentStage.config);
+        if(maze!=null)
+            maze.configure(currentStage.config);
+    }
 
     public void addExplosion(Explosion e) {
         //if(explosions.size()==0)

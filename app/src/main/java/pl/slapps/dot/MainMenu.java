@@ -69,6 +69,24 @@ public class MainMenu {
     private ImageButton btnStages;
     private ImageButton btnOnline;
 
+    private void disableButtons()
+    {
+        btnPlay.setEnabled(false);
+        btnExit.setEnabled(false);
+        btnGenerate.setEnabled(false);
+        btnStages.setEnabled(false);
+        btnOnline.setEnabled(false);
+    }
+
+    public void enableButtons()
+    {
+        btnPlay.setEnabled(true);
+        btnExit.setEnabled(true);
+        btnGenerate.setEnabled(true);
+        btnStages.setEnabled(true);
+        btnOnline.setEnabled(true);
+    }
+
     private MainActivity context;
     private SurfaceRenderer game;
 
@@ -92,7 +110,6 @@ public class MainMenu {
             menuShowAnimation.startAnimation(new OnAnimationListener() {
                 @Override
                 public void onAnimationEnd() {
-                    game.setRunnig(true);
                     context.mAdView.setVisibility(View.VISIBLE);
                 }
 
@@ -187,6 +204,8 @@ public class MainMenu {
                 if (context.mInterstitialAd.isLoaded()) {
                     context.mInterstitialAd.show();
                 } else {
+                    game.setDrawing(true);
+                    disableButtons();
                     headerHideAnimation.startAnimation();
                     btnsHideAnimation.startAnimation();
                     context.mAdView.setVisibility(View.GONE);

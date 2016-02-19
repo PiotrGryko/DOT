@@ -1,5 +1,8 @@
 package pl.slapps.dot.generator;
 
+import android.opengl.GLES20;
+import android.opengl.Matrix;
+import android.os.SystemClock;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -48,6 +51,13 @@ public class TileRoute {
 
     public double speedRatio = 1;
     public Generator generator;
+
+    private boolean currentTile=false;
+
+    public void setCurrentTile(boolean flag)
+    {
+        currentTile=flag;
+    }
     //public SurfaceRenderer generator;
 
 
@@ -328,6 +338,12 @@ public class TileRoute {
         isInitialized = true;
     }
 
+    public void configRoute(TileRoute route)
+    {
+        this.sound=route.sound;
+        this.speedRatio=route.speedRatio;
+    }
+
 
     public void configure(Config config)
     {
@@ -343,23 +359,58 @@ public class TileRoute {
     }
 
 
+    private float[] mModelMatrix = new float[16];
+    private float[] mvpLocalMatrix = new float[16];
     public void drawGL20(float[] mvpMatrix) {
 
 
         if (!isInitialized)
             return;
 
-
-        if (backgroundPartOne != null)
-            backgroundPartOne.drawGl2(mvpMatrix);
-        if (backgroundPartTwo != null)
-            backgroundPartTwo.drawGl2(mvpMatrix);
+        if(currentTile) {
+            Matrix.setIdentityM(mModelMatrix, 0);
 
 
-        for (int i = 0; i < walls.size(); i++) {
-            walls.get(i).drawGl2(mvpMatrix);
+            long time = SystemClock.uptimeMillis() % 10000L;
+            float angleInDegrees = (360.0f / 5000.0f) * ((int) time);
+            // Draw the triangle facing straight on.
+            Matrix.translateM(mModelMatrix,0,centerX,centerY,0);
+
+            Matrix.rotateM(mModelMatrix, 0, angleInDegrees, 0.0f, 0.0f, 1.0f);
+            Matrix.translateM(mModelMatrix, 0, -centerX, -centerY, 0);
+
+            Matrix.multiplyMM(mvpLocalMatrix, 0, generator.view.mViewMatrix, 0, mModelMatrix, 0);
+            // This multiplies the modelview matrix by the projection matrix, and stores the result in the MVP matrix
+            // (which now contains model * view * projection).
+            Matrix.multiplyMM(mvpLocalMatrix, 0, generator.view.mProjectionMatrix, 0, mvpLocalMatrix, 0);
+
+            if (backgroundPartOne != null)
+                backgroundPartOne.drawGl2(mvpLocalMatrix);
+            if (backgroundPartTwo != null)
+                backgroundPartTwo.drawGl2(mvpLocalMatrix);
+
+
+            for (int i = 0; i < walls.size(); i++) {
+                walls.get(i).drawGl2(mvpLocalMatrix);
+            }
+
+            Matrix.setIdentityM(generator.view.mModelMatrix, 0);
+
         }
 
+        else {
+
+
+            if (backgroundPartOne != null)
+                backgroundPartOne.drawGl2(mvpMatrix);
+            if (backgroundPartTwo != null)
+                backgroundPartTwo.drawGl2(mvpMatrix);
+
+
+            for (int i = 0; i < walls.size(); i++) {
+                walls.get(i).drawGl2(mvpMatrix);
+            }
+        }
 
 
     }

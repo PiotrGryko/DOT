@@ -46,6 +46,7 @@ public class GeneratorLayoutColors {
         colorExplosionEnd.setBackgroundColor(Color.parseColor(generator.getConfig().colors.colorExplosionEnd));
         colorDotLight.setBackgroundColor(Color.parseColor(generator.getConfig().colors.colorShipLight));
         colorExplosionLight.setBackgroundColor(Color.parseColor(generator.getConfig().colors.colorExplosionLight));
+        colorFence.setBackgroundColor(Color.parseColor(generator.getConfig().colors.colorFence));
 
     }
 
@@ -84,6 +85,7 @@ public class GeneratorLayoutColors {
                     @Override
                     public void onOk(AmbilWarnaDialog dialog, int color) {
                         // color is the color selected by the user.
+
 
                         colorDotLight.setBackgroundColor(color);
                         generator.getConfig().colors.colorShip = "#" + Integer.toHexString(color);

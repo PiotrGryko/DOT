@@ -10,6 +10,7 @@
         android:orientation="vertical">
 
         <LinearLayout
+            android:visibility="gone"
             android:id="@+id/tv_dot_light_color"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -36,6 +37,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:visibility="gone"
             android:id="@+id/tv_explosion_ligh_color"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"

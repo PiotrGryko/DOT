@@ -1,6 +1,7 @@
 package pl.slapps.dot.generator.gui;
 
 import android.app.Dialog;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,11 +49,15 @@ public class GeneratorLayout {
     private LinearLayout layoutGridBase;
     private LinearLayout layoutColorsBase;
     private LinearLayout layoutConfigBase;
-    private LinearLayout layoutRutesBase;
+    //private LinearLayout layoutRutesBase;
     private LinearLayout layoutSoundsBase;
     private LinearLayout layoutStringsBase;
     private LinearLayout layoutWorldBase;
     private LinearLayout layoutChooseWorldBase;
+    private LinearLayout layoutPreviewBase;
+    private LinearLayout layoutEffectsBase;
+
+
 
     /*
     drawer Main buttons
@@ -65,6 +70,9 @@ public class GeneratorLayout {
     private LinearLayout toggleSounds;
     private LinearLayout toggleString;
     private LinearLayout toggleWorld;
+    private LinearLayout togglePreview;
+    private LinearLayout toggleEffects;
+
     private LinearLayout toggleChooseWorld;
     private LinearLayout toggleSave;
 
@@ -82,7 +90,7 @@ public class GeneratorLayout {
     /*
     currently setted world
      */
-    public World currentWorld;
+    private World currentWorld;
 
 
     private TextView tvCurrentX;
@@ -93,32 +101,47 @@ public class GeneratorLayout {
     private GeneratorLayoutGrid layoutGrid;
     private GeneratorLayoutColors layoutColors;
     private GeneratorLayoutConfig layoutConfig;
-    private GeneratorLayoutPath layoutRoutes;
+    //private GeneratorLayoutPath layoutRoutes;
     private GeneratorLayoutSounds layoutSounds;
     private GeneratorLayoutStrings layoutStrings;
     private GeneratorLayoutWorldsList layoutWorldsList;
+    private GeneratorLayoutPreview layoutPreview;
+    private GeneratorLayoutEffects layoutEffects;
+
     public GeneratorLayoutConstruct layoutConstruct;
 
 
 
 
-    public GeneratorLayout(MainActivity context, TileRoute tile) {
+    public GeneratorLayout(MainActivity context,Generator generator, TileRoute tile) {
         this.context = context;
         this.tile = tile;
+        this.generator=generator;
+
 
         this.layoutWorlds = new GeneratorLayoutWorlds();
         this.layoutGrid=new GeneratorLayoutGrid();
         this.layoutColors = new GeneratorLayoutColors();
         this.layoutConfig=new GeneratorLayoutConfig();
-        this.layoutRoutes = new GeneratorLayoutPath();
+        //this.layoutRoutes = new GeneratorLayoutPath();
         this.layoutSounds=new GeneratorLayoutSounds();
         this.layoutStrings = new GeneratorLayoutStrings();
         this.layoutWorldsList = new GeneratorLayoutWorldsList();
         this.layoutConstruct=new GeneratorLayoutConstruct();
+        this.layoutPreview = new GeneratorLayoutPreview();
+        this.layoutEffects = new GeneratorLayoutEffects();
     }
 
     public World getCurrentWorld() {
         return currentWorld;
+    }
+
+    public void setCurrentWorld(World world)
+    {
+        currentWorld = world;
+        loadWorld(currentWorld);
+
+        refreshControlls();
     }
 
 
@@ -134,6 +157,7 @@ public class GeneratorLayout {
         layoutColors.refreashLayout();
         layoutSounds.refreashLayout();
         layoutStrings.refreashLayout(stage);
+        layoutEffects.refreashLayout();
 
 
     }
@@ -250,18 +274,22 @@ public class GeneratorLayout {
 
 
     public void setCurrentTile(TileRoute tile) {
+        if(this.tile!=null)
+            this.tile.setCurrentTile(false);
         this.tile = tile;
+        this.tile.setCurrentTile(true);
         //this.tile.getWalls().get(0).getColor()[0]=1.0f;
         refreashCurrentTileLabels();
 
         this.oldTile = null;
-        layoutRoutes.refreashLayout();
-        context.drawer.openDrawer(context.drawerContent);
-        if (layoutRoutes.getLayout().getParent() == null) {
-            layoutRutesBase.addView(layoutRoutes.getLayout());
-            toggleRoutes.setSelected(true);
+        generator.getPathPopup().refreashLayout();
+        //layoutRoutes.refreashLayout();
+        //context.drawer.openDrawer(context.drawerContent);
+        //if (layoutRoutes.getLayout().getParent() == null) {
+        //    layoutRutesBase.addView(layoutRoutes.getLayout());
+        //    toggleRoutes.setSelected(true);
 
-        }
+        //}
 
 
     }
@@ -354,54 +382,96 @@ public class GeneratorLayout {
         }
     }
 
-    public void refreashMainLayout() {
+    public void refreshControlls() {
 
 
-        Log.d(TAG, "Refreash maina layout");
 
-        if (currentWorld == null) {
-            layoutGridBase.setVisibility(View.GONE);
-            layoutColorsBase.setVisibility(View.GONE);
-            layoutConfigBase.setVerticalGravity(View.GONE);
-            layoutRutesBase.setVisibility(View.GONE);
-            layoutSoundsBase.setVisibility(View.GONE);
-            layoutStringsBase.setVisibility(View.GONE);
-            layoutConfigBase.setVisibility(View.GONE);
-            layoutConstructBase.setVisibility(View.GONE);
-            toggleSave.setVisibility(View.GONE);
-
-
-        } else {
-
-
-            layoutGridBase.setVisibility(View.VISIBLE);
-            layoutColorsBase.setVisibility(View.VISIBLE);
-            layoutConfigBase.setVerticalGravity(View.VISIBLE);
-            layoutRutesBase.setVisibility(View.VISIBLE);
-            layoutSoundsBase.setVisibility(View.VISIBLE);
-            layoutStringsBase.setVisibility(View.VISIBLE);
-            layoutConfigBase.setVisibility(View.VISIBLE);
-            layoutConstructBase.setVisibility(View.VISIBLE);
-            toggleSave.setVisibility(View.VISIBLE);
-            toggleWorld.setVisibility(View.GONE);
-            layoutChooseWorldBase.setVisibility(View.GONE);
-
-            generator.loadWorld(currentWorld);
-
-            layoutSounds.refreashLayout();
-            layoutGrid.refreashLayout();
-            layoutColors.refreashLayout();
-            layoutRoutes.refreashLayout();
-
-
-        }
+        layoutSounds.refreashLayout();
+        layoutGrid.refreashLayout();
+        layoutColors.refreashLayout();
+        generator.getPathPopup().refreashLayout();
+        layoutEffects.refreashLayout();
 
     }
 
 
-    public View onCreateView(final Generator generator) {
+    public void showPreviewControlls()
+    {
+        layoutGridBase.setVisibility(View.GONE);
+        layoutColorsBase.setVisibility(View.VISIBLE);
+        layoutConfigBase.setVerticalGravity(View.GONE);
+        //layoutRutesBase.setVisibility(View.GONE);
+        layoutSoundsBase.setVisibility(View.VISIBLE);
+        layoutEffectsBase.setVisibility(View.VISIBLE);
+        layoutStringsBase.setVisibility(View.GONE);
+        layoutConfigBase.setVisibility(View.GONE);
+        layoutConstructBase.setVisibility(View.VISIBLE);
+        toggleSave.setVisibility(View.VISIBLE);
+        layoutPreviewBase.setVisibility(View.VISIBLE);
+        toggleWorld.setVisibility(View.GONE);
+        layoutChooseWorldBase.setVisibility(View.GONE);
+    }
 
-        this.generator = generator;
+    public void showGeneratorConstrolls()
+    {
+        toggleWorld.setVisibility(View.GONE);
+        layoutChooseWorldBase.setVisibility(View.GONE);
+
+        layoutGridBase.setVisibility(View.VISIBLE);
+        layoutColorsBase.setVisibility(View.VISIBLE);
+        layoutConfigBase.setVerticalGravity(View.VISIBLE);
+        //layoutRutesBase.setVisibility(View.VISIBLE);
+        layoutSoundsBase.setVisibility(View.VISIBLE);
+        layoutStringsBase.setVisibility(View.VISIBLE);
+        layoutConfigBase.setVisibility(View.VISIBLE);
+        layoutConstructBase.setVisibility(View.VISIBLE);
+        toggleSave.setVisibility(View.VISIBLE);
+        layoutPreviewBase.setVisibility(View.VISIBLE);
+        layoutEffectsBase.setVisibility(View.VISIBLE);
+    }
+
+    public void showWorldControlls()
+    {
+        toggleWorld.setVisibility(View.VISIBLE);
+        layoutChooseWorldBase.setVisibility(View.VISIBLE);
+
+        layoutGridBase.setVisibility(View.GONE);
+        layoutColorsBase.setVisibility(View.GONE);
+        layoutConfigBase.setVerticalGravity(View.GONE);
+        //layoutRutesBase.setVisibility(View.VISIBLE);
+        layoutSoundsBase.setVisibility(View.GONE);
+        layoutStringsBase.setVisibility(View.GONE);
+        layoutConfigBase.setVisibility(View.GONE);
+        layoutConstructBase.setVisibility(View.GONE);
+        toggleSave.setVisibility(View.GONE);
+        layoutPreviewBase.setVisibility(View.GONE);
+        layoutEffectsBase.setVisibility(View.GONE);
+    }
+
+    public void loadWorld(World world)
+    {
+
+
+        if(world==null)
+        {
+            showWorldControlls();
+            return;
+        }
+
+        showGeneratorConstrolls();
+        generator.loadWorld(world);
+
+        this.tile.setCurrentTile(true);
+        this.generator.getPathPopup().show(this.tile.centerX, this.tile.centerY);
+        context.drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+        context.drawer.closeDrawer(context.drawerContent);
+    }
+
+
+
+
+    public View onCreateView() {
+
 
         View v = LayoutInflater.from(context).inflate(R.layout.layout_generator, null);
 
@@ -409,11 +479,13 @@ public class GeneratorLayout {
         layoutGrid.initLayout(this);
         layoutColors.initLayout(this);
         layoutConfig.initLayout(this);
-        layoutRoutes.initLayout(this);
+        //layoutRoutes.initLayout(this);
         layoutSounds.initLayout(this);
         layoutStrings.initLayout(this);
         layoutWorldsList.initLayout(this);
         layoutConstruct.initLayout(this);
+        layoutPreview.initLayout(this);
+        layoutEffects.initLayout(this);
 
         tvCurrentX = (TextView) v.findViewById(R.id.tv_current_x);
         tvCurrentY = (TextView) v.findViewById(R.id.tv_current_y);
@@ -434,7 +506,7 @@ public class GeneratorLayout {
         layoutConfigBase = (LinearLayout) v.findViewById(R.id.layout_config_base);
         toggleConfig = (LinearLayout) v.findViewById(R.id.toggle_config);
 
-        layoutRutesBase = (LinearLayout) v.findViewById(R.id.layout_routes_base);
+        //layoutRutesBase = (LinearLayout) v.findViewById(R.id.layout_routes_base);
         toggleRoutes = (LinearLayout) v.findViewById(R.id.toggle_routes);
 
         layoutSoundsBase = (LinearLayout) v.findViewById(R.id.layout_sounds_base);
@@ -449,10 +521,17 @@ public class GeneratorLayout {
         layoutConstructBase = (LinearLayout) v.findViewById(R.id.layout_construct_base);
         toggleConstruct = (LinearLayout) v.findViewById(R.id.toggle_construct);
 
+        layoutPreviewBase = (LinearLayout) v.findViewById(R.id.layout_preview_base);
+        togglePreview = (LinearLayout) v.findViewById(R.id.toggle_preview);
+
+        layoutEffectsBase = (LinearLayout) v.findViewById(R.id.layout_effects_base);
+        toggleEffects = (LinearLayout) v.findViewById(R.id.toggle_effects);
+
         toggleSave = (LinearLayout) v.findViewById(R.id.toggle_save);
 
 
-        refreashMainLayout();
+        showWorldControlls();
+        //refreshControlls();
 
         toggleGridSize.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -497,6 +576,7 @@ public class GeneratorLayout {
             }
         });
 
+        /*
         toggleRoutes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -511,6 +591,7 @@ public class GeneratorLayout {
                 }
             }
         });
+*/
 
         toggleSounds.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -567,6 +648,36 @@ public class GeneratorLayout {
                 } else {
                     layoutConstructBase.removeView(layoutConstruct.getLayout());
                     toggleConstruct.setSelected(false);
+
+                }
+            }
+        });
+
+        togglePreview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (layoutPreview.getLayout().getParent() == null) {
+                    layoutPreviewBase.addView(layoutPreview.getLayout());
+                    togglePreview.setSelected(true);
+
+                } else {
+                    layoutPreviewBase.removeView(layoutPreview.getLayout());
+                    togglePreview.setSelected(false);
+
+                }
+            }
+        });
+
+        toggleEffects.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (layoutEffects.getLayout().getParent() == null) {
+                    layoutEffectsBase.addView(layoutEffects.getLayout());
+                    toggleEffects.setSelected(true);
+
+                } else {
+                    layoutEffectsBase.removeView(layoutEffects.getLayout());
+                    toggleEffects.setSelected(false);
 
                 }
             }

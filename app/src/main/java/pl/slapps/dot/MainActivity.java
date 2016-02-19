@@ -49,7 +49,7 @@ public class MainActivity extends Activity {
 
 
     private String TAG = "MainActivity";
-    private SurfaceRenderer game;
+    private SurfaceRenderer surfaceRenderer;
 
 
     private final String STAGES_FILE = "stages.json";
@@ -103,12 +103,12 @@ public class MainActivity extends Activity {
     }
 
 
-    public void resetLogs()
-    {
+    public void resetLogs() {
         tvMax.setText(Integer.toString(0));
         tvCur.setText(Integer.toString(0));
         tvMin.setText(Integer.toString(0));
     }
+
     public void setMax(final long value) {
         handler.post(new Runnable() {
             @Override
@@ -199,11 +199,14 @@ public class MainActivity extends Activity {
         tvCur = (TextView) findViewById(R.id.tv_current_time);
 
 
-        game = (SurfaceRenderer) findViewById(R.id.game);
+        surfaceRenderer = (SurfaceRenderer) findViewById(R.id.game);
 
-        mainMenu = new MainMenu(this, game);
-
+        mainMenu = new MainMenu(this, surfaceRenderer);
+        drawer = (DrawerLayout) findViewById(R.id.drawer);
+        drawerContent = (LinearLayout) findViewById(R.id.drawer_content);
+        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         mainMenu.initMenu();
+        surfaceRenderer.init(this);
         //initMainMenu();
 
 
@@ -239,9 +242,7 @@ public class MainActivity extends Activity {
         requestNewInterstitial();
 
 
-        drawer = (DrawerLayout) findViewById(R.id.drawer);
-        drawerContent = (LinearLayout) findViewById(R.id.drawer_content);
-        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+
 
 
     }
@@ -258,7 +259,7 @@ public class MainActivity extends Activity {
 
     {
         try {
-            game.loadStageData(Stage.valueOf(stages.getJSONObject(currentStage)));
+            surfaceRenderer.loadStageData(Stage.valueOf(stages.getJSONObject(currentStage)));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -266,7 +267,7 @@ public class MainActivity extends Activity {
 
     public void loadStage(final Stage stage) {
 
-        game.setRunnig(false);
+        surfaceRenderer.setRunnig(false);
         try {
 
 
@@ -285,7 +286,7 @@ public class MainActivity extends Activity {
 
                 }
             });
-            game.loadStageData(stage);
+            surfaceRenderer.loadStageData(stage);
 
 
         } catch (Throwable e) {
@@ -367,38 +368,51 @@ public class MainActivity extends Activity {
 
 
     public void onBackPressed() {
+        Log.d("zzz","on back pressd");
 
         mainMenu.layoutMenu.clearAnimation();
 
-        if (mainMenu.layoutMenu.getVisibility() == View.GONE) {
-            game.setRunnig(false);
-            mainMenu.menuShowAnimation.startAnimation(null);
-            mAdView.setVisibility(View.VISIBLE);
-            mainMenu.btnSettings.setVisibility(View.GONE);
+        if (surfaceRenderer.onBackPressed()) {
+            if (mainMenu.layoutMenu.getVisibility() == View.GONE) {
+                surfaceRenderer.setRunnig(false);
+                mainMenu.menuShowAnimation.startAnimation(new MainMenu.OnAnimationListener() {
+                    @Override
+                    public void onAnimationEnd() {
+                        mainMenu.enableButtons();
 
-            drawerContent.removeAllViews();
-            drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+                    }
+
+                    @Override
+                    public void onAnimationStart() {
+
+                    }
+                });
+                mAdView.setVisibility(View.VISIBLE);
+                mainMenu.btnSettings.setVisibility(View.GONE);
+
+                drawerContent.removeAllViews();
+                drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
 
-        } else {
-            soundsManager.stopBackgroundPlayer();
+            } else {
+                soundsManager.stopBackgroundPlayer();
 
-            finish();
+                finish();
+            }
         }
-
     }
 
 
     public void onResume() {
 
         super.onResume();
-        game.onResume();
+        surfaceRenderer.onResume();
     }
 
     public void onPause() {
 
         super.onPause();
-        game.onPause();
+        surfaceRenderer.onPause();
 
     }
 

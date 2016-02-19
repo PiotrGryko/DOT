@@ -4,6 +4,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 import android.graphics.Color;
 import android.opengl.GLES20;
+import android.util.Log;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -16,6 +17,7 @@ import pl.slapps.dot.drawing.Util;
 import pl.slapps.dot.generator.TileRoute;
 import pl.slapps.dot.generator.TileRouteFinish;
 import pl.slapps.dot.model.Config;
+import pl.slapps.dot.model.Route;
 
 
 public class MainSprite extends Sprite {
@@ -25,6 +27,7 @@ public class MainSprite extends Sprite {
 
 
     private float angle;
+    private Config config;
 
 
     public boolean prepareToDie;
@@ -75,11 +78,17 @@ public class MainSprite extends Sprite {
 
 
         spriteSpeed = view.context.getResources().getDimension(R.dimen.speed);
+
+        configure(config);
+
+
+
+    }
+
+    public void configure(Config config)
+    {
+        this.config=config;
         color = Util.parseColor(config.colors.colorShip);
-
-
-
-
 
     }
 
@@ -119,9 +128,13 @@ public class MainSprite extends Sprite {
         }
 
         if (collision != null) {
-            if (collision instanceof TileRouteFinish) {
+            if (collision instanceof TileRouteFinish && currentTile.getType()== Route.Type.FINISH) {
                 game.explodeDot(false);
                 game.destroyDot();
+                if(game.getPreview())
+                    game.resetDot();
+                else
+                    game.gameView.moveToNextLvl();
             } else if (!prepareToDie) {
                 game.crashDot(true);
                 //    game.toggleColors();
@@ -171,10 +184,9 @@ public class MainSprite extends Sprite {
 
 
 
-
         GLES20.glUniform3f(game.mDotLightPosHandle, getCenterX(), getCenterY(), 0.0f);
-        GLES20.glUniform1f(game.mDotLightDistanceHandle, 0.3f);
-        GLES20.glUniform1f(game.mDotLightShinningHandle, 1.0f);
+        GLES20.glUniform1f(game.mDotLightDistanceHandle, config.settings.dotLightDistance);
+        GLES20.glUniform1f(game.mDotLightShinningHandle, config.settings.dotLightShinning);
         GLES20.glUniform4fv(game.mDotLightColorHandle, 1, color, 0);
 
 

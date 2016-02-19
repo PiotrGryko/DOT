@@ -79,8 +79,9 @@ public class GeneratorLayoutWorldsList {
                         v.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                generatorLayout.currentWorld = w;
-                                generatorLayout.refreashMainLayout();
+                                generatorLayout.setCurrentWorld(w);
+                                //generatorLayout.currentWorld = w;
+                                //generatorLayout.refreshControlls();
 
                             }
                         });

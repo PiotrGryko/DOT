@@ -22,6 +22,7 @@ import pl.slapps.dot.MainActivity;
 import pl.slapps.dot.R;
 import pl.slapps.dot.generator.Generator;
 import pl.slapps.dot.generator.TileRoute;
+import pl.slapps.dot.generator.widget.NumberPickerTextView;
 import pl.slapps.dot.model.Route;
 
 /**
@@ -70,7 +71,7 @@ public class GeneratorLayoutConstruct {
         ImageView imgTrash = (ImageView) row.findViewById(R.id.img_trash);
         TextView tvCount = (TextView) row.findViewById(R.id.tv_count);
         TextView tvMove = (TextView) row.findViewById(R.id.tv_movement);
-        EditText etSpeedRatio = (EditText) row.findViewById(R.id.et_speed_ratio);
+        NumberPickerTextView etSpeedRatio = (NumberPickerTextView) row.findViewById(R.id.et_speed_ratio);
         final LinearLayout layoutBase = (LinearLayout) row.findViewById(R.id.layout_base);
         final LinearLayout layoutDetails = (LinearLayout) row.findViewById(R.id.layout_details);
 
@@ -126,6 +127,8 @@ public class GeneratorLayoutConstruct {
                 if (layoutDetails.getVisibility() == View.GONE) {
                     layoutBase.setSelected(true);
                     layoutDetails.setVisibility(View.VISIBLE);
+
+                    generatorLayout.setCurrentTile(route);
                 } else {
                     layoutBase.setSelected(false);
 
@@ -137,31 +140,19 @@ public class GeneratorLayoutConstruct {
         TextView tvType = (TextView) row.findViewById(R.id.tv_type);
         TextView tvX = (TextView) row.findViewById(R.id.tv_x);
         TextView tvY = (TextView) row.findViewById(R.id.tv_y);
-
-        etSpeedRatio.setText(Double.toString(route.speedRatio));
-        etSpeedRatio.addTextChangedListener(new TextWatcher() {
+        etSpeedRatio.setmMinValue(0.1f);
+        etSpeedRatio.putValue((float)route.speedRatio);
+        etSpeedRatio.setListener(new NumberPickerTextView.OnLabelValueChanged() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            public void onValueChanged(float value) {
+                route.speedRatio = value;
+                if(generator.view.getGame().getPreview())
+                    generator.view.getGame().configRoute(route);
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-                try {
-                    route.speedRatio = Double.parseDouble(editable.toString());
-
-                } catch (Throwable t) {
-                    route.speedRatio = 1;
-
-                }
             }
         });
+
+
         tvType.setText(route.type.name());
         tvX.setText(Integer.toString(route.horizontalPos));
         tvY.setText(Integer.toString(route.verticalPos));

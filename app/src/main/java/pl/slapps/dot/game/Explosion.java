@@ -38,7 +38,6 @@ public class Explosion {
 
     // private FloatBuffer lPos;
 
-    private float lightRange = 100f;
 
 
     static final int COORDS_PER_VERTEX = 3;
@@ -49,6 +48,7 @@ public class Explosion {
 
 
     private ArrayList<Particle> particles;
+    private Config config;
 
     public static void initBuffers()
     {
@@ -60,7 +60,7 @@ public class Explosion {
 
     public Explosion(Game view, float x, float y, long time, float speed, int shipSize, Config config) {
 
-
+        this.config=config;
         int intColor = Color.parseColor(config.colors.colorExplosionStart);
         float a_start = (float) Color.alpha(intColor) / 255;
         float r_start = (float) Color.red(intColor) / 255;
@@ -196,15 +196,15 @@ public class Explosion {
 
         if(usedBuffer==bufferedVertex) {
             GLES20.glUniform3f(view.mExplosionLightOnePosHandle, x, y, 0.0f);
-            GLES20.glUniform1f(view.mExplosionLightOneDistanceHandle, 0.7f);
-            GLES20.glUniform1f(view.mExplosionLightOneShinningHandle, 1f - getProgress()*1f);
+            GLES20.glUniform1f(view.mExplosionLightOneDistanceHandle, config.settings.explosionOneLightDistance);
+            GLES20.glUniform1f(view.mExplosionLightOneShinningHandle, config.settings.explosionOneLightShinning - getProgress()*config.settings.explosionOneLightShinning);
             GLES20.glUniform4fv(view.mExplosionLightOneColorHandle, 1, color, 0);
         }
         else
         {
             GLES20.glUniform3f(view.mExplosionLightTwoPosHandle, x, y, 0.0f);
-            GLES20.glUniform1f(view.mExplosionLightTwoDistanceHandle, 1.0f);
-            GLES20.glUniform1f(view.mExplosionLightTwoShinningHandle, 0.7f - getProgress()*0.7f);
+            GLES20.glUniform1f(view.mExplosionLightTwoDistanceHandle, config.settings.explosionTwoLightDistance);
+            GLES20.glUniform1f(view.mExplosionLightTwoShinningHandle, config.settings.explosionTwoLightShinning - getProgress()*config.settings.explosionTwoLightShinning);
             GLES20.glUniform4fv(view.mExplosionLightTwoColorHandle, 1, color, 0);
         }
         GLES20.glDisableVertexAttribArray(view.mPositionHandle);
