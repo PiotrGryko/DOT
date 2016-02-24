@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import pl.slapps.dot.R;
 import pl.slapps.dot.generator.Generator;
+import pl.slapps.dot.generator.widget.NumberPickerTextView;
 
 /**
  * Created by piotr on 14/02/16.
@@ -23,49 +24,44 @@ public class GeneratorLayoutGrid {
     /*
    gridsize layout elements
     */
-    private EditText etWidth;
-    private EditText etHeight;
+    private NumberPickerTextView etWidth;
+    private NumberPickerTextView etHeight;
 
 
-    public View getLayout()
-    {
+    public View getLayout() {
         return layoutGrid;
     }
 
 
     public void refreashLayout() {
-        etWidth.setText(Integer.toString(generator.gridX));
-        etHeight.setText(Integer.toString(generator.gridY));
+        etWidth.putValue(generator.gridX);
+        etHeight.putValue(generator.gridY);
     }
 
     public void initLayout(final GeneratorLayout generatorLayout) {
-        this.generatorLayout=generatorLayout;
-        this.generator=generatorLayout.generator;
-        layoutGrid = LayoutInflater.from(generator.view.context).inflate(R.layout.layout_generator_grid,null);
-        Button btnSave = (Button) layoutGrid.findViewById(R.id.btn_save_grid);
+        this.generatorLayout = generatorLayout;
+        this.generator = generatorLayout.generator;
+        layoutGrid = LayoutInflater.from(generator.view.context).inflate(R.layout.layout_generator_grid, null);
 
-        etWidth = (EditText) layoutGrid.findViewById(R.id.et_width);
-        etHeight = (EditText) layoutGrid.findViewById(R.id.et_height);
+        etWidth = (NumberPickerTextView) layoutGrid.findViewById(R.id.et_width);
+        etHeight = (NumberPickerTextView) layoutGrid.findViewById(R.id.et_height);
 
-        refreashLayout();
+        etHeight.setInteger(true);
+        etWidth.setInteger(true);
 
-        btnSave.setOnClickListener(new View.OnClickListener() {
+
+        etWidth.setListener(new NumberPickerTextView.OnLabelValueChanged() {
             @Override
-            public void onClick(View v) {
+            public void onValueChanged(float value) {
+                generator.initGrid((int) value, (int) etHeight.getValue());
+                refreashLayout();
+            }
+        });
 
-                String textWidht = etWidth.getText().toString();
-                String textHeight = etHeight.getText().toString();
-
-                if (textWidht.trim().equals("")) {
-                    Toast.makeText(generator.view.context, "gridX is required", Toast.LENGTH_LONG).show();
-                    return;
-                }
-                if (textHeight.trim().equals("")) {
-                    Toast.makeText(generator.view.context, "gridY is required", Toast.LENGTH_LONG).show();
-                    return;
-                }
-
-                generator.initGrid(Integer.parseInt(textWidht), Integer.parseInt(textHeight));
+        etHeight.setListener(new NumberPickerTextView.OnLabelValueChanged() {
+            @Override
+            public void onValueChanged(float value) {
+                generator.initGrid((int) etWidth.getValue(), (int) value);
                 refreashLayout();
             }
         });

@@ -55,7 +55,9 @@ public class GeneratorLayout {
     private LinearLayout layoutWorldBase;
     private LinearLayout layoutChooseWorldBase;
     private LinearLayout layoutPreviewBase;
+    private LinearLayout layoutLightsBase;
     private LinearLayout layoutEffectsBase;
+
 
 
 
@@ -66,11 +68,11 @@ public class GeneratorLayout {
     private LinearLayout toggleColors;
     private LinearLayout toggleGridSize;
     private LinearLayout toggleConfig;
-    private LinearLayout toggleRoutes;
     private LinearLayout toggleSounds;
     private LinearLayout toggleString;
     private LinearLayout toggleWorld;
     private LinearLayout togglePreview;
+    private LinearLayout toggleLights;
     private LinearLayout toggleEffects;
 
     private LinearLayout toggleChooseWorld;
@@ -106,6 +108,7 @@ public class GeneratorLayout {
     private GeneratorLayoutStrings layoutStrings;
     private GeneratorLayoutWorldsList layoutWorldsList;
     private GeneratorLayoutPreview layoutPreview;
+    private GeneratorLayoutLights layoutLights;
     private GeneratorLayoutEffects layoutEffects;
 
     public GeneratorLayoutConstruct layoutConstruct;
@@ -129,7 +132,9 @@ public class GeneratorLayout {
         this.layoutWorldsList = new GeneratorLayoutWorldsList();
         this.layoutConstruct=new GeneratorLayoutConstruct();
         this.layoutPreview = new GeneratorLayoutPreview();
+        this.layoutLights = new GeneratorLayoutLights();
         this.layoutEffects = new GeneratorLayoutEffects();
+
     }
 
     public World getCurrentWorld() {
@@ -157,6 +162,7 @@ public class GeneratorLayout {
         layoutColors.refreashLayout();
         layoutSounds.refreashLayout();
         layoutStrings.refreashLayout(stage);
+        layoutLights.refreashLayout();
         layoutEffects.refreashLayout();
 
 
@@ -390,6 +396,7 @@ public class GeneratorLayout {
         layoutGrid.refreashLayout();
         layoutColors.refreashLayout();
         generator.getPathPopup().refreashLayout();
+        layoutLights.refreashLayout();
         layoutEffects.refreashLayout();
 
     }
@@ -402,7 +409,9 @@ public class GeneratorLayout {
         layoutConfigBase.setVerticalGravity(View.GONE);
         //layoutRutesBase.setVisibility(View.GONE);
         layoutSoundsBase.setVisibility(View.VISIBLE);
+        layoutLightsBase.setVisibility(View.VISIBLE);
         layoutEffectsBase.setVisibility(View.VISIBLE);
+
         layoutStringsBase.setVisibility(View.GONE);
         layoutConfigBase.setVisibility(View.GONE);
         layoutConstructBase.setVisibility(View.VISIBLE);
@@ -420,14 +429,15 @@ public class GeneratorLayout {
         layoutGridBase.setVisibility(View.VISIBLE);
         layoutColorsBase.setVisibility(View.VISIBLE);
         layoutConfigBase.setVerticalGravity(View.VISIBLE);
-        //layoutRutesBase.setVisibility(View.VISIBLE);
         layoutSoundsBase.setVisibility(View.VISIBLE);
         layoutStringsBase.setVisibility(View.VISIBLE);
         layoutConfigBase.setVisibility(View.VISIBLE);
         layoutConstructBase.setVisibility(View.VISIBLE);
         toggleSave.setVisibility(View.VISIBLE);
         layoutPreviewBase.setVisibility(View.VISIBLE);
+        layoutLightsBase.setVisibility(View.VISIBLE);
         layoutEffectsBase.setVisibility(View.VISIBLE);
+
     }
 
     public void showWorldControlls()
@@ -445,7 +455,9 @@ public class GeneratorLayout {
         layoutConstructBase.setVisibility(View.GONE);
         toggleSave.setVisibility(View.GONE);
         layoutPreviewBase.setVisibility(View.GONE);
+        layoutLightsBase.setVisibility(View.GONE);
         layoutEffectsBase.setVisibility(View.GONE);
+
     }
 
     public void loadWorld(World world)
@@ -479,12 +491,12 @@ public class GeneratorLayout {
         layoutGrid.initLayout(this);
         layoutColors.initLayout(this);
         layoutConfig.initLayout(this);
-        //layoutRoutes.initLayout(this);
         layoutSounds.initLayout(this);
         layoutStrings.initLayout(this);
         layoutWorldsList.initLayout(this);
         layoutConstruct.initLayout(this);
         layoutPreview.initLayout(this);
+        layoutLights.initLayout(this);
         layoutEffects.initLayout(this);
 
         tvCurrentX = (TextView) v.findViewById(R.id.tv_current_x);
@@ -506,8 +518,6 @@ public class GeneratorLayout {
         layoutConfigBase = (LinearLayout) v.findViewById(R.id.layout_config_base);
         toggleConfig = (LinearLayout) v.findViewById(R.id.toggle_config);
 
-        //layoutRutesBase = (LinearLayout) v.findViewById(R.id.layout_routes_base);
-        toggleRoutes = (LinearLayout) v.findViewById(R.id.toggle_routes);
 
         layoutSoundsBase = (LinearLayout) v.findViewById(R.id.layout_sounds_base);
         toggleSounds = (LinearLayout) v.findViewById(R.id.toggle_sounds);
@@ -524,6 +534,10 @@ public class GeneratorLayout {
         layoutPreviewBase = (LinearLayout) v.findViewById(R.id.layout_preview_base);
         togglePreview = (LinearLayout) v.findViewById(R.id.toggle_preview);
 
+        layoutLightsBase = (LinearLayout) v.findViewById(R.id.layout_lights_base);
+        toggleLights = (LinearLayout) v.findViewById(R.id.toggle_lights);
+
+
         layoutEffectsBase = (LinearLayout) v.findViewById(R.id.layout_effects_base);
         toggleEffects = (LinearLayout) v.findViewById(R.id.toggle_effects);
 
@@ -531,7 +545,6 @@ public class GeneratorLayout {
 
 
         showWorldControlls();
-        //refreshControlls();
 
         toggleGridSize.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -576,22 +589,7 @@ public class GeneratorLayout {
             }
         });
 
-        /*
-        toggleRoutes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (layoutRoutes.getLayout().getParent() == null) {
-                    layoutRutesBase.addView(layoutRoutes.getLayout());
-                    toggleRoutes.setSelected(true);
 
-                } else {
-                    layoutRutesBase.removeView(layoutRoutes.getLayout());
-                    toggleRoutes.setSelected(false);
-
-                }
-            }
-        });
-*/
 
         toggleSounds.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -642,6 +640,12 @@ public class GeneratorLayout {
             @Override
             public void onClick(View view) {
                 if (layoutConstruct.getLayout().getParent() == null) {
+
+                    generator.startRouteConfiguration();
+                    ArrayList<TileRoute> currentRoutes = generator.getPath();
+                    layoutConstruct.refreashLayout(currentRoutes);
+
+
                     layoutConstructBase.addView(layoutConstruct.getLayout());
                     toggleConstruct.setSelected(true);
 
@@ -667,6 +671,23 @@ public class GeneratorLayout {
                 }
             }
         });
+
+        toggleLights.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (layoutLights.getLayout().getParent() == null) {
+                    layoutLightsBase.addView(layoutLights.getLayout());
+                    toggleLights.setSelected(true);
+
+                } else {
+                    layoutLightsBase.removeView(layoutLights.getLayout());
+                    toggleLights.setSelected(false);
+
+                }
+            }
+        });
+
+
 
         toggleEffects.setOnClickListener(new View.OnClickListener() {
             @Override

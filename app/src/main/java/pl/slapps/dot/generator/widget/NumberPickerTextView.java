@@ -8,6 +8,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.util.Locale;
 
 import pl.slapps.dot.R;
 
@@ -18,8 +20,10 @@ public class NumberPickerTextView extends RelativeLayout {
 
     private TextView tvLabel;
     private OnLabelValueChanged listener;
-    private DecimalFormat precision = new DecimalFormat("0.0");
     private float mMinValue = 0;
+    private float currentValue = 0;
+    private boolean isInteger = false;
+
     public interface OnLabelValueChanged {
         void onValueChanged(float value);
     }
@@ -28,20 +32,42 @@ public class NumberPickerTextView extends RelativeLayout {
         this.listener = listener;
     }
 
-    public void putValue(float value)
-    {
-        tvLabel.setText(precision.format(value));
+    public void setInteger(boolean flag) {
+        this.isInteger = flag;
+    }
+
+    public void putValue(float value) {
+        currentValue = value;
+        if (!isInteger)
+            tvLabel.setText(String.format(Locale.ENGLISH, "%.1f", value));
+        else
+            tvLabel.setText(String.format(Locale.ENGLISH, "%d", (int) value));
+
 
     }
+
     private void setValue(float value) {
-        tvLabel.setText(precision.format(value));
-        if(listener!=null)
+        currentValue = value;
+        if (!isInteger)
+            tvLabel.setText(String.format(Locale.ENGLISH, "%.1f", value));
+        else
+            tvLabel.setText(String.format(Locale.ENGLISH, "%d", (int) value));
+        if (listener != null)
             listener.onValueChanged(value);
     }
 
     public float getValue() {
         String value = tvLabel.getText().toString();
-        return Float.parseFloat(value);
+        try {
+            float returnValue = Float.parseFloat(value);
+            return returnValue;
+        } catch (Throwable e) {
+            e.printStackTrace();
+            return currentValue;
+
+
+        }
+
     }
 
 
@@ -63,9 +89,9 @@ public class NumberPickerTextView extends RelativeLayout {
 
     }
 
-    public void setmMinValue(float value)
-    {
-        mMinValue=value;
+    public void setmMinValue(float value) {
+        mMinValue = value;
+
     }
 
     private void setup(Context context) {
@@ -76,8 +102,14 @@ public class NumberPickerTextView extends RelativeLayout {
             @Override
             public void onClick(View view) {
                 float value = getValue();
-                if (value > mMinValue)
-                    setValue(value - 0.1f);
+                if (value > mMinValue) {
+                    if (!isInteger)
+                        setValue(value - 0.1f);
+                    else
+                        setValue(value - 1);
+
+
+                }
             }
         });
 
@@ -86,8 +118,10 @@ public class NumberPickerTextView extends RelativeLayout {
             @Override
             public void onClick(View view) {
                 float value = getValue();
-
-                setValue(value + 0.1f);
+                if (!isInteger)
+                    setValue(value + 0.1f);
+                else
+                    setValue(value + 1);
             }
         });
 

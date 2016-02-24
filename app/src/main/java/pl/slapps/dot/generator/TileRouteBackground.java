@@ -34,14 +34,15 @@ public class TileRouteBackground extends Sprite {
 
     private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
 
-    float color[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-
+    float color[] = {0.0f, 0.0f, 0.0f, 1.0f};
 
 
     public void configure(Config config) {
         String colorString = config.colors.colorRoute;
-        if (config.colors.colorRoute == null)
-            colorString = "#B8B8B8";
+
+        if (config.settings.switchRouteColors)
+
+            colorString = config.colors.colorSwitchRouteStart;
 
         color = Util.parseColor(colorString);
 
@@ -50,16 +51,16 @@ public class TileRouteBackground extends Sprite {
     public TileRouteBackground(float centerX, float centerY, float width,
                                float height) {
 
-        super(centerX, centerY, width, height,false);
-
+        super(centerX, centerY, width, height, false);
 
 
     }
+
     public TileRouteBackground(float centerX, float centerY, float width,
                                float height, Generator generator) {
 
-        super(centerX, centerY, width, height,true);
-        this.generator=generator;
+        super(centerX, centerY, width, height, true);
+        this.generator = generator;
         configure(generator.getConfig());
 
 
@@ -71,10 +72,7 @@ public class TileRouteBackground extends Sprite {
     }
 
 
-
-
-    public void drawGl2(float[] mvpMatrix)
-    {
+    public void drawGl2(float[] mvpMatrix) {
 
 
         // Enable a handle to the triangle vertices
@@ -105,8 +103,6 @@ public class TileRouteBackground extends Sprite {
 
         // Disable vertex array
         GLES20.glDisableVertexAttribArray(generator.mPositionHandle);
-
-
 
 
     }

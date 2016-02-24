@@ -443,6 +443,47 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/layout_lights_base"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:animateLayoutChanges="true"
+                android:orientation="vertical">
+
+
+                <LinearLayout
+                    android:id="@+id/toggle_lights"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/selector_menu_drawer"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="5dp">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_margin="5dp"
+                        android:background="@drawable/circle_btn_selector"
+                        android:duplicateParentState="true"
+                        android:padding="5dp"
+                        android:src="@drawable/lights" />
+
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:text="lights" />
+                </LinearLayout>
+
+
+
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dp"
+                    android:background="#ffcbcbcb" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/layout_effects_base"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -482,6 +523,7 @@
                     android:layout_height="1dp"
                     android:background="#ffcbcbcb" />
             </LinearLayout>
+
 
 
 

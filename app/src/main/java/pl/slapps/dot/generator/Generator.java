@@ -56,27 +56,28 @@ public class Generator {
 
     private PathPopup pathPopup;
 
-    public PathPopup getPathPopup()
-    {
+    public PathPopup getPathPopup() {
         return pathPopup;
     }
+
     public Config getConfig() {
         return config;
     }
 
     public void configure(Config config) {
-            Log.d("xxx","xonfigure");
         try {
-            this.config=config;
+            this.config = config;
+
             String color = config.colors.colorBackground;
+            if (config.settings.switchBackgroundColors)
+                color = config.colors.colorSwitchBackgroundStart;
+
             int intColor = Color.parseColor(color);
 
-            config.colors.colorBackground = color;
             a = (float) Color.alpha(intColor) / 255;
             r = (float) Color.red(intColor) / 255;
             g = (float) Color.green(intColor) / 255;
             b = (float) Color.blue(intColor) / 255;
-            Log.d("XXX", "color setted " + color);
 
         } catch (Throwable t) {
             Log.d(TAG, "background color  null ");
@@ -108,7 +109,7 @@ public class Generator {
         Log.d(TAG, "generator loaded " + this.tiles.size());
 
 
-        layout = new GeneratorLayout(view.context,this, tiles.get(10));
+        layout = new GeneratorLayout(view.context, this, tiles.get(10));
 
         this.pathPopup = new PathPopup(this);
 
@@ -138,17 +139,16 @@ public class Generator {
 
     }
 
-    public void reset()
-    {
+    public void reset() {
         //int currentX = this.getLayout().tile.horizontalPos;
         //int currentY = this.getLayout().tile.verticalPos;
         view.getGame().setPreview(false);
         getPathPopup().dissmiss();
-        initGrid( 9, 15);
+        initGrid(9, 15);
         configure(new Config());
         getLayout().setCurrentWorld(null);
 
-        getLayout().tile=tiles.get(10);
+        getLayout().tile = tiles.get(10);
         //getLayout().tile.setCurrentTile(true);
 
     }
@@ -520,7 +520,7 @@ public class Generator {
 
     public void refreashMaze() {
 
-        Log.d("zzz","refreash maze");
+        Log.d("zzz", "refreash maze");
         configure(config);
 
         if (runPreview) {
@@ -713,7 +713,7 @@ public class Generator {
 
     public boolean onTouch(MotionEvent event) {
 
-        if(getLayout().getCurrentWorld()==null)
+        if (getLayout().getCurrentWorld() == null)
             return true;
 
         if (runPreview) {
@@ -728,7 +728,7 @@ public class Generator {
                 if (t.contains(x, y)) {
                     layout.setCurrentTile(t);
 
-                    pathPopup.show(event.getX(),event.getY());
+                    pathPopup.show(event.getX(), event.getY());
 
                     return true;
                 }
@@ -766,6 +766,7 @@ public class Generator {
     public void stopPreview() {
         view.getGame().setPreview(false);
         runPreview = false;
+        refreashMaze();
         getLayout().showGeneratorConstrolls();
 
 

@@ -46,8 +46,6 @@ public class TileRouteStart extends TileRoute {
         Route.Direction f = this.from;
 
 
-        if(generator ==null)
-            Log.d("XXX", "tile route start is null " + d.name());
         switch (f) {
             case LEFT: {
 

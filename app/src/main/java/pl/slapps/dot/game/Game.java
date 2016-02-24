@@ -23,10 +23,9 @@ public class Game {
 
     private String TAG = Game.class.getName();
 
-    public Game(MainActivity context, SurfaceRenderer gameView)
-    {
-        this.context=context;
-        this.gameView=gameView;
+    public Game(MainActivity context, SurfaceRenderer gameView) {
+        this.context = context;
+        this.gameView = gameView;
 
         dotSize = gameView.screenWidth / 20;
 
@@ -34,7 +33,6 @@ public class Game {
 
     public MainActivity context;
     public SurfaceRenderer gameView;
-
 
 
     private MainSprite mainSprite;
@@ -52,7 +50,6 @@ public class Game {
     public int mDotLightShinningHandle;
     public int mDotLightDistanceHandle;
     public int mDotLightColorHandle;
-
 
 
     public int mExplosionLightOnePosHandle;
@@ -75,16 +72,15 @@ public class Game {
 
 
     private boolean isPreview = false;
+    private float currentProgress = 0;
 
-    public void setPreview(boolean preview)
-    {
-        this.isPreview=preview;
+    public void setPreview(boolean preview) {
+        this.isPreview = preview;
     }
-    public boolean getPreview()
-    {
+
+    public boolean getPreview() {
         return isPreview;
     }
-
 
 
     final String vertexShaderCode =
@@ -137,28 +133,19 @@ public class Game {
 
                     "   float dotDistance = length(lights[0].u_LightPos - v_Position);\n" +
                     "   float dotDiffuse =  lights[0].lightShinning * (1.0 / (1.0 + (0.00007 * dotDistance * dotDistance* lights[0].lightDistance)));\n" +
-                    "   vec4 dotResult = dotDiffuse * lights[0].lightColor;"+
+                    "   vec4 dotResult = dotDiffuse * lights[0].lightColor;" +
 
                     "   float explosionOneDistance = length(lights[1].u_LightPos - v_Position);\n" +
                     "   float explosionOneDiffuse =  lights[1].lightShinning * (1.0 / (1.0 + (0.00007 * explosionOneDistance * explosionOneDistance* lights[1].lightDistance)));\n" +
-                    "   vec4 explosionOneResult = explosionOneDiffuse * lights[1].lightColor;"+
+                    "   vec4 explosionOneResult = explosionOneDiffuse * lights[1].lightColor;" +
 
                     "   float explosionTwoDistance = length(lights[2].u_LightPos - v_Position);\n" +
                     "   float explosionTwoDiffuse =  lights[2].lightShinning * (1.0 / (1.0 + (0.00007 * explosionTwoDistance * explosionTwoDistance* lights[2].lightDistance)));\n" +
-                    "   vec4 explosionTwoResult = explosionTwoDiffuse * lights[2].lightColor;"+
+                    "   vec4 explosionTwoResult = explosionTwoDiffuse * lights[2].lightColor;" +
 
                     "    // Multiply the color by the diffuse illumination level to get final output color.\n" +
-                    "    gl_FragColor = vColor *dotDiffuse  +explosionOneResult + explosionTwoResult;" +
+                    "    gl_FragColor = vColor *dotDiffuse +explosionOneResult + explosionTwoResult;" +
                     "}";
-
-
-
-
-
-
-    public ArrayList<Explosion> getExplosions() {
-        return explosions;
-    }
 
 
     public void initGameShaders() {
@@ -173,9 +160,6 @@ public class Game {
                 fragmentShaderCode);
         mProgram = gameView.createAndLinkProgram(vertexShader, fragmentShader,
                 new String[]{"vPosition"});
-
-
-
 
 
         mDotLightPosHandle = GLES20.glGetUniformLocation(mProgram, "lights[0].u_LightPos");
@@ -205,7 +189,7 @@ public class Game {
 
 
     public void initStage(Stage stage) {
-        currentStage=stage;
+        currentStage = stage;
         background = null;
         Explosion.initBuffers();
         background = new Background(this, stage.config);
@@ -218,45 +202,56 @@ public class Game {
     }
 
 
-    public void onDraw(float [] mMVPMatrix)
-    {
+    public void onGameProgress(float value) {
 
-
-
-            GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-            GLES20.glUseProgram(mProgram);
-
-
+        if (currentProgress != value) {
+            currentProgress = value;
+            context.setCurrent(value * 100);
             if (background != null)
-                background.drawGl2(mMVPMatrix);
+                background.onProgressChanged(value);
+            if (maze != null)
+                maze.onProgressChanged(value);
+            if(mainSprite!=null)
+                mainSprite.onProgressChanged(value);
+        }
+    }
 
 
-            if (maze != null && mainSprite != null) {
-
-                maze.drawGL20(mMVPMatrix);
+    public void onDraw(float[] mMVPMatrix) {
 
 
-                mainSprite.drawGl2(mMVPMatrix);
-
-                for (int i = 0; i < explosions.size(); i++) {
-                    explosions.get(i).drawGl2(mMVPMatrix);
-                }
-                //if (currentExplosion != null)
-                //   toggleColors(currentExplosion.getProgress());
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
+        GLES20.glUseProgram(mProgram);
 
 
+        if (background != null)
+            background.drawGl2(mMVPMatrix);
+
+
+        if (maze != null && mainSprite != null) {
+
+            maze.drawGL20(mMVPMatrix);
+
+
+            mainSprite.drawGl2(mMVPMatrix);
+
+            for (int i = 0; i < explosions.size(); i++) {
+                explosions.get(i).drawGl2(mMVPMatrix);
             }
-            update();
+            //if (currentExplosion != null)
+            //   toggleColors(currentExplosion.getProgress());
 
+
+        }
+        update();
 
 
     }
 
 
-
     private void setDotMovement(Route.Movement movement) {
 
-        if (movement == null)
+        if (movement == null || mainSprite==null)
             return;
 
         switch (movement) {
@@ -290,14 +285,12 @@ public class Game {
     }
 
 
-
     public boolean onTouchEvent(MotionEvent event) {
 
 
         switch (event.getActionMasked()) {
 
             case MotionEvent.ACTION_DOWN: {
-
 
 
                 if (mainSprite != null) {
@@ -340,24 +333,21 @@ public class Game {
     }
 
 
-    public Stage getCurrentStage()
-    {
+    public Stage getCurrentStage() {
         return currentStage;
     }
 
-    public void configRoute(TileRoute route)
-    {
-        if(maze!=null)
+    public void configRoute(TileRoute route) {
+        if (maze != null)
             maze.configRoute(route);
     }
 
-    public void configure()
-    {
-        if(background!=null)
+    public void configure() {
+        if (background != null)
             background.configure(currentStage.config);
-        if(mainSprite!=null)
+        if (mainSprite != null)
             mainSprite.configure(currentStage.config);
-        if(maze!=null)
+        if (maze != null)
             maze.configure(currentStage.config);
     }
 
@@ -388,62 +378,6 @@ public class Game {
     }
 
 
-
-    public String estimateColors(String colorStart, String colorEnd, float progress) {
-        int startColor = Color.parseColor(colorStart);
-        int endColor = Color.parseColor(colorEnd);
-
-        if (progress < 0)
-            progress = 0;
-        if (progress > 1)
-            progress = 1;
-
-        int startRed;
-        int endRed;
-
-        if (Color.red(startColor) > Color.red(endColor)) {
-            startRed = Color.red(startColor);
-            endRed = Color.red(endColor);
-        } else {
-            startRed = Color.red(endColor);
-            endRed = Color.red(startColor);
-        }
-
-        int startGreen;
-        int endGreen;
-
-        if (Color.green(startColor) > Color.green(endColor)) {
-            startGreen = Color.green(startColor);
-            endGreen = Color.green(endColor);
-        } else {
-            startGreen = Color.green(endColor);
-            endGreen = Color.green(startColor);
-        }
-
-        int startBlue;
-        int endBlue;
-
-        if (Color.blue(startColor) > Color.blue(endColor)) {
-            startBlue = Color.blue(startColor);
-            endBlue = Color.blue(endColor);
-        } else {
-            startBlue = Color.blue(endColor);
-            endBlue = Color.blue(startColor);
-        }
-
-
-        float redDiff = endRed - startRed;
-        float greenDiff = endGreen - startGreen;
-        float blueDiff = endBlue - startBlue;
-
-        int r = (int) (progress * redDiff + startRed);
-        int g = (int) (progress * greenDiff + startGreen);
-        int b = (int) (progress * blueDiff + startBlue);
-
-        int returnColor = Color.rgb(r, g, b);
-        return "#" + Integer.toHexString(returnColor);
-    }
-
     public void toggleColors(float progress) {
 
         //background.setColor(maze.getPath().backgroundColor);
@@ -451,11 +385,10 @@ public class Game {
 
         Log.d(TAG, "toggle colors " + progress);
 
-       // background.setColor(estimateColors(currentStage.colorRoute, currentStage.colorBackground, progress));
-       // maze.getPath().setColor(estimateColors(currentStage.colorRoute, currentStage.colorBackground, 1 - progress));
+        // background.setColor(estimateColors(currentStage.colorRoute, currentStage.colorBackground, progress));
+        // maze.getPath().setColor(estimateColors(currentStage.colorRoute, currentStage.colorBackground, 1 - progress));
 
     }
-
 
 
     public void startDot() {
@@ -476,7 +409,6 @@ public class Game {
     }
 
 
-
     public void stopDot() {
         mainSprite.setMove(0, 0);
     }
@@ -495,6 +427,23 @@ public class Game {
         mainSprite = new MainSprite(this, startX, startY,
                 (int) dotSize, (int) dotSize, currentStage.config);
 
+        mainSprite.setOnProgressListener(new MainSprite.OnProgressListener() {
+            @Override
+            public void onProgressChanged(float value) {
+                onGameProgress(value);
+            }
+        });
+
+        switch (startRoute.from) {
+            case LEFT:
+            case RIGHT:
+                mainSprite.setInitialProgress(startRoute.width / 2);
+                break;
+            case TOP:
+            case BOTTOM:
+                mainSprite.setInitialProgress(startRoute.height / 2);
+        }
+
         stopDot();
     }
 
@@ -505,7 +454,12 @@ public class Game {
         float startY = startRoute.topY + startRoute.height / 2;
         mainSprite = new MainSprite(this, startX, startY,
                 0, 0, currentStage.config);
-
+        mainSprite.setOnProgressListener(new MainSprite.OnProgressListener() {
+            @Override
+            public void onProgressChanged(float value) {
+                onGameProgress(value);
+            }
+        });
         stopDot();
     }
 
@@ -531,6 +485,12 @@ public class Game {
 
         mainSprite = new MainSprite(this, e.x, e.y,
                 (int) dotSize, (int) dotSize, currentStage.config);
+        mainSprite.setOnProgressListener(new MainSprite.OnProgressListener() {
+            @Override
+            public void onProgressChanged(float value) {
+                onGameProgress(value);
+            }
+        });
         mainSprite.setPrepareToDie(true);
 
         TileRoute current = maze.getCurrentRouteObject(mainSprite.centerX, mainSprite.centerY);
@@ -547,7 +507,7 @@ public class Game {
     public Route.Movement getNextMove(TileRoute startRoute) {
 
 
-        if (mainSprite.lastChangeRoute != null) {
+        if (mainSprite != null && mainSprite.lastChangeRoute != null) {
             int lastRoute = maze.routes.indexOf(mainSprite.lastChangeRoute);
             int currentRoute = maze.routes.indexOf(startRoute);
 
@@ -560,6 +520,7 @@ public class Game {
 
             }
         } else {
+            if(mainSprite!=null)
             mainSprite.lastChangeRoute = startRoute;
             return startRoute.next;
         }

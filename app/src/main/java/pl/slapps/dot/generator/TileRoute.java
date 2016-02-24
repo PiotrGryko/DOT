@@ -32,8 +32,8 @@ public class TileRoute {
 
     public float centerX;
     public float centerY;
-    float borderX;
-    float borderY;
+    public float borderX;
+    public float borderY;
 
     public Route.Direction from;
     public Route.Direction to;
@@ -52,11 +52,10 @@ public class TileRoute {
     public double speedRatio = 1;
     public Generator generator;
 
-    private boolean currentTile=false;
+    private boolean currentTile = false;
 
-    public void setCurrentTile(boolean flag)
-    {
-        currentTile=flag;
+    public void setCurrentTile(boolean flag) {
+        currentTile = flag;
     }
     //public SurfaceRenderer generator;
 
@@ -101,8 +100,8 @@ public class TileRoute {
         if (type == Route.Type.FILL) {
 
 
-            if(generator!=null)
-            backgroundPartOne = new TileRouteBackground(centerX, centerY, width, height,  generator);
+            if (generator != null)
+                backgroundPartOne = new TileRouteBackground(centerX, centerY, width, height, generator);
             else
                 backgroundPartOne = new TileRouteBackground(centerX, centerY, width, height);
 
@@ -150,12 +149,10 @@ public class TileRoute {
                 walls.add(tWall);
                 walls.add(rWall);
                 walls.add(bWall);
-                if(generator!=null) {
+                if (generator != null) {
                     backgroundPartOne = new TileRouteBackground(centerX, topY + height - borderY / 2, routeWidth, borderY, generator);
                     backgroundPartTwo = new TileRouteBackground(topX + borderX + (width - borderX) / 2, centerY, width - borderX, routeHeight, generator);
-                }
-                else
-                {
+                } else {
 
                     backgroundPartOne = new TileRouteBackground(centerX, topY + height - borderY / 2, routeWidth, borderY);
                     backgroundPartTwo = new TileRouteBackground(topX + borderX + (width - borderX) / 2, centerY, width - borderX, routeHeight);
@@ -188,12 +185,10 @@ public class TileRoute {
                 walls.add(tWall);
                 walls.add(rWall);
                 walls.add(bWall);
-                if(generator!=null) {
+                if (generator != null) {
                     backgroundPartOne = new TileRouteBackground(centerX, topY + height - borderY / 2, routeWidth, borderY, generator);
                     backgroundPartTwo = new TileRouteBackground(topX + (width - borderX) / 2, centerY, width - borderX, routeHeight, generator);
-                }
-                else
-                {
+                } else {
 
                     backgroundPartOne = new TileRouteBackground(centerX, topY + height - borderY / 2, routeWidth, borderY);
                     backgroundPartTwo = new TileRouteBackground(topX + (width - borderX) / 2, centerY, width - borderX, routeHeight);
@@ -220,12 +215,10 @@ public class TileRoute {
                 walls.add(tWall);
                 walls.add(rWall);
                 walls.add(bWall);
-                if(generator!=null) {
+                if (generator != null) {
                     backgroundPartOne = new TileRouteBackground(centerX, topY + borderY / 2, routeWidth, borderY, generator);
                     backgroundPartTwo = new TileRouteBackground(topX + borderX + (width - borderX) / 2, centerY, width - borderX, routeHeight, generator);
-                }
-                else
-                {
+                } else {
 
                     backgroundPartOne = new TileRouteBackground(centerX, topY + borderY / 2, routeWidth, borderY);
                     backgroundPartTwo = new TileRouteBackground(topX + borderX + (width - borderX) / 2, centerY, width - borderX, routeHeight);
@@ -251,12 +244,10 @@ public class TileRoute {
                 walls.add(tWall);
                 walls.add(rWall);
                 walls.add(bWall);
-                if(generator!=null) {
+                if (generator != null) {
                     backgroundPartOne = new TileRouteBackground(centerX, topY + borderY / 2, routeWidth, borderY, generator);
                     backgroundPartTwo = new TileRouteBackground(topX + (width - borderX) / 2, centerY, width - borderX, routeHeight, generator);
-                }
-                else
-                {
+                } else {
 
                     backgroundPartOne = new TileRouteBackground(centerX, topY + borderY / 2, routeWidth, borderY);
                     backgroundPartTwo = new TileRouteBackground(topX + (width - borderX) / 2, centerY, width - borderX, routeHeight);
@@ -276,11 +267,9 @@ public class TileRoute {
 
                 walls.add(tWall);
                 walls.add(bWall);
-                if(generator!=null) {
+                if (generator != null) {
                     backgroundPartOne = new TileRouteBackground(centerX, centerY, width, routeHeight, generator);
-                }
-                else
-                {
+                } else {
                     backgroundPartOne = new TileRouteBackground(centerX, centerY, width, routeHeight);
 
                 }
@@ -298,11 +287,9 @@ public class TileRoute {
 
                 walls.add(lWall);
                 walls.add(rWall);
-                if(generator!=null) {
+                if (generator != null) {
                     backgroundPartOne = new TileRouteBackground(centerX, centerY, routeWidth, height, generator);
-                }
-                else
-                {
+                } else {
                     backgroundPartOne = new TileRouteBackground(centerX, centerY, routeWidth, height);
 
                 }
@@ -338,22 +325,19 @@ public class TileRoute {
         isInitialized = true;
     }
 
-    public void configRoute(TileRoute route)
-    {
-        this.sound=route.sound;
-        this.speedRatio=route.speedRatio;
+    public void configRoute(TileRoute route) {
+        this.sound = route.sound;
+        this.speedRatio = route.speedRatio;
     }
 
 
-    public void configure(Config config)
-    {
+    public void configure(Config config) {
         if (backgroundPartOne != null)
             backgroundPartOne.configure(config);
         if (backgroundPartTwo != null)
             backgroundPartTwo.configure(config);
 
-        for(int i=0;i<walls.size();i++)
-        {
+        for (int i = 0; i < walls.size(); i++) {
             walls.get(i).configure(config);
         }
     }
@@ -361,20 +345,21 @@ public class TileRoute {
 
     private float[] mModelMatrix = new float[16];
     private float[] mvpLocalMatrix = new float[16];
+
     public void drawGL20(float[] mvpMatrix) {
 
 
         if (!isInitialized)
             return;
 
-        if(currentTile) {
+        if (currentTile) {
             Matrix.setIdentityM(mModelMatrix, 0);
 
 
             long time = SystemClock.uptimeMillis() % 10000L;
             float angleInDegrees = (360.0f / 5000.0f) * ((int) time);
             // Draw the triangle facing straight on.
-            Matrix.translateM(mModelMatrix,0,centerX,centerY,0);
+            Matrix.translateM(mModelMatrix, 0, centerX, centerY, 0);
 
             Matrix.rotateM(mModelMatrix, 0, angleInDegrees, 0.0f, 0.0f, 1.0f);
             Matrix.translateM(mModelMatrix, 0, -centerX, -centerY, 0);
@@ -396,9 +381,7 @@ public class TileRoute {
 
             Matrix.setIdentityM(generator.view.mModelMatrix, 0);
 
-        }
-
-        else {
+        } else {
 
 
             if (backgroundPartOne != null)
@@ -417,7 +400,6 @@ public class TileRoute {
 
 
     public boolean contains(float x, float y) {
-
 
 
         if (x >= topX && x <= topX + width

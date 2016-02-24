@@ -1,32 +1,42 @@
 package pl.slapps.dot.generator.gui;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.ImageView;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 
 import pl.slapps.dot.R;
 import pl.slapps.dot.generator.Generator;
 import pl.slapps.dot.generator.widget.NumberPickerTextView;
+import yuku.ambilwarna.AmbilWarnaDialog;
 
 /**
- * Created by piotr on 15/02/16.
+ * Created by piotr on 21/02/16.
  */
 public class GeneratorLayoutEffects {
 
-    private String TAG = GeneratorLayoutEffects.class.getName();
     private View layoutEffects;
-    private Generator generator;
     private GeneratorLayout generatorLayout;
+    private Generator generator;
 
-    private NumberPickerTextView dotLightShinning;
-    private NumberPickerTextView dotLightDistance;
+    /*
+ colors layout elements
+  */
+    private View colorBackgroundStart;
+    private View colorBackgroundEnd;
+    private CheckBox cbSwitchBackgroundColors;
 
-    private NumberPickerTextView explosionOneLightShinning;
-    private NumberPickerTextView explosionOneLightDistance;
 
-    private NumberPickerTextView explosionTwoLightShinning;
-    private NumberPickerTextView explosionTwoLightDistance;
+    private View colorRouteStart;
+    private View colorRouteEnd;
+    private CheckBox cbSwitchRouteColors;
+
+
+    private NumberPickerTextView dotLightStart;
+    private NumberPickerTextView dotLightEnd;
+    private CheckBox cbSwitchDotLightsDistance;
 
 
     public View getLayout() {
@@ -34,96 +44,218 @@ public class GeneratorLayoutEffects {
     }
 
     public void refreashLayout() {
-        dotLightShinning.putValue(generator.getConfig().settings.dotLightShinning);
-        dotLightDistance.putValue(generator.getConfig().settings.dotLightDistance);
+        colorBackgroundStart.setBackgroundColor(Color.parseColor(generator.getConfig().colors.colorSwitchBackgroundStart));
+        colorBackgroundEnd.setBackgroundColor(Color.parseColor(generator.getConfig().colors.colorSwitchBackgroundEnd));
 
-        explosionOneLightDistance.putValue(generator.getConfig().settings.explosionOneLightDistance);
-        explosionOneLightShinning.putValue(generator.getConfig().settings.explosionOneLightShinning);
+        colorRouteStart.setBackgroundColor(Color.parseColor(generator.getConfig().colors.colorSwitchRouteStart));
+        colorRouteEnd.setBackgroundColor(Color.parseColor(generator.getConfig().colors.colorSwitchRouteEnd));
 
-        explosionTwoLightDistance.putValue(generator.getConfig().settings.explosionTwoLightDistance);
-        explosionTwoLightShinning.putValue(generator.getConfig().settings.explosionTwoLightShinning);
+        dotLightStart.putValue(generator.getConfig().settings.dotLightDistanceStart);
+        dotLightEnd.putValue(generator.getConfig().settings.dotLightDistanceEnd);
+
+
+        cbSwitchRouteColors.setChecked(generator.getConfig().settings.switchRouteColors);
+        cbSwitchBackgroundColors.setChecked(generator.getConfig().settings.switchBackgroundColors);
 
     }
 
     public void initLayout(final GeneratorLayout generatorLayout) {
+
         this.generatorLayout = generatorLayout;
         this.generator = generatorLayout.generator;
-
-
         layoutEffects = LayoutInflater.from(generator.view.context).inflate(R.layout.layout_generator_effects, null);
 
-
-        dotLightShinning = (NumberPickerTextView) layoutEffects.findViewById(R.id.et_dot_shinning);
-        dotLightDistance = (NumberPickerTextView) layoutEffects.findViewById(R.id.et_dot_distance);
-
-        explosionOneLightShinning = (NumberPickerTextView) layoutEffects.findViewById(R.id.et_explosion_one_shinning);
-        explosionOneLightDistance = (NumberPickerTextView) layoutEffects.findViewById(R.id.et_explosion_one_distance);
-
-        explosionTwoLightShinning = (NumberPickerTextView) layoutEffects.findViewById(R.id.et_explosion_two_shinning);
-        explosionTwoLightDistance = (NumberPickerTextView) layoutEffects.findViewById(R.id.et_explosion_two_distance);
+        cbSwitchBackgroundColors = (CheckBox) layoutEffects.findViewById(R.id.cb_switch_background_color);
+        cbSwitchRouteColors = (CheckBox) layoutEffects.findViewById(R.id.cb_switch_route_color);
+        cbSwitchDotLightsDistance = (CheckBox) layoutEffects.findViewById(R.id.cb_switch_dot_light);
 
 
-        dotLightShinning.setListener(new NumberPickerTextView.OnLabelValueChanged() {
+        cbSwitchBackgroundColors.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onValueChanged(float value) {
-                generator.getConfig().settings.dotLightShinning = value;
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                generator.getConfig().settings.switchBackgroundColors = b;
                 generator.refreashMaze();
-
-
-            }
-        });
-        dotLightDistance.setListener(new NumberPickerTextView.OnLabelValueChanged() {
-            @Override
-            public void onValueChanged(float value) {
-                generator.getConfig().settings.dotLightDistance = value;
-                generator.refreashMaze();
-
-
-            }
-        });
-        explosionOneLightDistance.setListener(new NumberPickerTextView.OnLabelValueChanged() {
-            @Override
-            public void onValueChanged(float value) {
-                generator.getConfig().settings.explosionOneLightDistance = value;
-                generator.refreashMaze();
-
 
             }
         });
 
-        explosionOneLightShinning.setListener(new NumberPickerTextView.OnLabelValueChanged() {
+        cbSwitchRouteColors.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onValueChanged(float value) {
-                generator.getConfig().settings.explosionOneLightShinning = value;
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                generator.getConfig().settings.switchRouteColors = b;
                 generator.refreashMaze();
-
 
             }
         });
 
-        explosionTwoLightDistance.setListener(new NumberPickerTextView.OnLabelValueChanged() {
+        cbSwitchDotLightsDistance.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onValueChanged(float value) {
-                generator.getConfig().settings.explosionTwoLightDistance = value;
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                generator.getConfig().settings.switchDotLightDistance = b;
                 generator.refreashMaze();
-
-
-            }
-        });
-
-        explosionTwoLightShinning.setListener(new NumberPickerTextView.OnLabelValueChanged() {
-            @Override
-            public void onValueChanged(float value) {
-                generator.getConfig().settings.explosionTwoLightShinning = value;
-                generator.refreashMaze();
-
 
             }
         });
 
 
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        colorBackgroundStart = layoutEffects.findViewById(R.id.color_background_start);
+        colorBackgroundEnd = layoutEffects.findViewById(R.id.color_background_end);
+
+        final LinearLayout tvSwitchBackgroundStart = (LinearLayout) layoutEffects.findViewById(R.id.tv_background_color_start);
+        final LinearLayout tvSwitchBackgroundEnd = (LinearLayout) layoutEffects.findViewById(R.id.tv_background_color_end);
+
+
+        tvSwitchBackgroundStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                AmbilWarnaDialog dialog = new AmbilWarnaDialog(generator.view.context, Color.parseColor(generator.getConfig().colors.colorSwitchBackgroundStart), new AmbilWarnaDialog.OnAmbilWarnaListener() {
+                    @Override
+                    public void onOk(AmbilWarnaDialog dialog, int color) {
+                        // color is the color selected by the user.
+
+
+                        colorBackgroundStart.setBackgroundColor(color);
+                        generator.getConfig().colors.colorSwitchBackgroundStart = "#" + Integer.toHexString(color);
+
+
+                        if (generator.getConfig().settings.switchBackgroundColors)
+                            generator.refreashMaze();
+                        dialog.getDialog().dismiss();
+                    }
+
+                    @Override
+                    public void onCancel(AmbilWarnaDialog dialog) {
+                        // cancel was selected by the user
+                    }
+                });
+
+
+                dialog.show();
+            }
+        });
+        tvSwitchBackgroundEnd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AmbilWarnaDialog dialog = new AmbilWarnaDialog(generator.view.context, Color.parseColor(generator.getConfig().colors.colorSwitchBackgroundEnd), new AmbilWarnaDialog.OnAmbilWarnaListener() {
+                    @Override
+                    public void onOk(AmbilWarnaDialog dialog, int color) {
+                        // color is the color selected by the user.
+
+                        colorBackgroundEnd.setBackgroundColor(color);
+                        generator.getConfig().colors.colorSwitchBackgroundEnd = "#" + Integer.toHexString(color);
+
+                        if (generator.getConfig().settings.switchBackgroundColors)
+                            generator.refreashMaze();
+
+                        dialog.getDialog().dismiss();
+                    }
+
+                    @Override
+                    public void onCancel(AmbilWarnaDialog dialog) {
+                        // cancel was selected by the user
+                    }
+                });
+
+                dialog.show();
+            }
+        });
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+        colorRouteStart = layoutEffects.findViewById(R.id.color_route_start);
+        colorRouteEnd = layoutEffects.findViewById(R.id.color_route_end);
+
+        final LinearLayout tvSwitchRoutedStart = (LinearLayout) layoutEffects.findViewById(R.id.tv_route_color_start);
+        final LinearLayout tvSwitchRouteEnd = (LinearLayout) layoutEffects.findViewById(R.id.tv_route_color_end);
+
+
+
+        tvSwitchRoutedStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                AmbilWarnaDialog dialog = new AmbilWarnaDialog(generator.view.context, Color.parseColor(generator.getConfig().colors.colorSwitchRouteStart), new AmbilWarnaDialog.OnAmbilWarnaListener() {
+                    @Override
+                    public void onOk(AmbilWarnaDialog dialog, int color) {
+                        // color is the color selected by the user.
+
+
+                        colorRouteStart.setBackgroundColor(color);
+                        generator.getConfig().colors.colorSwitchRouteStart = "#" + Integer.toHexString(color);
+
+
+                        if (generator.getConfig().settings.switchRouteColors)
+                            generator.refreashMaze();
+                        dialog.getDialog().dismiss();
+                    }
+
+                    @Override
+                    public void onCancel(AmbilWarnaDialog dialog) {
+                        // cancel was selected by the user
+                    }
+                });
+
+
+                dialog.show();
+            }
+        });
+        tvSwitchRouteEnd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AmbilWarnaDialog dialog = new AmbilWarnaDialog(generator.view.context, Color.parseColor(generator.getConfig().colors.colorSwitchRouteEnd), new AmbilWarnaDialog.OnAmbilWarnaListener() {
+                    @Override
+                    public void onOk(AmbilWarnaDialog dialog, int color) {
+                        // color is the color selected by the user.
+
+                        colorRouteEnd.setBackgroundColor(color);
+                        generator.getConfig().colors.colorSwitchRouteEnd = "#" + Integer.toHexString(color);
+
+                        if (generator.getConfig().settings.switchRouteColors)
+                            generator.refreashMaze();
+
+                        dialog.getDialog().dismiss();
+                    }
+
+                    @Override
+                    public void onCancel(AmbilWarnaDialog dialog) {
+                        // cancel was selected by the user
+                    }
+                });
+
+                dialog.show();
+            }
+        });
+
+        ///////////////////////////////////////////////////////////////////
+
+        dotLightStart = (NumberPickerTextView)layoutEffects.findViewById(R.id.dot_light_distance_start);
+        dotLightEnd = (NumberPickerTextView)layoutEffects.findViewById(R.id.dot_light_distance_end);
+
+        dotLightStart.setListener(new NumberPickerTextView.OnLabelValueChanged() {
+            @Override
+            public void onValueChanged(float value) {
+                generator.getConfig().settings.dotLightDistanceStart=value;
+                if(generator.getConfig().settings.switchDotLightDistance)
+                    generator.refreashMaze();
+            }
+        });
+        dotLightEnd.setListener(new NumberPickerTextView.OnLabelValueChanged() {
+            @Override
+            public void onValueChanged(float value) {
+                generator.getConfig().settings.dotLightDistanceEnd = value;
+                if (generator.getConfig().settings.switchDotLightDistance)
+                    generator.refreashMaze();
+            }
+        });
+
+
+
+        refreashLayout();
     }
 
 
 }
-

@@ -19,39 +19,52 @@ public class Background extends Sprite {
     private Game view;
 
 
-    /** Size of the normal data in elements. */
+    /**
+     * Size of the normal data in elements.
+     */
 
     static final int COORDS_PER_VERTEX = 3;
 
 
     private Config config;
 
+    private boolean switchColors;
 
 
-    float color[] = { 0.0f, 0.0f, 0.0f, 1.0f
+    float color[] = {0.0f, 0.0f, 0.0f, 1.0f
 
     };
 
+    public void onProgressChanged(float value) {
+        if (config.settings.switchBackgroundColors) {
+            String finalColor = Util.calculateColorsSwitch(config.colors.colorSwitchBackgroundStart, config.colors.colorSwitchBackgroundEnd, value);
+            color = Util.parseColor(finalColor);
+        }
+
+    }
 
     public void configure(Config config) {
+        Log.d(TAG,"configure background");
+        this.config=config;
+        Log.d(TAG,config.colors.colorBackground +"  "+config.colors.colorSwitchBackgroundStart);
 
-        color= Util.parseColor(config.colors.colorBackground);
+        if (!config.settings.switchBackgroundColors) {
+            color = Util.parseColor(config.colors.colorBackground);
+        } else {
+            switchColors = true;
+            color = Util.parseColor(config.colors.colorSwitchBackgroundStart);
 
+        }
     }
 
     public Background(Game view, Config config) {
-        super(MainActivity.screenWidth / 2, MainActivity.screenHeight / 2, MainActivity.screenWidth, MainActivity.screenHeight,true);
+        super(MainActivity.screenWidth / 2, MainActivity.screenHeight / 2, MainActivity.screenWidth, MainActivity.screenHeight, true);
         this.view = view;
-        this.config=config;
+        this.config = config;
         configure(config);
 
 
-
-
-
     }
-
-
 
 
     public void setMove(float x, float y) {
@@ -60,15 +73,11 @@ public class Background extends Sprite {
     }
 
 
-
-
-    public void drawGl2(float[] mvpMatrix)
-    {
+    public void drawGl2(float[] mvpMatrix) {
 
 
         // Add program to OpenGL environment
         GLES20.glUseProgram(view.mProgram);
-
 
 
         // get handle to vertex shader's vPosition member
@@ -81,12 +90,10 @@ public class Background extends Sprite {
                 0, bufferedVertex);
 
 
-
         // get handle to fragment shader's vColor member
         // Pass in the color information
         // Set color for drawing the triangle
         GLES20.glUniform4fv(view.mColorHandle, 1, color, 0);
-
 
 
         // get handle to shape's transformation matrix
@@ -95,8 +102,6 @@ public class Background extends Sprite {
         // Apply the projection and generator transformation
         GLES20.glUniformMatrix4fv(view.mMVPMatrixHandle, 1, false, mvpMatrix, 0);
         SurfaceRenderer.checkGlError("glUniformMatrix4fv");
-
-
 
 
         // Draw the square
@@ -110,10 +115,7 @@ public class Background extends Sprite {
         GLES20.glDisableVertexAttribArray(view.mPositionHandle);
 
 
-
-
     }
-
 
 
 }

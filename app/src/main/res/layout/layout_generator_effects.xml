@@ -9,112 +9,201 @@
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
-        <pl.slapps.dot.generator.widget.NumberPickerTextView
-            android:id="@+id/et_dot_shinning"
-            android:layout_width="wrap_content"
-
-            android:layout_height="wrap_content"></pl.slapps.dot.generator.widget.NumberPickerTextView>
-
-
-        <TextView
+        <CheckBox
+            android:id="@+id/cb_switch_background_color"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="dot Light shining" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <pl.slapps.dot.generator.widget.NumberPickerTextView
-            android:id="@+id/et_dot_distance"
-            android:layout_width="wrap_content"
-
-            android:layout_height="wrap_content"></pl.slapps.dot.generator.widget.NumberPickerTextView>
+            android:text="Switch background color?" />
 
 
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/tv_background_color_start"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="dot Light distance" />
-    </LinearLayout>
+            android:background="@drawable/abc_list_selector_holo_light"
+            android:orientation="horizontal"
+
+            android:padding="5dp">
+
+            <View
+                android:id="@+id/color_background_start"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+
+                android:layout_margin="5dp"></View>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="Background color start" />
 
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        </LinearLayout>
 
-        <pl.slapps.dot.generator.widget.NumberPickerTextView
-            android:id="@+id/et_explosion_one_shinning"
-            android:layout_width="wrap_content"
-
-            android:layout_height="wrap_content"></pl.slapps.dot.generator.widget.NumberPickerTextView>
-
-
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/tv_background_color_end"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="explosion one light shining" />
-    </LinearLayout>
+            android:background="@drawable/abc_list_selector_holo_light"
+            android:orientation="horizontal"
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+            android:padding="5dp">
 
-        <pl.slapps.dot.generator.widget.NumberPickerTextView
-            android:id="@+id/et_explosion_one_distance"
-            android:layout_width="wrap_content"
+            <View
+                android:id="@+id/color_background_end"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
 
-            android:layout_height="wrap_content"></pl.slapps.dot.generator.widget.NumberPickerTextView>
+                android:layout_margin="5dp"></View>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="Background color end" />
 
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="explosion one light distance" />
+        </LinearLayout>
+
+
     </LinearLayout>
 
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
-        <pl.slapps.dot.generator.widget.NumberPickerTextView
-            android:id="@+id/et_explosion_two_shinning"
-            android:layout_width="wrap_content"
-
-            android:layout_height="wrap_content"></pl.slapps.dot.generator.widget.NumberPickerTextView>
-
-
-        <TextView
+        <CheckBox
+            android:id="@+id/cb_switch_route_color"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="explosion two light shining" />
+            android:text="Switch route color?" />
+
+
+        <LinearLayout
+            android:id="@+id/tv_route_color_start"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/abc_list_selector_holo_light"
+            android:orientation="horizontal"
+
+            android:padding="5dp">
+
+            <View
+                android:id="@+id/color_route_start"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+
+                android:layout_margin="5dp"></View>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="Route color start" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/tv_route_color_end"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/abc_list_selector_holo_light"
+            android:orientation="horizontal"
+
+            android:padding="5dp">
+
+            <View
+                android:id="@+id/color_route_end"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+
+                android:layout_margin="5dp"></View>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="Route color end" />
+
+
+        </LinearLayout>
+
+
     </LinearLayout>
+
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
-        <pl.slapps.dot.generator.widget.NumberPickerTextView
-            android:id="@+id/et_explosion_two_distance"
-            android:layout_width="wrap_content"
-
-            android:layout_height="wrap_content"></pl.slapps.dot.generator.widget.NumberPickerTextView>
-
-
-        <TextView
+        <CheckBox
+            android:id="@+id/cb_switch_dot_light"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="explosion two light distance" />
+            android:text="Switch dot light?" />
+
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/abc_list_selector_holo_light"
+            android:orientation="horizontal"
+
+            android:padding="5dp">
+
+            <pl.slapps.dot.generator.widget.NumberPickerTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/dot_light_distance_start"></pl.slapps.dot.generator.widget.NumberPickerTextView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="Dot light start" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/abc_list_selector_holo_light"
+            android:orientation="horizontal"
+
+            android:padding="5dp">
+
+            <pl.slapps.dot.generator.widget.NumberPickerTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/dot_light_distance_end"></pl.slapps.dot.generator.widget.NumberPickerTextView>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="Dot light end" />
+
+
+        </LinearLayout>
+
+
     </LinearLayout>
+
 
 
 </LinearLayout>

@@ -39,13 +39,10 @@ public class Path {
     public short[] indices;
 
 
-    public String backgroundColor;
-
     private Game game;
-
+    private Config config;
 
     static final int COORDS_PER_VERTEX = 3;
-
 
 
     float color[] = {0.0f, 0.0f, 0.0f, 1.0f};
@@ -54,22 +51,29 @@ public class Path {
     ArrayList<Quad> quads; //list of quads ordered from beginning to end
 
 
+    public void onProgressChanged(float value) {
+        if (config.settings.switchRouteColors) {
+            String finalColor = Util.calculateColorsSwitch(config.colors.colorSwitchRouteStart, config.colors.colorSwitchRouteEnd, value);
+            color = Util.parseColor(finalColor);
+        }
+
+    }
+
     public void configure(Config config) {
+        this.config = config;
 
-
-        if (config.colors.colorRoute == null)
-            backgroundColor = "#B8B8B8";
-        else
-            backgroundColor = config.colors.colorRoute;
-        color = Util.parseColor(backgroundColor);
-
+        String finalColor = config.colors.colorRoute;
+        if (config.settings.switchRouteColors)
+            finalColor = config.colors.colorSwitchRouteStart;
+        color = Util.parseColor(finalColor);
 
 
         Log.d(TAG, "test path set color ");
     }
 
     public Path(ArrayList<TileRoute> routes, Game game, Config config) {
-        this.game= game;
+        this.game = game;
+        this.config = config;
         ArrayList<TileRouteBackground> backgrounds = new ArrayList<>();
         ArrayList<Quad> data = new ArrayList<>();
 
@@ -93,7 +97,7 @@ public class Path {
             addQuad(data.get(i));
         }
 
-       configure(config);
+        configure(config);
 
 
         Log.d(TAG, "quads size " + this.quads.size());
@@ -106,7 +110,7 @@ public class Path {
         //Building arrays
 
         for (int j = 0; j < this.quads.size(); j++) {
-            int startVerticlesIndex = j * COORDS_PER_VERTEX*4;
+            int startVerticlesIndex = j * COORDS_PER_VERTEX * 4;
             int startIncentIndex = j * 6;
 
 
@@ -114,19 +118,19 @@ public class Path {
             //Log.d(TAG,"strt index "+startVerticlesIndex +" "+startIncentIndex);
             verticles[startVerticlesIndex++] = q.bottomLeft.x;
             verticles[startVerticlesIndex++] = q.bottomLeft.y;
-            verticles[startVerticlesIndex++]=q.bottomLeft.z;
+            verticles[startVerticlesIndex++] = q.bottomLeft.z;
 
             verticles[startVerticlesIndex++] = q.topLeft.x;
             verticles[startVerticlesIndex++] = q.topLeft.y;
-            verticles[startVerticlesIndex++]=q.topLeft.z;
+            verticles[startVerticlesIndex++] = q.topLeft.z;
 
             verticles[startVerticlesIndex++] = q.bottomRight.x;
             verticles[startVerticlesIndex++] = q.bottomRight.y;
-            verticles[startVerticlesIndex++]=q.bottomRight.z;
+            verticles[startVerticlesIndex++] = q.bottomRight.z;
 
             verticles[startVerticlesIndex++] = q.topRight.x;
             verticles[startVerticlesIndex++] = q.topRight.y;
-            verticles[startVerticlesIndex++]=q.topRight.z;
+            verticles[startVerticlesIndex++] = q.topRight.z;
 
             indices[startIncentIndex++] = q.bottomLeft.index;
             indices[startIncentIndex++] = q.topLeft.index;
@@ -158,8 +162,6 @@ public class Path {
         roadBufferedIndices.position(0);
         //verticles=result.vertices;
         //indices=result.indices;
-
-
 
 
     }
@@ -225,7 +227,6 @@ public class Path {
         quads.add(q);
 
     }
-
 
 
     public void drawGl2(float[] mvpMatrix) {

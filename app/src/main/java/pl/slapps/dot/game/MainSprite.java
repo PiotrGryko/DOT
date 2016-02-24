@@ -9,6 +9,7 @@ import android.util.Log;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.util.Random;
 
 import pl.slapps.dot.R;
 import pl.slapps.dot.SurfaceRenderer;
@@ -16,17 +17,30 @@ import pl.slapps.dot.drawing.Sprite;
 import pl.slapps.dot.drawing.Util;
 import pl.slapps.dot.generator.TileRoute;
 import pl.slapps.dot.generator.TileRouteFinish;
+import pl.slapps.dot.generator.widget.RouteScoreCounter;
 import pl.slapps.dot.model.Config;
 import pl.slapps.dot.model.Route;
 
 
 public class MainSprite extends Sprite {
 
+
+    public interface OnProgressListener {
+        public void onProgressChanged(float value);
+    }
+
+
+    private OnProgressListener listener;
+
+    public void setOnProgressListener(OnProgressListener listener) {
+        this.listener = listener;
+    }
+
+
     private String TAG = MainSprite.class.getName();
     private Maze fence;
 
 
-    private float angle;
     private Config config;
 
 
@@ -36,6 +50,14 @@ public class MainSprite extends Sprite {
 
     public TileRoute lastChangeRoute;
     public TileRoute currentTile;
+    private RouteScoreCounter scoreCounter;
+
+    private float movingProgres = 0;
+    private float totalScore =0;
+
+    private float lightDistance;
+    private float lightShinning;
+
 
     public float spriteSpeed = 0;
     private FloatBuffer lPos = ByteBuffer.allocateDirect(4 * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
@@ -50,7 +72,6 @@ public class MainSprite extends Sprite {
     private int mMVPMatrixHandle;
 
 
-
     float color[] = {0.0f, 0.0f, 0.0f, 1.0f};
 
 
@@ -58,8 +79,9 @@ public class MainSprite extends Sprite {
         this.prepareToDie = prepareToDie;
     }
 
-    public void setRotation(float angle) {
-        this.angle = angle;
+
+    public void setInitialProgress(float value) {
+        movingProgres += value;
     }
 
     public boolean isMoving() {
@@ -72,7 +94,7 @@ public class MainSprite extends Sprite {
     public MainSprite(Game view, float centerX, float centerY, int width,
                       int height, Config config) {
 
-        super(centerX, centerY, width, height,true);
+        super(centerX, centerY, width, height, true);
         this.game = view;
         fence = view.getMaze();
 
@@ -82,19 +104,40 @@ public class MainSprite extends Sprite {
         configure(config);
 
 
+    }
+
+    public void onProgressChanged(float value) {
+        if (config.settings.switchDotLightDistance) {
+
+            lightDistance = config.settings.dotLightDistanceStart + (config.settings.dotLightDistanceEnd - config.settings.dotLightDistanceStart) * value;
+        }
 
     }
 
-    public void configure(Config config)
-    {
-        this.config=config;
+    public void configure(Config config) {
+        this.config = config;
         color = Util.parseColor(config.colors.colorShip);
+        if (!config.settings.switchDotLightDistance)
+            lightDistance = config.settings.dotLightDistance;
+        else
+            lightDistance = config.settings.dotLightDistanceStart;
+
+        lightShinning = config.settings.dotLightShinning;
 
     }
 
 
     public void update() {
         super.update();
+
+        //if(moveX!=0 || moveY!=0)
+
+        movingProgres += Math.abs(this.x) + Math.abs(this.y);
+        if (movingProgres != 0 && movingProgres < fence.getMazeLength()) {
+            if (listener != null)
+                listener.onProgressChanged(movingProgres / fence.getMazeLength());
+            //Log.d("aaa", "moving progress " + movingProgres);
+        }
         //fence.setMove(-x, -y);
         //background.setMove(-x, -y);
 
@@ -111,8 +154,31 @@ public class MainSprite extends Sprite {
         TileRoute collision = fence.checkRouteCollision(centerX, centerY, width / 2);
         TileRoute tmpCurrent = fence.getCurrentRouteObject(centerX, centerY);
 
+
         if (tmpCurrent != null && currentTile != tmpCurrent) {
+
+            if (scoreCounter != null) {
+                scoreCounter.setExitCoords(centerX, centerY);
+                totalScore += scoreCounter.estimateScore();
+                Log.d("aaa", "calculate score " + totalScore);
+            }
+
+            if (scoreCounter == null)
+                scoreCounter = new RouteScoreCounter(tmpCurrent);
+            else
+                scoreCounter.setRoute(tmpCurrent);
+
+            scoreCounter.setEnterCoords(centerX, centerY);
+
+            if (tmpCurrent.getType() == Route.Type.FINISH) {
+                scoreCounter.setExitCoords(centerX, centerY);
+                Log.d("aaa", "calculate score " + scoreCounter.estimateScore());
+            }
+
+
             currentTile = tmpCurrent;
+
+
             if (x > 0)
                 x = spriteSpeed * (float) currentTile.speedRatio;
 
@@ -128,18 +194,23 @@ public class MainSprite extends Sprite {
         }
 
         if (collision != null) {
-            if (collision instanceof TileRouteFinish && currentTile.getType()== Route.Type.FINISH) {
+            if (collision instanceof TileRouteFinish && currentTile.getType() == Route.Type.FINISH) {
                 game.explodeDot(false);
                 game.destroyDot();
-                if(game.getPreview())
+                if (game.getPreview())
                     game.resetDot();
                 else
-                    game.gameView.moveToNextLvl();
+                    game.gameView.moveToNextLvl((totalScore/fence.routes.size())*100);
+                //    game.resetDot();
+
             } else if (!prepareToDie) {
                 game.crashDot(true);
                 //    game.toggleColors();
             } else {
                 game.explodeDot(true);
+
+                if(new Random().nextFloat()>0.8f)
+                    game.context.showAdv();
 
                 game.resetDot();
                 //   game.toggleColors();
@@ -183,21 +254,16 @@ public class MainSprite extends Sprite {
         SurfaceRenderer.checkGlError("glUniformMatrix4fv");
 
 
-
         GLES20.glUniform3f(game.mDotLightPosHandle, getCenterX(), getCenterY(), 0.0f);
-        GLES20.glUniform1f(game.mDotLightDistanceHandle, config.settings.dotLightDistance);
-        GLES20.glUniform1f(game.mDotLightShinningHandle, config.settings.dotLightShinning);
+        GLES20.glUniform1f(game.mDotLightDistanceHandle, lightDistance);
+        GLES20.glUniform1f(game.mDotLightShinningHandle, lightShinning);
         GLES20.glUniform4fv(game.mDotLightColorHandle, 1, color, 0);
-
 
 
         // Draw the square
         GLES20.glDrawElements(
                 GLES20.GL_TRIANGLES, indices.length,
                 GLES20.GL_UNSIGNED_SHORT, bufferedIndices);
-
-
-
 
 
         // Disable vertex array

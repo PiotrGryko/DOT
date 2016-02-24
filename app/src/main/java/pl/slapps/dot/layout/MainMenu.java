@@ -1,14 +1,11 @@
-package pl.slapps.dot;
+package pl.slapps.dot.layout;
 
 import android.app.Dialog;
 import android.graphics.Color;
-import android.support.v4.view.ViewCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
-import android.view.animation.Animation;
-import android.view.animation.Transformation;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageButton;
@@ -34,6 +31,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import pl.slapps.dot.DAO;
+import pl.slapps.dot.MainActivity;
+import pl.slapps.dot.R;
+import pl.slapps.dot.SurfaceRenderer;
 import pl.slapps.dot.adapter.AdapterStages;
 import pl.slapps.dot.adapter.AdapterWorlds;
 import pl.slapps.dot.model.Stage;
@@ -46,20 +47,16 @@ public class MainMenu {
 
 
     private String TAG = MainMenu.class.getName();
-    public HideAnimation menuHideAnimation;
-    public ShowAnimation menuShowAnimation;
-    public HideAnimation headerHideAnimation;
-    public HideAnimation btnsHideAnimation;
-    public EntranceAnimation entranceAnimation;
+
 
     private TextView tvName;
     private TextView tvDesc;
 
     public ImageView btnSettings;
     public LinearLayout layoutMenu;
-    private LinearLayout layoutBtns;
-    private LinearLayout layoutHeader;
-    private TextView tvHeader;
+    public LinearLayout layoutBtns;
+    public LinearLayout layoutHeader;
+    public TextView tvHeader;
     public LinearLayout menuBkg;
 
 
@@ -69,8 +66,14 @@ public class MainMenu {
     private ImageButton btnStages;
     private ImageButton btnOnline;
 
-    private void disableButtons()
+    private AnimationMainMenu animationMainMenu;
+
+    public AnimationMainMenu getAnimationMainMenu()
     {
+        return animationMainMenu;
+    }
+
+    public void disableButtons() {
         btnPlay.setEnabled(false);
         btnExit.setEnabled(false);
         btnGenerate.setEnabled(false);
@@ -78,8 +81,7 @@ public class MainMenu {
         btnOnline.setEnabled(false);
     }
 
-    public void enableButtons()
-    {
+    public void enableButtons() {
         btnPlay.setEnabled(true);
         btnExit.setEnabled(true);
         btnGenerate.setEnabled(true);
@@ -89,6 +91,11 @@ public class MainMenu {
 
     private MainActivity context;
     private SurfaceRenderer game;
+
+    public SurfaceRenderer getGame()
+    {
+        return game;
+    }
 
     public MainMenu(MainActivity context, SurfaceRenderer game) {
         this.context = context;
@@ -100,29 +107,19 @@ public class MainMenu {
 
     public void loadStage(Stage stage) {
 
-        final int color = Color.parseColor(stage.config.colors.colorBackground);
+        final int color = Color.parseColor(stage.config.colors.colorRoute);
 
 
-        layoutMenu.clearAnimation();
+        //layoutMenu.clearAnimation();
         tvName.setTextColor(color);
         tvDesc.setTextColor(color);
-        if (layoutMenu.getVisibility() == View.GONE)
-            menuShowAnimation.startAnimation(new OnAnimationListener() {
-                @Override
-                public void onAnimationEnd() {
-                    context.mAdView.setVisibility(View.VISIBLE);
-                }
-
-                @Override
-                public void onAnimationStart() {
-
-                }
-            });
-
         tvName.setText(stage.name);
         tvDesc.setText(stage.description);
-    }
+        //layoutMenu.setVisibility(View.VISIBLE);
 
+
+
+    }
 
 
     public String loadWorlds() {
@@ -155,7 +152,18 @@ public class MainMenu {
     }
 
 
-    private void initMainMenu() {
+    public void init() {
+
+        animationMainMenu = new AnimationMainMenu(this);
+        btnSettings = (ImageView) context.findViewById(R.id.btn_settings);
+        layoutMenu = (LinearLayout) context.findViewById(R.id.layout_menu);
+        layoutBtns = (LinearLayout) context.findViewById(R.id.layout_btns);
+        layoutHeader = (LinearLayout) context.findViewById(R.id.layout_header);
+        tvHeader = (TextView) context.findViewById(R.id.tv_header);
+        btnSettings.setVisibility(View.GONE);
+        menuBkg = (LinearLayout) context.findViewById(R.id.menu_bkg);
+
+
 
         tvName = (TextView) context.findViewById(R.id.tv_lvl);
         tvDesc = (TextView) context.findViewById(R.id.tv_desc);
@@ -166,6 +174,7 @@ public class MainMenu {
         btnStages = (ImageButton) context.findViewById(R.id.btn_stages);
         btnOnline = (ImageButton) context.findViewById(R.id.btn_online);
 
+        animationMainMenu.init();
         LoginButton loginButton = (LoginButton) context.findViewById(R.id.login_button);
         loginButton.setReadPermissions("user_friends");
         // If using in a fragment
@@ -201,16 +210,9 @@ public class MainMenu {
             public void onClick(View view) {
 
 
-                if (context.mInterstitialAd.isLoaded()) {
-                    context.mInterstitialAd.show();
-                } else {
-                    game.setDrawing(true);
-                    disableButtons();
-                    headerHideAnimation.startAnimation();
-                    btnsHideAnimation.startAnimation();
-                    context.mAdView.setVisibility(View.GONE);
-                }
 
+                context.mAdView.setVisibility(View.GONE);
+                animationMainMenu.hideMenu();
 
             }
         });
@@ -222,7 +224,8 @@ public class MainMenu {
                 game.initGenerator();
                 game.setRunnig(true);
                 btnSettings.setVisibility(View.VISIBLE);
-                menuHideAnimation.startAnimation();
+                layoutMenu.setVisibility(View.GONE);
+                //menuHideAnimation.startAnimation(500);
                 context.mAdView.setVisibility(View.GONE);
 
 
@@ -326,12 +329,12 @@ public class MainMenu {
             @Override
             public void onClick(View view) {
 
-                Log.d(TAG,"button online pressed");
+                Log.d(TAG, "button online pressed");
 
                 DAO.getWorlds(context, new Response.Listener() {
                     @Override
                     public void onResponse(Object response) {
-                        Log.d(TAG,"online stages fetched");
+                        Log.d(TAG, "online stages fetched");
 
                         final Dialog worldsDialog = new Dialog(context);
                         worldsDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
@@ -391,10 +394,10 @@ public class MainMenu {
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                    Log.d(TAG,"error fetching online stages "+error.getMessage());
-                        Log.d(TAG,error.toString());
+                        Log.d(TAG, "error fetching online stages " + error.getMessage());
+                        Log.d(TAG, error.toString());
                     }
-                },true);
+                }, true);
 
 
             }
@@ -404,233 +407,7 @@ public class MainMenu {
     }
 
 
-    public void initMenu() {
-
-        btnSettings = (ImageView) context.findViewById(R.id.btn_settings);
-        layoutMenu = (LinearLayout) context.findViewById(R.id.layout_menu);
-        layoutBtns = (LinearLayout) context.findViewById(R.id.layout_btns);
-        layoutHeader = (LinearLayout) context.findViewById(R.id.layout_header);
-        tvHeader = (TextView) context.findViewById(R.id.tv_header);
-        btnSettings.setVisibility(View.GONE);
-        menuBkg = (LinearLayout) context.findViewById(R.id.menu_bkg);
-
-        menuHideAnimation = new HideAnimation(layoutMenu, new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-
-                game.setRunnig(true);
-                layoutMenu.setVisibility(View.GONE);
-                //menuHideAnimation.clearAnimation();
-                entranceAnimation.clearAnimation();
-                btnsHideAnimation.clearAnimation();
-                headerHideAnimation.clearAnimation();
 
 
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-        });
-        menuShowAnimation = new ShowAnimation(layoutMenu);
-        headerHideAnimation = new HideAnimation(tvHeader, new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-        });
-        entranceAnimation = new EntranceAnimation(layoutHeader, new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-
-                menuHideAnimation.startAnimation();
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-        });
-        btnsHideAnimation = new HideAnimation(layoutBtns, new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-
-                entranceAnimation.startAnimation();
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-        });
-
-
-        initMainMenu();
-
-    }
-
-
-    class HideAnimation {
-        private View view;
-        private Animation animation;
-
-        public HideAnimation(final View view, Animation.AnimationListener listener) {
-            this.view = view;
-            animation = new Animation() {
-                @Override
-                protected void applyTransformation(float interpolatedTime, Transformation t) {
-                    super.applyTransformation(interpolatedTime, t);
-                    ViewCompat.setAlpha(view, 1 - interpolatedTime);
-                }
-            };
-
-            animation.setDuration(300);
-            if (listener != null)
-                animation.setAnimationListener(listener);
-            else {
-                animation.setAnimationListener(new Animation.AnimationListener() {
-                    @Override
-                    public void onAnimationStart(Animation animation) {
-
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                        view.setVisibility(View.GONE);
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {
-
-                    }
-                });
-            }
-        }
-
-        public void startAnimation() {
-            view.startAnimation(animation);
-        }
-
-        public void clearAnimation() {
-            ViewCompat.setAlpha(view, 1);
-        }
-    }
-
-
-    interface OnAnimationListener {
-        public void onAnimationEnd();
-
-        public void onAnimationStart();
-    }
-
-    class ShowAnimation {
-        private View view;
-        private Animation animation;
-        private OnAnimationListener listener;
-
-
-        public ShowAnimation(final View view) {
-            this.view = view;
-            animation = new Animation() {
-                @Override
-                protected void applyTransformation(float interpolatedTime, Transformation t) {
-                    super.applyTransformation(interpolatedTime, t);
-                    ViewCompat.setAlpha(view, interpolatedTime);
-                }
-            };
-            animation.setDuration(150);
-            animation.setAnimationListener(new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {
-                    if (listener != null)
-                        listener.onAnimationStart();
-
-                    view.setVisibility(View.VISIBLE);
-
-                }
-
-                @Override
-                public void onAnimationEnd(Animation animation) {
-
-                    if (listener != null)
-                        listener.onAnimationEnd();
-                }
-
-                @Override
-                public void onAnimationRepeat(Animation animation) {
-
-                }
-            });
-        }
-
-        public void startAnimation(OnAnimationListener listener) {
-            this.listener = listener;
-            view.startAnimation(animation);
-            //generator.setVisibility(View.VISIBLE);
-        }
-
-    }
-
-    class EntranceAnimation {
-        private View view;
-        private Animation animation;
-
-        public EntranceAnimation(final View view, Animation.AnimationListener listener) {
-            this.view = view;
-
-            animation = new Animation() {
-                @Override
-                protected void applyTransformation(float interpolatedTime, Transformation t) {
-                    super.applyTransformation(interpolatedTime, t);
-                    ViewCompat.setScaleX(view, 1 + interpolatedTime / 3);
-                    ViewCompat.setScaleY(view, 1 + interpolatedTime / 3);
-
-
-                }
-            };
-
-
-            animation.setDuration(2000);
-
-
-            if (listener != null)
-                animation.setAnimationListener(listener);
-        }
-
-        public void startAnimation() {
-            view.startAnimation(animation);
-        }
-
-        public void clearAnimation() {
-            ViewCompat.setScaleX(view, 1);
-            ViewCompat.setScaleY(view, 1);
-        }
-    }
 
 }

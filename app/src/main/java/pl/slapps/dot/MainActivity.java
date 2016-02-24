@@ -19,12 +19,15 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.facebook.FacebookSdk;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 
+
+import io.fabric.sdk.android.Fabric;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,6 +41,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
+import pl.slapps.dot.layout.AnimationShow;
+import pl.slapps.dot.layout.MainMenu;
+import pl.slapps.dot.layout.AnimationScoreLayout;
 import pl.slapps.dot.model.Stage;
 
 public class MainActivity extends Activity {
@@ -70,6 +76,7 @@ public class MainActivity extends Activity {
     public AdView mAdView;
 
     public MainMenu mainMenu;
+    public AnimationScoreLayout scoreLayout;
 
     public DrawerLayout drawer;
     public LinearLayout drawerContent;
@@ -89,13 +96,13 @@ public class MainActivity extends Activity {
         return files;
     }
 
-    public void setCurrent(final long value) {
+    public void setCurrent(final float value) {
         handler.post(new Runnable() {
             @Override
             public void run() {
 
 
-                tvCur.setText(Long.toString(value));
+                tvCur.setText(Integer.toString((int) value));
 
 
             }
@@ -154,6 +161,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
 
         screenHeight = this.getResources().getDisplayMetrics().heightPixels;
         screenWidth = this.getResources().getDisplayMetrics().widthPixels;
@@ -202,11 +210,13 @@ public class MainActivity extends Activity {
         surfaceRenderer = (SurfaceRenderer) findViewById(R.id.game);
 
         mainMenu = new MainMenu(this, surfaceRenderer);
+        scoreLayout = new AnimationScoreLayout();
         drawer = (DrawerLayout) findViewById(R.id.drawer);
         drawerContent = (LinearLayout) findViewById(R.id.drawer_content);
         drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-        mainMenu.initMenu();
+        mainMenu.init();
         surfaceRenderer.init(this);
+        scoreLayout.initLayout(this);
         //initMainMenu();
 
 
@@ -232,9 +242,9 @@ public class MainActivity extends Activity {
             @Override
             public void onAdClosed() {
                 requestNewInterstitial();
-                mainMenu.headerHideAnimation.startAnimation();
-                mainMenu.btnsHideAnimation.startAnimation();
-                mAdView.setVisibility(View.GONE);
+                //    mainMenu.headerHideAnimation.startAnimation(500);
+                //    mainMenu.btnsHideAnimation.startAnimation(500);
+                //mAdView.setVisibility(View.GONE);
 
             }
         });
@@ -242,9 +252,20 @@ public class MainActivity extends Activity {
         requestNewInterstitial();
 
 
+    }
+
+    public void showAdv() {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
 
 
+                if (mInterstitialAd.isLoaded()) {
+                    mInterstitialAd.show();
+                }
 
+            }
+        });
     }
 
     private void requestNewInterstitial() {
@@ -278,14 +299,10 @@ public class MainActivity extends Activity {
             final int color = Color.parseColor(stage.config.colors.colorBackground);
             int c = Color.argb(100, Color.red(color), Color.green(color), Color.blue(color));
             mainMenu.menuBkg.setBackgroundColor(c);
+            scoreLayout.config(stage);
+            mainMenu.loadStage(stage);
 
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    mainMenu.loadStage(stage);
 
-                }
-            });
             surfaceRenderer.loadStageData(stage);
 
 
@@ -301,23 +318,54 @@ public class MainActivity extends Activity {
             drawer.openDrawer(drawerContent);
     }
 
-    public void moveToNextStage() {
+    public void moveToNextStage(final String points) {
 
 
         currentStage++;
         if (currentStage >= stages.length())
-            currentStage = stages.length() - 1;
-        try {
-            loadStage(Stage.valueOf(stages.getJSONObject(currentStage)));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+            currentStage = 0;
+
 
         int savedStage = preferences.getInt("current_stage", 0);
         if (savedStage < currentStage) {
             unlockedStage = currentStage;
             preferences.edit().putInt("current_stage", unlockedStage).apply();
         }
+
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                Log.d("Zzz", "load stage " + currentStage + " " + stages.length());
+                //mainMenu.getAnimationMainMenu().showMe;
+
+
+                scoreLayout.showScore(points, new AnimationShow.OnAnimationListener() {
+                    @Override
+                    public void onAnimationEnd() {
+
+
+                        Log.d("zzz", "move to next stage");
+                        //mainMenu.playStage(false);
+                        try {
+                            loadStage(Stage.valueOf(stages.getJSONObject(currentStage)));
+                            surfaceRenderer.setRunnig(true);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+
+                    @Override
+                    public void onAnimationStart() {
+
+                    }
+                });
+
+
+            }
+
+        });
     }
 
 
@@ -368,25 +416,15 @@ public class MainActivity extends Activity {
 
 
     public void onBackPressed() {
-        Log.d("zzz","on back pressd");
+        Log.d("zzz", "on back pressd");
 
         mainMenu.layoutMenu.clearAnimation();
 
         if (surfaceRenderer.onBackPressed()) {
             if (mainMenu.layoutMenu.getVisibility() == View.GONE) {
                 surfaceRenderer.setRunnig(false);
-                mainMenu.menuShowAnimation.startAnimation(new MainMenu.OnAnimationListener() {
-                    @Override
-                    public void onAnimationEnd() {
-                        mainMenu.enableButtons();
+                mainMenu.getAnimationMainMenu().showMenu();
 
-                    }
-
-                    @Override
-                    public void onAnimationStart() {
-
-                    }
-                });
                 mAdView.setVisibility(View.VISIBLE);
                 mainMenu.btnSettings.setVisibility(View.GONE);
 

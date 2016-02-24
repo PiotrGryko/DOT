@@ -150,7 +150,7 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
         if (startMonitoring && isRunning) {
             context.setMax(renderTime);
             context.setMin(renderTime);
-            context.setCurrent(renderTime);
+            //context.setCurrent(renderTime);
         }
 
     }
@@ -314,7 +314,7 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
     }
 
 
-    public void moveToNextLvl() {
+    public void moveToNextLvl(final float points) {
         //resetDot();
         //maze.clearRoutes();
         context.getSoundsManager().playFinishSound();
@@ -322,7 +322,7 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                context.moveToNextStage();
+                context.moveToNextStage(Integer.toString((int)points)+"%");
 
             }
         }, 1000);

@@ -40,8 +40,6 @@ public class TileRouteFinish extends TileRoute {
 
         Route.Direction f = this.to;
 
-        if(generator ==null)
-            Log.d("XXX", "tile route finish generator is null " + d.name());
 
         switch (f) {
             case LEFT: {

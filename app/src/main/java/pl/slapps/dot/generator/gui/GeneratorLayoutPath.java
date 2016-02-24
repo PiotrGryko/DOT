@@ -312,8 +312,8 @@ public class GeneratorLayoutPath {
 
                     //generator.startRouteConfiguration();
                     generator.startRouteConfiguration();
-                    ArrayList<TileRoute> currentRoutes = generator.getPath();
-                    GeneratorLayoutPath.this.generatorLayout.layoutConstruct.refreashLayout(currentRoutes);
+                    //ArrayList<TileRoute> currentRoutes = generator.getPath();
+                    //GeneratorLayoutPath.this.generatorLayout.layoutConstruct.refreashLayout(currentRoutes);
 
                     Route.Movement movement = r.getDirection();
                     switch (movement) {

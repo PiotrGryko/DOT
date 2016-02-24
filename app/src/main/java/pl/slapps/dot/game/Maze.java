@@ -30,14 +30,19 @@ public class Maze {
     // public float spriteSpeed;
 
 
-
     private Path path;
     private Fence fence;
 
+    private float mazeLength;
 
 
-    public void configure(Config config)
-    {
+    public void onProgressChanged(float value) {
+
+        path.onProgressChanged(value);
+
+    }
+
+    public void configure(Config config) {
         path.configure(config);
         fence.configure(config);
 
@@ -74,6 +79,47 @@ public class Maze {
         routes = output;
 
 
+    }
+
+    private float calculateLength() {
+        float length = 0;
+
+
+        for (TileRoute t : routes) {
+            switch (t.getDirection()) {
+                case LEFTRIGHT:
+                case RIGHTLEFT:
+                    length += t.width;
+                    if (t.getType() == Route.Type.START || t.getType() == Route.Type.FINISH) {
+                        length -= t.borderX;
+                    }
+                    break;
+                case LEFTBOTTOM:
+                case LEFTTOP:
+                case RIGHTBOTTOM:
+                case RIGHTTOP:
+                    length += t.width / 2 + t.height / 2;
+                    break;
+                case BOTTOMLEFT:
+                case TOPLEFT:
+                case BOTTOMRIGHT:
+                case TOPRIGHT:
+
+                    length += t.height / 2 + t.width / 2;
+                    break;
+                case TOPBOTTOM:
+                case BOTTOMTOP:
+                    length += t.height;
+                    if (t.getType() == Route.Type.START || t.getType() == Route.Type.FINISH) {
+                        length -= t.borderY;
+                    }
+                    break;
+
+
+            }
+        }
+
+        return length;
     }
 
     private TileRoute findNextRoute(TileRoute t) {
@@ -164,12 +210,17 @@ public class Maze {
 
         }
         sortMaze();
-        Log.d(TAG, "elements loaded ");
+        mazeLength = calculateLength();
+        Log.d("aaa", "elements loaded " + mazeLength);
         //initWallsDrawing();
-        path = new Path(routes,  game,stage.config);
-        fence = new Fence(routes, game,stage.config);
+        path = new Path(routes, game, stage.config);
+        fence = new Fence(routes, game, stage.config);
 
 
+    }
+
+    public float getMazeLength() {
+        return mazeLength;
     }
 
 
@@ -182,11 +233,10 @@ public class Maze {
         return null;
     }
 
-    public void configRoute(TileRoute route)
-    {
-        TileRoute t = findTile(route.horizontalPos,route.verticalPos);
-        if(t!=null)
-        t.configRoute(route);
+    public void configRoute(TileRoute route) {
+        TileRoute t = findTile(route.horizontalPos, route.verticalPos);
+        if (t != null)
+            t.configRoute(route);
     }
 
 
@@ -250,7 +300,6 @@ public class Maze {
 */
 
     }
-
 
 
 }
