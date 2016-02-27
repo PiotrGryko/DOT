@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import pl.slapps.dot.MainActivity;
 import pl.slapps.dot.R;
+import pl.slapps.dot.SurfaceRenderer;
 import pl.slapps.dot.drawing.Util;
 import pl.slapps.dot.model.Config;
 import pl.slapps.dot.model.Stage;
@@ -41,6 +42,13 @@ public class AnimationScoreLayout {
     private String textColor;
 
     private Animation colorAnimation;
+
+    private SurfaceRenderer renderer;
+
+
+    public AnimationScoreLayout(SurfaceRenderer renderer) {
+        this.renderer = renderer;
+    }
 
 
     public void config(Stage stage) {
@@ -91,7 +99,22 @@ public class AnimationScoreLayout {
         headerShowAnimation = new AnimationShow(layoutHeader);
         headerEntranceAnimation = new AnimationEntrance(layoutHeader);
 
-        hideAnimation = new AnimationHide(scoreLayout, null);
+        hideAnimation = new AnimationHide(scoreLayout, new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                renderer.setRunnig(true);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
 
 
         colorAnimation = new Animation() {
@@ -170,6 +193,7 @@ public class AnimationScoreLayout {
         tvScore.setText(score);
         ViewCompat.setAlpha(tvScore, 1);
 
+
         entranceAnimation.clearAnimation();
         headerEntranceAnimation.clearAnimation();
         hideAnimation.clearAnimation();
@@ -179,6 +203,7 @@ public class AnimationScoreLayout {
         //scoreLayout.setVisibility(View.VISIBLE);
 
         Log.d("zzz", "start animation");
+
         showAnimation.startAnimation(new AnimationShow.OnAnimationListener() {
             @Override
             public void onAnimationEnd() {

@@ -22,6 +22,12 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent" />
 
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+
+            </View>
+
             <LinearLayout
                 android:id="@+id/layout_menu"
                 android:layout_width="fill_parent"

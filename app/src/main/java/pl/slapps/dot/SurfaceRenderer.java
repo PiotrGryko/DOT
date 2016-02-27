@@ -262,6 +262,10 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
         this.isDrawing=isDrawing;
     }
 
+    public void setInteracting(boolean interacting)
+    {
+        this.isRunning=interacting;
+    }
 
     public void setRunnig(boolean isRunnig) {
         this.isRunning = isRunnig;

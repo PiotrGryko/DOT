@@ -211,7 +211,7 @@ public class Game {
                 background.onProgressChanged(value);
             if (maze != null)
                 maze.onProgressChanged(value);
-            if(mainSprite!=null)
+            if (mainSprite != null)
                 mainSprite.onProgressChanged(value);
         }
     }
@@ -228,21 +228,19 @@ public class Game {
             background.drawGl2(mMVPMatrix);
 
 
-        if (maze != null && mainSprite != null) {
-
+        if (maze != null)
             maze.drawGL20(mMVPMatrix);
 
-
+        if (mainSprite != null)
             mainSprite.drawGl2(mMVPMatrix);
 
-            for (int i = 0; i < explosions.size(); i++) {
-                explosions.get(i).drawGl2(mMVPMatrix);
-            }
-            //if (currentExplosion != null)
-            //   toggleColors(currentExplosion.getProgress());
-
-
+        for (int i = 0; i < explosions.size(); i++) {
+            explosions.get(i).drawGl2(mMVPMatrix);
         }
+        //if (currentExplosion != null)
+        //   toggleColors(currentExplosion.getProgress());
+
+
         update();
 
 
@@ -251,7 +249,7 @@ public class Game {
 
     private void setDotMovement(Route.Movement movement) {
 
-        if (movement == null || mainSprite==null)
+        if (movement == null || mainSprite == null)
             return;
 
         switch (movement) {
@@ -449,6 +447,7 @@ public class Game {
 
     public void destroyDot() {
         mainSprite = null;
+       /*
         TileRoute startRoute = maze.getStartRoute();
         float startX = startRoute.topX + startRoute.width / 2;
         float startY = startRoute.topY + startRoute.height / 2;
@@ -461,6 +460,7 @@ public class Game {
             }
         });
         stopDot();
+    */
     }
 
     public Explosion explodeDot(boolean sound) {
@@ -520,8 +520,8 @@ public class Game {
 
             }
         } else {
-            if(mainSprite!=null)
-            mainSprite.lastChangeRoute = startRoute;
+            if (mainSprite != null)
+                mainSprite.lastChangeRoute = startRoute;
             return startRoute.next;
         }
         return startRoute.next;

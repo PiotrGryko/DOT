@@ -730,6 +730,7 @@ public class Generator {
 
                     pathPopup.show(event.getX(), event.getY());
 
+
                     return true;
                 }
             }

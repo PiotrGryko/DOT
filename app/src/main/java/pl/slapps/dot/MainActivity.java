@@ -210,7 +210,7 @@ public class MainActivity extends Activity {
         surfaceRenderer = (SurfaceRenderer) findViewById(R.id.game);
 
         mainMenu = new MainMenu(this, surfaceRenderer);
-        scoreLayout = new AnimationScoreLayout();
+        scoreLayout = new AnimationScoreLayout(surfaceRenderer);
         drawer = (DrawerLayout) findViewById(R.id.drawer);
         drawerContent = (LinearLayout) findViewById(R.id.drawer_content);
         drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
@@ -348,8 +348,8 @@ public class MainActivity extends Activity {
                         //mainMenu.playStage(false);
                         try {
                             loadStage(Stage.valueOf(stages.getJSONObject(currentStage)));
-                            surfaceRenderer.setRunnig(true);
-
+                            //surfaceRenderer.setRunnig(true);
+                            surfaceRenderer.setDrawing(true);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

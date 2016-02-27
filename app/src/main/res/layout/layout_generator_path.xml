@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:background="@drawable/rounded_bkg"
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
@@ -194,5 +193,75 @@
 
 
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_details"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
+        android:orientation="vertical"
+        android:padding="10dp"
+        >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="speed ratio: " />
+
+            <pl.slapps.dot.generator.widget.NumberPickerTextView
+                android:layout_width="wrap_content"
+                android:id="@+id/et_speed_ratio"
+                android:layout_height="wrap_content"></pl.slapps.dot.generator.widget.NumberPickerTextView>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="press sound"
+            android:textStyle="bold" />
+
+        <LinearLayout
+
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/abc_list_selector_holo_light"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/btn_play_sound"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:soundEffectsEnabled="false"
+                android:src="@drawable/play_btn" />
+
+
+            <TextView
+
+                android:id="@+id/btn_choose_sound"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:text="choose sound" />
+
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/img_trash"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+
+            android:background="@drawable/abc_list_selector_holo_light"
+            android:soundEffectsEnabled="false"
+            android:src="@drawable/trash" />
+    </LinearLayout>
+
 
 </LinearLayout>

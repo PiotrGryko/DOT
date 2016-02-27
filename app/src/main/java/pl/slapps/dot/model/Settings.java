@@ -37,7 +37,7 @@ public class Settings {
         try {
             settings.put("dot_light_shinning", dotLightShinning);
             settings.put("dot_light_distance", dotLightDistance);
-            settings.put("explosion_one_light_shinning", explosionTwoLightDistance);
+            settings.put("explosion_one_light_shinning", explosionOneLightShinning);
             settings.put("explosion_one_light_distance", explosionOneLightDistance);
             settings.put("explosion_two_light_shinning", explosionTwoLightShinning);
             settings.put("explosion_two_light_distance", explosionTwoLightDistance);

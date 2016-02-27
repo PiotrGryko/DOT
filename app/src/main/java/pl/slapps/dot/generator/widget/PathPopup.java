@@ -109,5 +109,7 @@ public class PathPopup {
 
             mPopup.showAtLocation(generator.view, Gravity.NO_GRAVITY, (int) mCurrentX, (int) mCurrentY);
         }
+        layoutPath.estimateAllDirections();
+
     }
 }
