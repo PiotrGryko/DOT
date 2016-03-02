@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
     <LinearLayout
         android:id="@+id/layout_world"
@@ -16,7 +18,7 @@
             android:orientation="vertical"
             android:padding="5dp">
 
-            <TextView
+            <pl.slapps.dot.layout.FontedTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="name" />
@@ -49,7 +51,7 @@
 
                     android:layout_margin="5dp"></View>
 
-                <TextView
+                <pl.slapps.dot.layout.FontedTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
@@ -74,7 +76,7 @@
 
                     android:layout_margin="5dp"></View>
 
-                <TextView
+                <pl.slapps.dot.layout.FontedTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="5dp"
@@ -124,7 +126,7 @@
 
                     android:layout_margin="5dp"></View>
 
-                <TextView
+                <pl.slapps.dot.layout.FontedTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
@@ -148,7 +150,7 @@
 
                     android:layout_margin="5dp"></View>
 
-                <TextView
+                <pl.slapps.dot.layout.FontedTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
@@ -176,7 +178,8 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <TextView
+                    <pl.slapps.dot.layout.FontedTextView
+                        custom:bold="true"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:padding="5dp"
@@ -198,7 +201,7 @@
                             android:soundEffectsEnabled="false"
                             android:src="@drawable/play_btn" />
 
-                        <TextView
+                        <pl.slapps.dot.layout.FontedTextView
 
                             android:id="@+id/btn_choose_world_background"
                             android:layout_width="120dp"
@@ -215,7 +218,8 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <TextView
+                    <pl.slapps.dot.layout.FontedTextView
+                        custom:bold="true"
 
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
@@ -239,7 +243,7 @@
                             android:soundEffectsEnabled="false"
                             android:src="@drawable/play_btn" />
 
-                        <TextView
+                        <pl.slapps.dot.layout.FontedTextView
                             android:id="@+id/btn_choose_world_press"
 
                             android:layout_width="120dp"
@@ -257,7 +261,8 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <TextView
+                    <pl.slapps.dot.layout.FontedTextView
+                        custom:bold="true"
 
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
@@ -281,7 +286,7 @@
                             android:soundEffectsEnabled="false"
                             android:src="@drawable/play_btn" />
 
-                        <TextView
+                        <pl.slapps.dot.layout.FontedTextView
 
                             android:id="@+id/btn_choose_world_crash"
                             android:layout_width="120dp"
@@ -299,7 +304,8 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <TextView
+                    <pl.slapps.dot.layout.FontedTextView
+                        custom:bold="true"
 
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
@@ -323,7 +329,7 @@
                             android:soundEffectsEnabled="false"
                             android:src="@drawable/play_btn" />
 
-                        <TextView
+                        <pl.slapps.dot.layout.FontedTextView
 
                             android:id="@+id/btn_choose_world_finish"
                             android:layout_width="120dp"

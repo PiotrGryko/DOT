@@ -1,6 +1,7 @@
 package pl.slapps.dot.generator.gui;
 
 import android.app.Dialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -11,6 +12,16 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+
+import pl.slapps.dot.DAO;
 import pl.slapps.dot.MainActivity;
 import pl.slapps.dot.R;
 import pl.slapps.dot.SoundsManager;
@@ -38,14 +49,16 @@ public class GeneratorLayoutSounds {
     private ImageView btnPlayCrash;
     private ImageView btnPlayFinish;
 
-    public View getLayout()
-    {
+    public View getLayout() {
         return layoutSounds;
     }
 
 
 
+
     public void refreashLayout() {
+
+        Log.d("aaa",generator.getConfig().sounds.toJson().toString());
         if (!generator.getConfig().sounds.soundBackground.trim().equals(""))
             btnSoundBackground.setText(generator.getConfig().sounds.soundBackground);
 
@@ -65,10 +78,10 @@ public class GeneratorLayoutSounds {
     }
 
     public void initLayout(GeneratorLayout generatorLayout) {
-        this.generatorLayout=generatorLayout;
-        this.generator=generatorLayout.generator;
+        this.generatorLayout = generatorLayout;
+        this.generator = generatorLayout.generator;
 
-        layoutSounds = LayoutInflater.from(this.generator.view.context).inflate(R.layout.layout_generator_sounds,null);
+        layoutSounds = LayoutInflater.from(this.generator.view.context).inflate(R.layout.layout_generator_sounds, null);
 
         btnSoundBackground = (TextView) layoutSounds.findViewById(R.id.btn_choose_background);
         btnSoundPress = (TextView) layoutSounds.findViewById(R.id.btn_choose_press);

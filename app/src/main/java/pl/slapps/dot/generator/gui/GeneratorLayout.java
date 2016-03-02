@@ -59,8 +59,6 @@ public class GeneratorLayout {
     private LinearLayout layoutEffectsBase;
 
 
-
-
     /*
     drawer Main buttons
      */
@@ -79,7 +77,6 @@ public class GeneratorLayout {
     private LinearLayout toggleSave;
 
 
-
     private MainActivity context;
     public Generator generator;
 
@@ -94,10 +91,6 @@ public class GeneratorLayout {
      */
     private World currentWorld;
 
-
-    private TextView tvCurrentX;
-    private TextView tvCurrentY;
-    private TextView tvElementsCountLabel;
 
     private GeneratorLayoutWorlds layoutWorlds;
     private GeneratorLayoutGrid layoutGrid;
@@ -114,23 +107,21 @@ public class GeneratorLayout {
     public GeneratorLayoutConstruct layoutConstruct;
 
 
-
-
-    public GeneratorLayout(MainActivity context,Generator generator, TileRoute tile) {
+    public GeneratorLayout(MainActivity context, Generator generator, TileRoute tile) {
         this.context = context;
         this.tile = tile;
-        this.generator=generator;
+        this.generator = generator;
 
 
         this.layoutWorlds = new GeneratorLayoutWorlds();
-        this.layoutGrid=new GeneratorLayoutGrid();
+        this.layoutGrid = new GeneratorLayoutGrid();
         this.layoutColors = new GeneratorLayoutColors();
-        this.layoutConfig=new GeneratorLayoutConfig();
+        this.layoutConfig = new GeneratorLayoutConfig();
         //this.layoutRoutes = new GeneratorLayoutPath();
-        this.layoutSounds=new GeneratorLayoutSounds();
+        this.layoutSounds = new GeneratorLayoutSounds();
         this.layoutStrings = new GeneratorLayoutStrings();
         this.layoutWorldsList = new GeneratorLayoutWorldsList();
-        this.layoutConstruct=new GeneratorLayoutConstruct();
+        this.layoutConstruct = new GeneratorLayoutConstruct();
         this.layoutPreview = new GeneratorLayoutPreview();
         this.layoutLights = new GeneratorLayoutLights();
         this.layoutEffects = new GeneratorLayoutEffects();
@@ -141,17 +132,12 @@ public class GeneratorLayout {
         return currentWorld;
     }
 
-    public void setCurrentWorld(World world)
-    {
+    public void setCurrentWorld(World world) {
         currentWorld = world;
         loadWorld(currentWorld);
 
         refreshControlls();
     }
-
-
-
-
 
 
     private void loadRoute(Stage stage) {
@@ -221,7 +207,7 @@ public class GeneratorLayout {
             public void onErrorResponse(VolleyError error) {
 
             }
-        });
+        }, currentWorld.id);
 
 
     }
@@ -233,7 +219,7 @@ public class GeneratorLayout {
         View v = LayoutInflater.from(context).inflate(R.layout.dialog_stages, null);
         ListView listView = (ListView) v.findViewById(R.id.lv);
         ArrayList<String> entries = new ArrayList<String>();
-        for (int i = 0; i < context.stages.length(); i++) {
+        for (int i = 0; i < context.stages.size(); i++) {
             entries.add(Integer.toString(i));
         }
         listView.setAdapter(new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, entries));
@@ -241,18 +227,16 @@ public class GeneratorLayout {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View v, int i, long l) {
-                try {
-                    loadRoute(Stage.valueOf(context.stages.getJSONObject(i)));
-                    generator._id = null;
-                    generator.startRouteConfiguration();
 
-                    ArrayList<TileRoute> currentRoutes = generator.getPath();
-                    layoutConstruct.refreashLayout(currentRoutes);
-                    stages.dismiss();
+                loadRoute(context.stages.get(i));
+                generator._id = null;
+                generator.startRouteConfiguration();
 
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                ArrayList<TileRoute> currentRoutes = generator.getPath();
+                layoutConstruct.refreashLayout(currentRoutes);
+                stages.dismiss();
+
+
             }
         });
         stages.setContentView(v);
@@ -260,32 +244,12 @@ public class GeneratorLayout {
     }
 
 
-
-
-
-
-
-
-    public void refreashConstructLength(String label)
-    {
-        tvElementsCountLabel.setText(label);
-    }
-
-
-    public void refreashCurrentTileLabels()
-    {
-        tvCurrentX.setText("current x : " + this.tile.horizontalPos);
-        tvCurrentY.setText("current y : " + this.tile.verticalPos);
-    }
-
-
     public void setCurrentTile(TileRoute tile) {
-        if(this.tile!=null)
+        if (this.tile != null)
             this.tile.setCurrentTile(false);
         this.tile = tile;
         this.tile.setCurrentTile(true);
         //this.tile.getWalls().get(0).getColor()[0]=1.0f;
-        refreashCurrentTileLabels();
 
         this.oldTile = null;
         generator.getPathPopup().refreashLayout();
@@ -391,7 +355,6 @@ public class GeneratorLayout {
     public void refreshControlls() {
 
 
-
         layoutSounds.refreashLayout();
         layoutGrid.refreashLayout();
         layoutColors.refreashLayout();
@@ -402,8 +365,7 @@ public class GeneratorLayout {
     }
 
 
-    public void showPreviewControlls()
-    {
+    public void showPreviewControlls() {
         layoutGridBase.setVisibility(View.GONE);
         layoutColorsBase.setVisibility(View.VISIBLE);
         layoutConfigBase.setVerticalGravity(View.GONE);
@@ -421,8 +383,7 @@ public class GeneratorLayout {
         layoutChooseWorldBase.setVisibility(View.GONE);
     }
 
-    public void showGeneratorConstrolls()
-    {
+    public void showGeneratorConstrolls() {
         toggleWorld.setVisibility(View.GONE);
         layoutChooseWorldBase.setVisibility(View.GONE);
 
@@ -440,8 +401,7 @@ public class GeneratorLayout {
 
     }
 
-    public void showWorldControlls()
-    {
+    public void showWorldControlls() {
         toggleWorld.setVisibility(View.VISIBLE);
         layoutChooseWorldBase.setVisibility(View.VISIBLE);
 
@@ -460,12 +420,10 @@ public class GeneratorLayout {
 
     }
 
-    public void loadWorld(World world)
-    {
+    public void loadWorld(World world) {
 
 
-        if(world==null)
-        {
+        if (world == null) {
             showWorldControlls();
             return;
         }
@@ -478,8 +436,6 @@ public class GeneratorLayout {
         context.drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
         context.drawer.closeDrawer(context.drawerContent);
     }
-
-
 
 
     public View onCreateView() {
@@ -498,11 +454,6 @@ public class GeneratorLayout {
         layoutPreview.initLayout(this);
         layoutLights.initLayout(this);
         layoutEffects.initLayout(this);
-
-        tvCurrentX = (TextView) v.findViewById(R.id.tv_current_x);
-        tvCurrentY = (TextView) v.findViewById(R.id.tv_current_y);
-
-        tvElementsCountLabel = (TextView) v.findViewById(R.id.tv_construct_title);
 
 
         layoutGridBase = (LinearLayout) v.findViewById(R.id.layout_grid_size_base);
@@ -588,7 +539,6 @@ public class GeneratorLayout {
                 }
             }
         });
-
 
 
         toggleSounds.setOnClickListener(new View.OnClickListener() {
@@ -688,7 +638,6 @@ public class GeneratorLayout {
         });
 
 
-
         toggleEffects.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -717,9 +666,7 @@ public class GeneratorLayout {
                             layoutChooseWorldBase.addView(layoutWorldsList.getLayout());
                         }
                     });
-                }
-                else
-                {
+                } else {
                     toggleChooseWorld.setSelected(false);
                     layoutChooseWorldBase.removeView(layoutWorldsList.getLayout());
 
@@ -736,10 +683,8 @@ public class GeneratorLayout {
             }
         });
 
-        refreashCurrentTileLabels();
         return v;
     }
-
 
 
 }

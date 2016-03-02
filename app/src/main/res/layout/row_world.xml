@@ -2,13 +2,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
 
-        <TextView
+        <pl.slapps.dot.layout.FontedTextView
+            custom:bold="true"
             android:id="@+id/tv_world_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -39,13 +41,13 @@
             android:orientation="vertical"
             android:padding="5dp">
 
-            <TextView
+            <pl.slapps.dot.layout.FontedTextView
                 android:id="@+id/tv_world_name"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="name" />
 
-            <TextView
+            <pl.slapps.dot.layout.FontedTextView
                 android:id="@+id/tv_stages_count"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"

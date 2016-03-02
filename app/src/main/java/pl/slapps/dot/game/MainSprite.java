@@ -172,7 +172,9 @@ public class MainSprite extends Sprite {
 
             if (tmpCurrent.getType() == Route.Type.FINISH) {
                 scoreCounter.setExitCoords(centerX, centerY);
-                Log.d("aaa", "calculate score " + scoreCounter.estimateScore());
+                totalScore += scoreCounter.estimateScore();
+
+                Log.d("aaa", "calculate score " + totalScore);
             }
 
 

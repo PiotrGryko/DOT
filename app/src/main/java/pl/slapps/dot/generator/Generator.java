@@ -96,7 +96,7 @@ public class Generator {
         //this.elements=elements;
         this.config = new Config();
         this.view = view;
-        this.view.context.mainMenu.btnSettings.setOnClickListener(new View.OnClickListener() {
+        this.view.context.getButtonSettings().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //GeneratorDialog.showGeneratorMenuDialog(Generator.this);
@@ -765,6 +765,7 @@ public class Generator {
     }
 
     public void stopPreview() {
+        view.context.getSoundsManager().stopMusic();
         view.getGame().setPreview(false);
         runPreview = false;
         refreashMaze();

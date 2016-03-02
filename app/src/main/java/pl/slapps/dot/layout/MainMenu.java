@@ -1,6 +1,7 @@
 package pl.slapps.dot.layout;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,6 +30,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import pl.slapps.dot.DAO;
@@ -48,16 +51,16 @@ public class MainMenu {
 
     private String TAG = MainMenu.class.getName();
 
+    public View layout;
 
     private TextView tvName;
     private TextView tvDesc;
 
-    public ImageView btnSettings;
-    public LinearLayout layoutMenu;
-    public LinearLayout layoutBtns;
-    public LinearLayout layoutHeader;
-    public TextView tvHeader;
-    public LinearLayout menuBkg;
+    private LinearLayout layoutMenu;
+    private LinearLayout layoutBtns;
+    private LinearLayout layoutHeader;
+    private TextView tvHeader;
+    private LinearLayout menuBkg;
 
 
     private ImageButton btnPlay;
@@ -66,11 +69,57 @@ public class MainMenu {
     private ImageButton btnStages;
     private ImageButton btnOnline;
 
+    private String currentColor = null;
+
     private AnimationMainMenu animationMainMenu;
 
-    public AnimationMainMenu getAnimationMainMenu()
-    {
+    public LinearLayout getLayoutMenu() {
+        return layoutMenu;
+    }
+
+    public LinearLayout getLayoutBtns() {
+        return layoutBtns;
+    }
+
+    public LinearLayout getLayoutHeader() {
+        return layoutHeader;
+    }
+
+    public TextView getTvHeader() {
+        return tvHeader;
+    }
+
+    public LinearLayout getBackground() {
+        return menuBkg;
+    }
+
+    public View getLayout() {
+        return layout;
+    }
+
+
+    public void clearAnimation() {
+        layoutMenu.clearAnimation();
+    }
+
+    public AnimationMainMenu getAnimationMainMenu() {
         return animationMainMenu;
+    }
+
+    public void setColor(String colorString) {
+        if (currentColor == null) {
+            final int color = Color.parseColor(colorString);
+            int c = Color.argb(100, Color.red(color), Color.green(color), Color.blue(color));
+
+            currentColor = colorString;
+
+
+            getBackground().setBackgroundColor(c);
+        } else {
+
+            animationMainMenu.setColor(currentColor, colorString);
+            currentColor = colorString;
+        }
     }
 
     public void disableButtons() {
@@ -89,11 +138,10 @@ public class MainMenu {
         btnOnline.setEnabled(true);
     }
 
-    private MainActivity context;
+    public MainActivity context;
     private SurfaceRenderer game;
 
-    public SurfaceRenderer getGame()
-    {
+    public SurfaceRenderer getGame() {
         return game;
     }
 
@@ -118,64 +166,68 @@ public class MainMenu {
         //layoutMenu.setVisibility(View.VISIBLE);
 
 
-
     }
 
 
     public String loadWorlds() {
-
-        //deleteWorlds();
-        File file = new File(context.getExternalCacheDir(), "worlds.txt");
-
-
-        //Read text from file
-        StringBuilder text = new StringBuilder();
-        BufferedReader br = null;
+        StringBuilder returnString = new StringBuilder();
+        InputStream fIn = null;
+        InputStreamReader isr = null;
+        BufferedReader input = null;
         try {
-            br = new BufferedReader(new FileReader(file));
-            String line;
-
-            while ((line = br.readLine()) != null) {
-                text.append(line);
-                text.append('\n');
+            fIn = context.getResources().getAssets()
+                    .open(context.WORLDS_FILE, Context.MODE_WORLD_READABLE);
+            isr = new InputStreamReader(fIn);
+            input = new BufferedReader(isr);
+            String line = "";
+            while ((line = input.readLine()) != null) {
+                returnString.append(line);
             }
-            br.close();
-        } catch (IOException e) {
-            Log.d(TAG, "error " + e.toString());
-            //You'll need to add proper error handling here
+        } catch (Exception e) {
+            e.getMessage();
+        } finally {
+            try {
+                if (isr != null)
+                    isr.close();
+                if (fIn != null)
+                    fIn.close();
+                if (input != null)
+                    input.close();
+            } catch (Exception e2) {
+                e2.getMessage();
+            }
         }
-
-        if (!text.toString().trim().equals(""))
-            return text.toString();
-        else
-            return "[]";
+        return returnString.toString();
     }
 
 
     public void init() {
 
         animationMainMenu = new AnimationMainMenu(this);
-        btnSettings = (ImageView) context.findViewById(R.id.btn_settings);
-        layoutMenu = (LinearLayout) context.findViewById(R.id.layout_menu);
-        layoutBtns = (LinearLayout) context.findViewById(R.id.layout_btns);
-        layoutHeader = (LinearLayout) context.findViewById(R.id.layout_header);
-        tvHeader = (TextView) context.findViewById(R.id.tv_header);
-        btnSettings.setVisibility(View.GONE);
-        menuBkg = (LinearLayout) context.findViewById(R.id.menu_bkg);
+
+        layout = LayoutInflater.from(context).inflate(R.layout.layout_menu, null);
+
+        layoutMenu = (LinearLayout) layout.findViewById(R.id.layout_menu);
+        layoutBtns = (LinearLayout) layout.findViewById(R.id.layout_btns);
+        layoutHeader = (LinearLayout) layout.findViewById(R.id.layout_header);
+        tvHeader = (TextView) layout.findViewById(R.id.tv_header);
+
+        menuBkg = (LinearLayout) layout.findViewById(R.id.menu_bkg);
 
 
+        tvName = (TextView) layout.findViewById(R.id.tv_lvl);
+        tvDesc = (TextView) layout.findViewById(R.id.tv_desc);
 
-        tvName = (TextView) context.findViewById(R.id.tv_lvl);
-        tvDesc = (TextView) context.findViewById(R.id.tv_desc);
+        btnExit = (ImageButton) layout.findViewById(R.id.btn_exit);
+        btnPlay = (ImageButton) layout.findViewById(R.id.btn_play);
+        btnGenerate = (ImageButton) layout.findViewById(R.id.btn_generate);
+        btnStages = (ImageButton) layout.findViewById(R.id.btn_stages);
+        btnOnline = (ImageButton) layout.findViewById(R.id.btn_online);
+        LoginButton loginButton = (LoginButton) layout.findViewById(R.id.login_button);
 
-        btnExit = (ImageButton) context.findViewById(R.id.btn_exit);
-        btnPlay = (ImageButton) context.findViewById(R.id.btn_play);
-        btnGenerate = (ImageButton) context.findViewById(R.id.btn_generate);
-        btnStages = (ImageButton) context.findViewById(R.id.btn_stages);
-        btnOnline = (ImageButton) context.findViewById(R.id.btn_online);
+        context.gameHolder.addView(layout);
 
         animationMainMenu.init();
-        LoginButton loginButton = (LoginButton) context.findViewById(R.id.login_button);
         loginButton.setReadPermissions("user_friends");
         // If using in a fragment
         //loginButton.setFragment(this);
@@ -210,7 +262,6 @@ public class MainMenu {
             public void onClick(View view) {
 
 
-
                 context.mAdView.setVisibility(View.GONE);
                 animationMainMenu.hideMenu();
 
@@ -223,8 +274,12 @@ public class MainMenu {
                 context.getSoundsManager().stopBackgroundPlayer();
                 game.initGenerator();
                 game.setRunnig(true);
-                btnSettings.setVisibility(View.VISIBLE);
-                layoutMenu.setVisibility(View.GONE);
+                context.getButtonSettings().setVisibility(View.VISIBLE);
+
+                context.gameHolder.removeView(layout);
+
+                context.gameHolder.removeView(layoutMenu);
+                context.gameHolder.addView(context.mockView);
                 //menuHideAnimation.startAnimation(500);
                 context.mAdView.setVisibility(View.GONE);
 
@@ -242,6 +297,12 @@ public class MainMenu {
         btnStages.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+
+                /*
+
+                Log.d(TAG, "online stages fetched");
+
                 final Dialog worldsDialog = new Dialog(context);
                 worldsDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
@@ -251,10 +312,13 @@ public class MainMenu {
 
 
                 final ArrayList<World> worlds = new ArrayList<World>();
-                JSONArray jsonArray = null;
                 try {
-                    jsonArray = new JSONArray(loadWorlds());
 
+                    String response = loadWorlds();
+                    JSONObject res = new JSONObject(response.toString());
+
+                    JSONObject api = res.has("api") ? res.getJSONObject("api") : new JSONObject();
+                    JSONArray jsonArray = api.has("results") ? api.getJSONArray("results") : new JSONArray();
                     for (int i = 0; i < jsonArray.length(); i++) {
                         worlds.add(World.valueOf(jsonArray.getJSONObject(i)));
                     }
@@ -291,43 +355,12 @@ public class MainMenu {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                /*
-                ListView listView = (ListView) v.findViewById(R.id.lv);
 
-                ArrayList<JSONObject> entries = new ArrayList<JSONObject>();
-
-                for (int i = 0; i <= unlockedStage; i++) {
-                    try {
-                        entries.add(stages.getJSONObject(i));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                listView.setAdapter(new AdapterStages(MainActivity.this, entries));
-
-                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> adapterView, View generator, int i, long l) {
-                        currentStage = i;
-                        try {
-                            loadStage(stages.getJSONObject(i));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        stagesDialog.dismiss();
-                    }
-                });
-                */
                 worldsDialog.setContentView(v);
                 worldsDialog.show();
-            }
-        });
 
+*/
 
-        btnOnline.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
 
                 Log.d(TAG, "button online pressed");
 
@@ -404,10 +437,46 @@ public class MainMenu {
         });
 
 
+        btnOnline.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+                DAO.getRandomStage(context, new Response.Listener() {
+                    @Override
+                    public void onResponse(Object response) {
+
+                        Log.d(TAG, response.toString());
+                        JSONObject object = null;
+                        try {
+                            object = new JSONObject(response.toString());
+                            object = object.has("api") ? object.getJSONObject("api") : object;
+                            object = object.has("doc") ? object.getJSONObject("doc") : object;
+
+                            context.loadStage(Stage.valueOf(object));
+
+                            context.mAdView.setVisibility(View.GONE);
+                            animationMainMenu.hideMenu();
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(TAG, error.toString());
+
+                    }
+                }, context.android_id);
+
+            }
+        });
+
+
     }
-
-
-
 
 
 }

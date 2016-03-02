@@ -53,7 +53,6 @@ public class GeneratorLayoutConstruct {
     public void refreashLayout(ArrayList<TileRoute> currentRoutes) {
 
 
-        generatorLayout.refreashConstructLength(Integer.toString(currentRoutes.size()) + " elements");
 
 
         layoutProgress.removeAllViews();

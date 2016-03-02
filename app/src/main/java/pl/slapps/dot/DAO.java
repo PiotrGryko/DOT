@@ -24,7 +24,25 @@ import java.util.Map;
 public class DAO {
     final static String TAG = DAO.class.getName();
     final static String url = "http://188.166.101.11:4321/v1/";
+    final public static String url_files = "http://188.166.101.11:4321/";
 
+
+    public static void getSounds(Context context, Response.Listener listener, Response.ErrorListener errorListener) {
+        RequestQueue queue = Volley.newRequestQueue(context);
+
+// Request a string response from the provided URL.
+        String request = url + "files?find";
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, request,
+                listener, errorListener);
+// Add the request to the RequestQueue.
+
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                10 * 1000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        queue.add(stringRequest);
+    }
 
     public static void removeStage(Context context, Response.Listener listener, final String id) {
         RequestQueue queue = Volley.newRequestQueue(context);
@@ -90,16 +108,35 @@ public class DAO {
         queue.add(stringRequest);
     }
 
-    public static void getStages(Context context, Response.Listener listener, Response.ErrorListener errorListener) {
+    public static void getStages(Context context, Response.Listener listener, Response.ErrorListener errorListener, String worldId) {
         RequestQueue queue = Volley.newRequestQueue(context);
 
+
+        String request = url + "stage?find";
 // Request a string response from the provided URL.
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url + "stage?find",
+        if (worldId != null
+                )
+            request = url + "stage?find.world_id=" + worldId;
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, request,
                 listener, errorListener);
 // Add the request to the RequestQueue.
         queue.add(stringRequest);
     }
 
+
+
+    public static void getRandomStage(Context context, Response.Listener listener, Response.ErrorListener errorListener, String deviceId) {
+        RequestQueue queue = Volley.newRequestQueue(context);
+
+
+        String request = url + "stage?device_id="+deviceId;
+// Request a string response from the provided URL.
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, request,
+                listener, errorListener);
+// Add the request to the RequestQueue.
+        queue.add(stringRequest);
+    }
 
     public static void getWorlds(Context context, Response.Listener listener, Response.ErrorListener errorListener, boolean fetchStages) {
         RequestQueue queue = Volley.newRequestQueue(context);
@@ -113,7 +150,7 @@ public class DAO {
 // Add the request to the RequestQueue.
 
         stringRequest.setRetryPolicy(new DefaultRetryPolicy(
-                10*1000,
+                10 * 1000,
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         queue.add(stringRequest);

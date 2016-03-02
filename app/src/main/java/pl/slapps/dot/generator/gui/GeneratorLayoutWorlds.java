@@ -364,10 +364,10 @@ public class GeneratorLayoutWorlds {
                     Toast.makeText(generator.view.context, "set world name", Toast.LENGTH_LONG).show();
                     return;
                 }
-                if (tmpWorld.soundBackground.equals("")) {
-                    Toast.makeText(generator.view.context, "choose background sound", Toast.LENGTH_LONG).show();
-                    return;
-                }
+                //if (tmpWorld.soundBackground.equals("")) {
+                ///    Toast.makeText(generator.view.context, "choose background sound", Toast.LENGTH_LONG).show();
+                ///    return;
+                //}
                 if (tmpWorld.soundPress.equals("")) {
                     Toast.makeText(generator.view.context, "choose press sound", Toast.LENGTH_LONG).show();
                     return;

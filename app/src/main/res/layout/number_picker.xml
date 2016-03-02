@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" android:layout_width="wrap_content"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:layout_width="wrap_content"
     android:padding="2dp"
     android:gravity="center"
     android:layout_height="wrap_content">
@@ -11,7 +13,8 @@
         android:id="@+id/iv_left"
         android:src="@drawable/arrow_number_left"/>
 
-    <TextView
+    <pl.slapps.dot.layout.FontedTextView
+        custom:bold="true"
         android:layout_width="30dp"
         android:gravity="center"
         android:layout_height="wrap_content"

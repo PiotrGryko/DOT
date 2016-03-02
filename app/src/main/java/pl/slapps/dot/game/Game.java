@@ -189,6 +189,10 @@ public class Game {
 
 
     public void initStage(Stage stage) {
+
+        context.getSoundsManager().configure(stage.config.sounds);
+        context.getSoundsManager().playBackgroundSound();
+
         currentStage = stage;
         background = null;
         Explosion.initBuffers();
@@ -301,10 +305,10 @@ public class Game {
                         TileRoute current = maze.getCurrentRouteObject(mainSprite.centerX, mainSprite.centerY);
                         if (current != null) {
 
-                            if (!current.sound.equals(""))
-                                context.getSoundsManager().playRawFile(current.sound);
-                            else
+                            if (current.sound.equals(""))
                                 context.getSoundsManager().playMoveSound();
+                            else
+                                context.getSoundsManager().playRawFile(current.sound);
                             setDotMovement(getNextMove(current));
                             //setDotMovement(current.next);
                         }

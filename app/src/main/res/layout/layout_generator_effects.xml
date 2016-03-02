@@ -34,7 +34,7 @@
 
                 android:layout_margin="5dp"></View>
 
-            <TextView
+            <pl.slapps.dot.layout.FontedTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -60,7 +60,7 @@
 
                 android:layout_margin="5dp"></View>
 
-            <TextView
+            <pl.slapps.dot.layout.FontedTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -102,7 +102,7 @@
 
                 android:layout_margin="5dp"></View>
 
-            <TextView
+            <pl.slapps.dot.layout.FontedTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -128,7 +128,7 @@
 
                 android:layout_margin="5dp"></View>
 
-            <TextView
+            <pl.slapps.dot.layout.FontedTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -167,7 +167,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/dot_light_distance_start"></pl.slapps.dot.generator.widget.NumberPickerTextView>
 
-            <TextView
+            <pl.slapps.dot.layout.FontedTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -191,7 +191,7 @@
                 android:id="@+id/dot_light_distance_end"></pl.slapps.dot.generator.widget.NumberPickerTextView>
 
 
-            <TextView
+            <pl.slapps.dot.layout.FontedTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"

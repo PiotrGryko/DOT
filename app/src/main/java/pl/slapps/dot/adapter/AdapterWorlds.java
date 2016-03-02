@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -35,13 +36,29 @@ public class AdapterWorlds extends BaseAdapter {
         return 0;
     }
 
+    class ViewHolder
+    {
+        TextView tvCount;
+    }
+
     // create a new ImageView for each item referenced by the Adapter
     public View getView(int position, View convertView, ViewGroup parent) {
+
+        ViewHolder vh = null;
         if (convertView == null) {
             // if it's not recycled, initialize some attributes
 
             convertView = LayoutInflater.from(mContext).inflate(R.layout.tile_world, null);
+            vh = new ViewHolder();
+            vh.tvCount = (TextView)convertView.findViewById(R.id.tv_count);
+            convertView.setTag(vh);
+
+
         }
+        else
+            vh = (ViewHolder)convertView.getTag();
+
+        vh.tvCount.setText("#"+position);
 
         return convertView;
     }

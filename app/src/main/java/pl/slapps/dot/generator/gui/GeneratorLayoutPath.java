@@ -53,6 +53,11 @@ public class GeneratorLayoutPath {
     private ImageView tvFinishLeft;
     private ImageView tvFinishRight;
 
+    private TextView tvStartLabel;
+    private TextView tvPathLabel;
+    private TextView tvFinishLabel;
+
+
     private LinearLayout layoutDetails;
     private LinearLayout layoutPaths;
 
@@ -68,10 +73,30 @@ public class GeneratorLayoutPath {
     }
 
 
-
     ///////////////////////////////////////////////////////////////////////////////////////
 
     /////routes
+
+    private Route.Direction considerRouteTo(TileRoute route)
+    {
+        Route.Direction direction = route.to;
+        if(route.getType()== Route.Type.FINISH)
+        {
+            direction=null;
+        }
+        return  direction;
+    }
+    private Route.Direction considerRouteFrom(TileRoute route)
+    {
+        Route.Direction direction = route.from;
+        if(route.getType()== Route.Type.START)
+        {
+            direction=null;
+        }
+        return  direction;
+    }
+
+
     private void toggleBottomTop(TileRoute top, TileRoute bottom) {
 
         if (top == null || bottom == null) {
@@ -79,8 +104,17 @@ public class GeneratorLayoutPath {
             return;
         }
 
+        Route.Direction topFrom = considerRouteFrom(top);
+        Route.Direction topTo = considerRouteTo(top);
+
+
+        Route.Direction bottomFrom = considerRouteFrom(bottom);
+        Route.Direction bottomTo = considerRouteTo(bottom);
+
+
+
         if (top.getType() != Route.Type.TILE && bottom.getType() == Route.Type.TILE) {
-            if (top.from == Route.Direction.BOTTOM || top.to == Route.Direction.BOTTOM)
+            if (topFrom == Route.Direction.BOTTOM || topTo == Route.Direction.BOTTOM)
                 tvBottomTop.setVisibility(View.VISIBLE);
             else
                 tvBottomTop.setVisibility(View.GONE);
@@ -89,7 +123,7 @@ public class GeneratorLayoutPath {
         }
 
         if (top.getType() == Route.Type.TILE && bottom.getType() != Route.Type.TILE) {
-            if (bottom.from == Route.Direction.TOP || bottom.to == Route.Direction.TOP)
+            if (bottomFrom == Route.Direction.TOP || bottomTo == Route.Direction.TOP)
                 tvBottomTop.setVisibility(View.VISIBLE);
             else
                 tvBottomTop.setVisibility(View.GONE);
@@ -98,9 +132,9 @@ public class GeneratorLayoutPath {
         }
 
         if (top.getType() != Route.Type.TILE && bottom.getType() != Route.Type.TILE) {
-            if ((bottom.from == Route.Direction.TOP || bottom.to == Route.Direction.TOP)
+            if ((bottomFrom == Route.Direction.TOP || bottomTo == Route.Direction.TOP)
                     &&
-                    (top.from == Route.Direction.BOTTOM || top.to == Route.Direction.BOTTOM))
+                    (topFrom == Route.Direction.BOTTOM || topTo == Route.Direction.BOTTOM))
                 tvBottomTop.setVisibility(View.VISIBLE);
             else
                 tvBottomTop.setVisibility(View.GONE);
@@ -118,8 +152,16 @@ public class GeneratorLayoutPath {
             return;
         }
 
+
+        Route.Direction leftFrom = considerRouteFrom(left);
+        Route.Direction leftTo = considerRouteTo(left);
+
+
+        Route.Direction rightFrom = considerRouteFrom(right);
+        Route.Direction rightTo = considerRouteTo(right);
+
         if (left.getType() != Route.Type.TILE && right.getType() == Route.Type.TILE) {
-            if (left.from == Route.Direction.RIGHT || left.to == Route.Direction.RIGHT)
+            if (leftFrom == Route.Direction.RIGHT || leftTo == Route.Direction.RIGHT)
                 tvLeftRight.setVisibility(View.VISIBLE);
             else
                 tvLeftRight.setVisibility(View.GONE);
@@ -128,7 +170,7 @@ public class GeneratorLayoutPath {
         }
 
         if (left.getType() == Route.Type.TILE && right.getType() != Route.Type.TILE) {
-            if (right.from == Route.Direction.LEFT || right.to == Route.Direction.LEFT)
+            if (rightFrom == Route.Direction.LEFT || rightTo == Route.Direction.LEFT)
                 tvLeftRight.setVisibility(View.VISIBLE);
             else
                 tvLeftRight.setVisibility(View.GONE);
@@ -137,9 +179,9 @@ public class GeneratorLayoutPath {
         }
 
         if (left.getType() != Route.Type.TILE && right.getType() != Route.Type.TILE) {
-            if ((right.from == Route.Direction.LEFT || right.to == Route.Direction.LEFT)
+            if ((rightFrom == Route.Direction.LEFT || rightTo == Route.Direction.LEFT)
                     &&
-                    (left.from == Route.Direction.RIGHT || left.to == Route.Direction.RIGHT))
+                    (leftFrom == Route.Direction.RIGHT || leftTo == Route.Direction.RIGHT))
                 tvLeftRight.setVisibility(View.VISIBLE);
             else
                 tvLeftRight.setVisibility(View.GONE);
@@ -154,8 +196,16 @@ public class GeneratorLayoutPath {
             return;
         }
 
+        Route.Direction topFrom = considerRouteFrom(top);
+        Route.Direction topTo = considerRouteTo(top);
+
+
+        Route.Direction leftFrom = considerRouteFrom(left);
+        Route.Direction leftTo = considerRouteTo(left);
+
+
         if (left.getType() != Route.Type.TILE && top.getType() == Route.Type.TILE) {
-            if (left.from == Route.Direction.RIGHT || left.to == Route.Direction.RIGHT)
+            if (leftFrom == Route.Direction.RIGHT || leftTo == Route.Direction.RIGHT)
                 tvLeftTop.setVisibility(View.VISIBLE);
             else
                 tvLeftTop.setVisibility(View.GONE);
@@ -164,7 +214,7 @@ public class GeneratorLayoutPath {
         }
 
         if (left.getType() == Route.Type.TILE && top.getType() != Route.Type.TILE) {
-            if (top.from == Route.Direction.BOTTOM || top.to == Route.Direction.BOTTOM)
+            if (topFrom == Route.Direction.BOTTOM || topTo == Route.Direction.BOTTOM)
                 tvLeftTop.setVisibility(View.VISIBLE);
             else
                 tvLeftTop.setVisibility(View.GONE);
@@ -173,9 +223,9 @@ public class GeneratorLayoutPath {
         }
 
         if (left.getType() != Route.Type.TILE && top.getType() != Route.Type.TILE) {
-            if ((top.from == Route.Direction.BOTTOM || top.to == Route.Direction.BOTTOM)
+            if ((topFrom == Route.Direction.BOTTOM || topTo == Route.Direction.BOTTOM)
                     &&
-                    (left.from == Route.Direction.RIGHT || left.to == Route.Direction.RIGHT))
+                    (leftFrom == Route.Direction.RIGHT || leftTo == Route.Direction.RIGHT))
                 tvLeftTop.setVisibility(View.VISIBLE);
             else
                 tvLeftTop.setVisibility(View.GONE);
@@ -191,8 +241,15 @@ public class GeneratorLayoutPath {
             return;
         }
 
+        Route.Direction topFrom = considerRouteFrom(top);
+        Route.Direction topTo = considerRouteTo(top);
+
+
+        Route.Direction rightFrom = considerRouteFrom(right);
+        Route.Direction rightTo = considerRouteTo(right);
+
         if (right.getType() != Route.Type.TILE && top.getType() == Route.Type.TILE) {
-            if (right.from == Route.Direction.LEFT || right.to == Route.Direction.LEFT)
+            if (rightFrom == Route.Direction.LEFT || rightTo == Route.Direction.LEFT)
                 tvRightTop.setVisibility(View.VISIBLE);
             else
                 tvRightTop.setVisibility(View.GONE);
@@ -200,7 +257,7 @@ public class GeneratorLayoutPath {
         }
 
         if (right.getType() == Route.Type.TILE && top.getType() != Route.Type.TILE) {
-            if (top.from == Route.Direction.BOTTOM || top.to == Route.Direction.BOTTOM)
+            if (topFrom == Route.Direction.BOTTOM || topTo == Route.Direction.BOTTOM)
                 tvRightTop.setVisibility(View.VISIBLE);
             else
                 tvRightTop.setVisibility(View.GONE);
@@ -209,9 +266,9 @@ public class GeneratorLayoutPath {
 
         if (right.getType() != Route.Type.TILE && top.getType() != Route.Type.TILE) {
             if (
-                    (top.from == Route.Direction.BOTTOM || top.to == Route.Direction.BOTTOM)
+                    (topFrom == Route.Direction.BOTTOM || topTo == Route.Direction.BOTTOM)
                             &&
-                            (right.from == Route.Direction.LEFT || right.to == Route.Direction.LEFT)
+                            (rightFrom == Route.Direction.LEFT || rightTo == Route.Direction.LEFT)
                     )
                 tvRightTop.setVisibility(View.VISIBLE);
             else
@@ -229,8 +286,14 @@ public class GeneratorLayoutPath {
             return;
         }
 
+        Route.Direction rightFrom = considerRouteFrom(right);
+        Route.Direction rightTo = considerRouteTo(right);
+
+        Route.Direction bottomFrom = considerRouteFrom(bottom);
+        Route.Direction bottomTo = considerRouteTo(bottom);
+
         if (right.getType() != Route.Type.TILE && bottom.getType() == Route.Type.TILE) {
-            if (right.from == Route.Direction.LEFT || right.to == Route.Direction.LEFT)
+            if (rightFrom == Route.Direction.LEFT || rightTo == Route.Direction.LEFT)
                 tvBottomRight.setVisibility(View.VISIBLE);
             else
                 tvBottomRight.setVisibility(View.GONE);
@@ -239,7 +302,7 @@ public class GeneratorLayoutPath {
         }
 
         if (right.getType() == Route.Type.TILE && bottom.getType() != Route.Type.TILE) {
-            if (bottom.from == Route.Direction.TOP || bottom.to == Route.Direction.TOP)
+            if (bottomFrom == Route.Direction.TOP || bottomTo == Route.Direction.TOP)
                 tvBottomRight.setVisibility(View.VISIBLE);
             else
                 tvBottomRight.setVisibility(View.GONE);
@@ -248,9 +311,9 @@ public class GeneratorLayoutPath {
         }
 
         if (right.getType() != Route.Type.TILE && bottom.getType() != Route.Type.TILE) {
-            if ((bottom.from == Route.Direction.TOP || bottom.to == Route.Direction.TOP)
+            if ((bottomFrom == Route.Direction.TOP || bottomTo == Route.Direction.TOP)
                     &&
-                    (right.from == Route.Direction.LEFT || right.to == Route.Direction.LEFT))
+                    (rightFrom == Route.Direction.LEFT || rightTo == Route.Direction.LEFT))
                 tvBottomRight.setVisibility(View.VISIBLE);
             else
                 tvBottomRight.setVisibility(View.GONE);
@@ -268,8 +331,15 @@ public class GeneratorLayoutPath {
             return;
         }
 
+        Route.Direction leftFrom = considerRouteFrom(left);
+        Route.Direction leftTo = considerRouteTo(left);
+
+
+        Route.Direction bottomFrom = considerRouteFrom(bottom);
+        Route.Direction bottomTo = considerRouteTo(bottom);
+
         if (left.getType() != Route.Type.TILE && bottom.getType() == Route.Type.TILE) {
-            if (left.from == Route.Direction.RIGHT || left.to == Route.Direction.RIGHT)
+            if (leftFrom == Route.Direction.RIGHT || leftTo == Route.Direction.RIGHT)
                 tvBottomLeft.setVisibility(View.VISIBLE);
             else
                 tvBottomLeft.setVisibility(View.GONE);
@@ -278,7 +348,7 @@ public class GeneratorLayoutPath {
         }
 
         if (left.getType() == Route.Type.TILE && bottom.getType() != Route.Type.TILE) {
-            if (bottom.from == Route.Direction.TOP || bottom.to == Route.Direction.TOP)
+            if (bottomFrom == Route.Direction.TOP || bottomTo == Route.Direction.TOP)
                 tvBottomLeft.setVisibility(View.VISIBLE);
             else
                 tvBottomLeft.setVisibility(View.GONE);
@@ -287,9 +357,9 @@ public class GeneratorLayoutPath {
         }
 
         if (left.getType() != Route.Type.TILE && bottom.getType() != Route.Type.TILE) {
-            if ((bottom.from == Route.Direction.TOP || bottom.to == Route.Direction.TOP)
+            if ((bottomFrom == Route.Direction.TOP || bottomTo == Route.Direction.TOP)
                     &&
-                    (left.from == Route.Direction.RIGHT || left.to == Route.Direction.RIGHT))
+                    (leftFrom == Route.Direction.RIGHT || leftTo == Route.Direction.RIGHT))
                 tvBottomLeft.setVisibility(View.VISIBLE);
             else
                 tvBottomLeft.setVisibility(View.GONE);
@@ -300,13 +370,17 @@ public class GeneratorLayoutPath {
 
     }
 
-//starts
+    //starts
     private void toggleStartBottom(TileRoute top) {
+
+
 
         if (top == null) {
             tvStartBottom.setVisibility(View.GONE);
             return;
         }
+
+
 
         if (top.getType() != Route.Type.TILE) {
             if (top.from == Route.Direction.BOTTOM || top.to == Route.Direction.BOTTOM)
@@ -336,6 +410,7 @@ public class GeneratorLayoutPath {
         }
 
     }
+
     private void toggleStartLeft(TileRoute right) {
 
         if (right == null) {
@@ -352,6 +427,7 @@ public class GeneratorLayoutPath {
         }
 
     }
+
     private void toggleStartRight(TileRoute left) {
 
         if (left == null) {
@@ -370,9 +446,7 @@ public class GeneratorLayoutPath {
     }
 
 
-
     //finishes
-
 
 
     private void toggleFinishBottom(TileRoute top) {
@@ -392,6 +466,7 @@ public class GeneratorLayoutPath {
         }
 
     }
+
     private void toggleFinishTop(TileRoute bottom) {
 
         if (bottom == null) {
@@ -427,6 +502,7 @@ public class GeneratorLayoutPath {
         }
 
     }
+
     private void toggleFinishRight(TileRoute left) {
 
         if (left == null) {
@@ -445,9 +521,6 @@ public class GeneratorLayoutPath {
     }
 
 
-
-
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -455,7 +528,6 @@ public class GeneratorLayoutPath {
 
 
     {
-
 
 
         int x = generatorLayout.tile.horizontalPos;
@@ -522,6 +594,8 @@ public class GeneratorLayoutPath {
         }
 
 */
+
+        refreashLabels();
     }
 
     private void hideStart() {
@@ -538,19 +612,18 @@ public class GeneratorLayoutPath {
             tvFinishTop.setVisibility(View.GONE);
             tvFinishLeft.setVisibility(View.GONE);
             tvFinishRight.setVisibility(View.GONE);
+
         } else {
             tvStartBottom.setVisibility(View.GONE);
             tvStartTop.setVisibility(View.GONE);
             tvStartLeft.setVisibility(View.GONE);
             tvStartRight.setVisibility(View.GONE);
 
+
         }
 
 
     }
-
-
-
 
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -588,9 +661,9 @@ public class GeneratorLayoutPath {
         TileRoute rightTile = generator.findTile(x + 1, y);
         TileRoute leftTile = generator.findTile(x - 1, y);
 
-        toggleLeftTop(leftTile,topTile);
-        toggleLeftBottom(leftTile,bottomTile);
-        toggleLeftRight(leftTile,rightTile);
+        toggleLeftTop(leftTile, topTile);
+        toggleLeftBottom(leftTile, bottomTile);
+        toggleLeftRight(leftTile, rightTile);
 
     }
 
@@ -627,9 +700,9 @@ public class GeneratorLayoutPath {
         TileRoute rightTile = generator.findTile(x + 1, y);
         TileRoute leftTile = generator.findTile(x - 1, y);
 
-        toggleRightTop(rightTile,topTile);
+        toggleRightTop(rightTile, topTile);
         toggleRightBottom(rightTile, bottomTile);
-        toggleLeftRight(leftTile,rightTile);
+        toggleLeftRight(leftTile, rightTile);
 
     }
 
@@ -667,9 +740,9 @@ public class GeneratorLayoutPath {
         TileRoute rightTile = generator.findTile(x + 1, y);
         TileRoute leftTile = generator.findTile(x - 1, y);
 
-        toggleBottomTop(topTile,bottomTile);
-        toggleRightBottom(rightTile,bottomTile);
-        toggleLeftBottom(leftTile,bottomTile);
+        toggleBottomTop(topTile, bottomTile);
+        toggleRightBottom(rightTile, bottomTile);
+        toggleLeftBottom(leftTile, bottomTile);
 
     }
 
@@ -684,9 +757,9 @@ public class GeneratorLayoutPath {
         TileRoute rightTile = generator.findTile(x + 1, y);
         TileRoute leftTile = generator.findTile(x - 1, y);
 
-        toggleBottomTop(topTile,bottomTile);
-        toggleRightTop(rightTile,topTile);
-        toggleLeftTop(leftTile,topTile);
+        toggleBottomTop(topTile, bottomTile);
+        toggleRightTop(rightTile, topTile);
+        toggleLeftTop(leftTile, topTile);
 
 
 /*
@@ -796,6 +869,51 @@ public class GeneratorLayoutPath {
 
     }
 
+    private void refreashLabels() {
+        if (tvStartRight.getVisibility() == View.GONE
+                &&
+                tvStartLeft.getVisibility() == View.GONE
+                &&
+                tvStartTop.getVisibility() == View.GONE
+                &&
+                tvStartBottom.getVisibility() == View.GONE)
+            tvStartLabel.setVisibility(View.GONE);
+        else
+            tvStartLabel.setVisibility(View.VISIBLE);
+
+
+        if (tvFinishRight.getVisibility() == View.GONE
+                &&
+                tvFinishLeft.getVisibility() == View.GONE
+                &&
+                tvFinishTop.getVisibility() == View.GONE
+                &&
+                tvFinishBottom.getVisibility() == View.GONE)
+            tvFinishLabel.setVisibility(View.GONE);
+        else
+            tvFinishLabel.setVisibility(View.VISIBLE);
+
+
+        if (tvLeftTop.getVisibility() == View.GONE
+                &&
+                tvLeftRight.getVisibility() == View.GONE
+                &&
+                tvBottomLeft.getVisibility() == View.GONE
+                &&
+                tvBottomRight.getVisibility() == View.GONE
+                &&
+                tvRightTop.getVisibility() == View.GONE
+                &&
+                tvBottomTop.getVisibility() == View.GONE
+
+                )
+            tvPathLabel.setVisibility(View.GONE);
+        else
+            tvPathLabel.setVisibility(View.VISIBLE);
+
+
+    }
+
 
     public void refreashLayout() {
 
@@ -827,6 +945,8 @@ public class GeneratorLayoutPath {
         refreashPathTiles();
 
         refreashDetailsLayout();
+
+        refreashLabels();
     }
 
 
@@ -845,14 +965,9 @@ public class GeneratorLayoutPath {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-
-
-
-    private TileRoute getPrevTile(TileRoute tile)
-    {
+    private TileRoute getPrevTile(TileRoute tile) {
         TileRoute prevTile = null;
-        switch(tile.getDirection())
-        {
+        switch (tile.getDirection()) {
             case LEFTBOTTOM:
             case LEFTTOP:
             case LEFTRIGHT: {
@@ -869,13 +984,13 @@ public class GeneratorLayoutPath {
             case TOPLEFT:
             case TOPBOTTOM:
             case TOPRIGHT: {
-                prevTile = generator.findTile(tile.horizontalPos, tile.verticalPos-1);
+                prevTile = generator.findTile(tile.horizontalPos, tile.verticalPos - 1);
                 break;
             }
             case BOTTOMLEFT:
             case BOTTOMTOP:
             case BOTTOMRIGHT: {
-                prevTile = generator.findTile(tile.horizontalPos, tile.verticalPos+1);
+                prevTile = generator.findTile(tile.horizontalPos, tile.verticalPos + 1);
                 break;
             }
         }
@@ -889,6 +1004,10 @@ public class GeneratorLayoutPath {
         this.generator = generatorLayout.generator;
 
         layoutRoutes = LayoutInflater.from(generator.view.context).inflate(R.layout.layout_generator_path, null);
+        tvStartLabel = (TextView) layoutRoutes.findViewById(R.id.tv_start_tiles);
+        tvPathLabel = (TextView) layoutRoutes.findViewById(R.id.tv_path_tiles);
+        tvFinishLabel = (TextView) layoutRoutes.findViewById(R.id.tv_finish_tiles);
+
 
         layoutDetails = (LinearLayout) layoutRoutes.findViewById(R.id.layout_details);
         layoutPaths = (LinearLayout) layoutRoutes.findViewById(R.id.layout_routes);
@@ -1018,7 +1137,7 @@ public class GeneratorLayoutPath {
                     if (!generator.getConfig().sounds.soundPress.equals(""))
                         r.sound = generator.getConfig().sounds.soundPress;
 
-                        r.configure(generator.getConfig());
+                    r.configure(generator.getConfig());
                    /*
                     switch (r.getType()) {
 
@@ -1046,8 +1165,7 @@ public class GeneratorLayoutPath {
                     //GeneratorLayoutPath.this.generatorLayout.layoutConstruct.refreashLayout(currentRoutes);
 
 
-                    if(r.getType()== Route.Type.FINISH)
-                    {
+                    if (r.getType() == Route.Type.FINISH) {
                         generator.getPathPopup().dissmiss();
                         return;
                     }
@@ -1058,7 +1176,6 @@ public class GeneratorLayoutPath {
                         case LEFTRIGHT:
                         case BOTTOMRIGHT:
                         case TOPRIGHT:
-
 
 
                             nextTile = generator.findTile(r.horizontalPos + 1, r.verticalPos);
@@ -1082,22 +1199,19 @@ public class GeneratorLayoutPath {
                     }
 
 
-
-
                     if (nextTile != null) {
 
-                        if(nextTile.getType()!= Route.Type.TILE)
-                        {
+                        if (nextTile.getType() != Route.Type.TILE) {
                             prevTile = getPrevTile(r);
-                            if(prevTile!=null && prevTile.getType()== Route.Type.TILE)
-                            {  nextTile=prevTile;
+                            if (prevTile != null && prevTile.getType() == Route.Type.TILE) {
+                                nextTile = prevTile;
 
                                 Route.Direction tmpTo = r.to;
 
                                 r.to = r.from;
-                                r.from=tmpTo;
+                                r.from = tmpTo;
 
-                            Log.d("test","switched to prev!!!!!!!!!!!!!!!!!");
+                                Log.d("test", "switched to prev!!!!!!!!!!!!!!!!!");
                             }
                         }
 
@@ -1107,7 +1221,6 @@ public class GeneratorLayoutPath {
                         GeneratorLayoutPath.this.generatorLayout.oldTile.setCurrentTile(false);
 
                         refreashLayout();
-                        generatorLayout.refreashCurrentTileLabels();
 
                     }
                     //      initPathLayout(generator, nextTile, r);

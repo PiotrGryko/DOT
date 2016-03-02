@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"></pl.slapps.dot.generator.widget.NumberPickerTextView>
 
 
-        <TextView
+        <pl.slapps.dot.layout.FontedTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="dot Light shining" />
@@ -36,7 +36,7 @@
             android:layout_height="wrap_content"></pl.slapps.dot.generator.widget.NumberPickerTextView>
 
 
-        <TextView
+        <pl.slapps.dot.layout.FontedTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="dot Light distance" />
@@ -55,7 +55,7 @@
             android:layout_height="wrap_content"></pl.slapps.dot.generator.widget.NumberPickerTextView>
 
 
-        <TextView
+        <pl.slapps.dot.layout.FontedTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="explosion one light shining" />
@@ -73,7 +73,7 @@
             android:layout_height="wrap_content"></pl.slapps.dot.generator.widget.NumberPickerTextView>
 
 
-        <TextView
+        <pl.slapps.dot.layout.FontedTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="explosion one light distance" />
@@ -92,7 +92,7 @@
             android:layout_height="wrap_content"></pl.slapps.dot.generator.widget.NumberPickerTextView>
 
 
-        <TextView
+        <pl.slapps.dot.layout.FontedTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="explosion two light shining" />
@@ -110,7 +110,7 @@
             android:layout_height="wrap_content"></pl.slapps.dot.generator.widget.NumberPickerTextView>
 
 
-        <TextView
+        <pl.slapps.dot.layout.FontedTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="explosion two light distance" />

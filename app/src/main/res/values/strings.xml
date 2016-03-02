@@ -5,4 +5,25 @@
     <string name="action_settings">Settings</string>
     <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
     <string name="app_id">1006738829369214</string>
+
+    <string name="generator_path_start">Start route tiles</string>
+    <string name="generator_path_routes">Path route tiles</string>
+    <string name="generator_path_finish">Finish route tiles</string>
+
+    <string name="generator_create_world">Create new world</string>
+    <string name="generator_choose_world">Select existing world</string>
+    <string name="generator_grid_size">Change maze size</string>
+    <string name="generator_colors">Change game colors</string>
+    <string name="generator_config">Load existing stage</string>
+    <string name="generator_construct">Browse maze path</string>
+    <string name="generator_sounds">Change sounds</string>
+    <string name="generator_strings">Change description</string>
+    <string name="generator_preview">Test your maze</string>
+    <string name="generator_lights">Change lights</string>
+    <string name="generator_effects">Add game effects</string>
+    <string name="generator_save">Save</string>
+
+
+
+
 </resources>

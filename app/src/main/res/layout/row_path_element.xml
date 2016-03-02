@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:animateLayoutChanges="true"
     android:background="#1be2e2e2"
     android:gravity="center_vertical"
@@ -24,7 +25,7 @@
             android:layout_height="fill_parent"
             android:layout_weight="2">
 
-            <TextView
+            <pl.slapps.dot.layout.FontedTextView
                 android:id="@+id/tv_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -53,13 +54,14 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <TextView
+                <pl.slapps.dot.layout.FontedTextView
+                    custom:bold="true"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="type: "
                     android:textStyle="bold" />
 
-                <TextView
+                <pl.slapps.dot.layout.FontedTextView
                     android:id="@+id/tv_type"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -73,13 +75,14 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <TextView
+                <pl.slapps.dot.layout.FontedTextView
+                    custom:bold="true"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="move: "
                     android:textStyle="bold" />
 
-                <TextView
+                <pl.slapps.dot.layout.FontedTextView
                     android:id="@+id/tv_movement"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -91,24 +94,24 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <TextView
+                <pl.slapps.dot.layout.FontedTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="x: " />
 
-                <TextView
+                <pl.slapps.dot.layout.FontedTextView
                     android:id="@+id/tv_x"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="type: " />
 
-                <TextView
+                <pl.slapps.dot.layout.FontedTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
                     android:text="y: " />
 
-                <TextView
+                <pl.slapps.dot.layout.FontedTextView
                     android:id="@+id/tv_y"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -133,6 +136,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:visibility="gone"
         android:id="@+id/layout_details"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -147,7 +151,7 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <TextView
+            <pl.slapps.dot.layout.FontedTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="speed ratio: " />
@@ -180,7 +184,7 @@
                 android:src="@drawable/play_btn" />
 
 
-            <TextView
+            <pl.slapps.dot.layout.FontedTextView
 
                 android:id="@+id/btn_choose_sound"
                 android:layout_width="120dp"

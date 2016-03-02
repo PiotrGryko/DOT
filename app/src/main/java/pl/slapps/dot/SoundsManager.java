@@ -22,9 +22,6 @@ public class SoundsManager {
     private Uri crashSound;
     private Uri soundFinish;
     private Uri backgroundSound;
-    private Uri soundBackgroundBirds;
-    private Uri soundBackgroundBeach;
-    private Uri soundBackgroundWater;
 
 
     private AsyncPlayer asyncPlayer;
@@ -37,29 +34,54 @@ public class SoundsManager {
     public static String DEFAULT_CRASH = "spacebib";
     public static String DEFAULT_FINISH = "finish";
 
+    private String key = "cache/";
+
+
+    public void stopMusic()
+    {
+        asyncPlayer.stop();
+        asyncPlayerBackground.stop();
+        asyncPlayerCrash.stop();
+        asyncPlayerPress.stop();
+    }
 
     public void configure(Sounds sounds) {
         Log.d(TAG, "configure : " + sounds.toString());
 
 
         if (!sounds.soundBackground.equals(""))
-            backgroundSound = Uri.parse("android.resource://" + context.getPackageName() + "/raw/" + sounds.soundBackground);
+
+            if (sounds.soundBackground.contains(key))
+                backgroundSound = Uri.parse(sounds.soundBackground);
+            else
+                backgroundSound = Uri.parse("android.resource://" + context.getPackageName() + "/raw/" + sounds.soundBackground);
         else
             backgroundSound = null;
 
-        if (!sounds.soundPress.equals(""))
-            moveSound = Uri.parse("android.resource://" + context.getPackageName() + "/raw/" + sounds.soundPress);
-        else
+        if (!sounds.soundPress.equals("")) {
+
+            if (sounds.soundPress.contains(key))
+                moveSound = Uri.parse(sounds.soundPress);
+            else
+                moveSound = Uri.parse("android.resource://" + context.getPackageName() + "/raw/" + sounds.soundPress);
+        } else
             moveSound = Uri.parse("android.resource://" + context.getPackageName() + "/raw/" + DEFAULT_PRESS);
 
-        if (!sounds.soundCrash.equals(""))
-            crashSound = Uri.parse("android.resource://" + context.getPackageName() + "/raw/" + sounds.soundCrash);
-        else
+        if (!sounds.soundCrash.equals("")) {
+            if (sounds.soundCrash.contains(key))
+                crashSound = Uri.parse(sounds.soundCrash);
+            else
+                crashSound = Uri.parse("android.resource://" + context.getPackageName() + "/raw/" + sounds.soundCrash);
+        } else
             crashSound = Uri.parse("android.resource://" + context.getPackageName() + "/raw/" + DEFAULT_CRASH);
 
-        if (!sounds.soundFinish.equals(""))
-            soundFinish = Uri.parse("android.resource://" + context.getPackageName() + "/raw/" + sounds.soundFinish);
-        else
+        if (!sounds.soundFinish.equals("")) {
+            if (sounds.soundFinish.contains(key))
+                soundFinish = Uri.parse(sounds.soundFinish);
+            else
+                soundFinish = Uri.parse("android.resource://" + context.getPackageName() + "/raw/" + sounds.soundFinish);
+
+        } else
             soundFinish = Uri.parse("android.resource://" + context.getPackageName() + "/raw/" + DEFAULT_FINISH);
 
 
@@ -70,9 +92,6 @@ public class SoundsManager {
         moveSound = Uri.parse("android.resource://" + context.getPackageName() + "/raw/click2");
         crashSound = Uri.parse("android.resource://" + context.getPackageName() + "/raw/spacebib");
         soundFinish = Uri.parse("android.resource://" + context.getPackageName() + "/raw/finish");
-        soundBackgroundBirds = Uri.parse("android.resource://" + context.getPackageName() + "/raw/birds");
-        soundBackgroundWater = Uri.parse("android.resource://" + context.getPackageName() + "/raw/waves");
-        soundBackgroundBeach = Uri.parse("android.resource://" + context.getPackageName() + "/raw/beach");
 
         asyncPlayer = new AsyncPlayer("action");
         asyncPlayerBackground = new AsyncPlayer("background");
@@ -92,9 +111,10 @@ public class SoundsManager {
     }
 
     public void playMoveSound() {
-        asyncPlayerPress.play(context, moveSound, false, AudioManager.STREAM_MUSIC);
-        Log.d(TAG, "play move sound " + moveSound.toString());
-        //  mediaPlayerMove.start();
+            asyncPlayerPress.play(context, moveSound, false, AudioManager.STREAM_MUSIC);
+            Log.d(TAG, "play move sound " + moveSound.toString());
+            //  mediaPlayerMove.start();
+
     }
 
     public void playCrashSound() {
@@ -120,9 +140,18 @@ public class SoundsManager {
     }
 
     public void playRawFile(String filename) {
-        Uri custom = Uri.parse("android.resource://" + context.getPackageName() + "/raw/" + filename);
-        asyncPlayer.play(context, custom, false, AudioManager.STREAM_MUSIC);
-        Log.d(TAG, "play raw file " + filename);
+
+        if (!filename.contains(key)) {
+            Uri custom = Uri.parse("android.resource://" + context.getPackageName() + "/raw/" + filename);
+            asyncPlayer.play(context, custom, false, AudioManager.STREAM_MUSIC);
+            Log.d(TAG, "play raw file " + custom.toString());
+
+        } else {
+            Uri custom = Uri.parse(filename);
+            asyncPlayer.play(context, custom, false, AudioManager.STREAM_MUSIC);
+            Log.d(TAG, "play raw file " + custom.toString());
+
+        }
 
     }
 

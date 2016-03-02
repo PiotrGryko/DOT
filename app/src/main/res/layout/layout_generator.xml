@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#ffffff"
@@ -41,10 +42,11 @@
                         android:padding="5dp"
                         android:src="@drawable/world" />
 
-                    <TextView
+                    <pl.slapps.dot.layout.FontedTextView
                         android:layout_width="fill_parent"
+                        custom:bold="true"
                         android:layout_height="wrap_content"
-                        android:text="create new world" />
+                        android:text="@string/generator_create_world" />
                 </LinearLayout>
 
 
@@ -80,10 +82,12 @@
                         android:padding="5dp"
                         android:src="@drawable/spread" />
 
-                    <TextView
+                    <pl.slapps.dot.layout.FontedTextView
                         android:layout_width="fill_parent"
+                        custom:bold="true"
+
                         android:layout_height="wrap_content"
-                        android:text="grid size" />
+                        android:text="@string/generator_grid_size" />
                 </LinearLayout>
 
 
@@ -120,10 +124,12 @@
                         android:padding="5dp"
                         android:src="@drawable/palette" />
 
-                    <TextView
+                    <pl.slapps.dot.layout.FontedTextView
+                        custom:bold="true"
+
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:text="colors" />
+                        android:text="@string/generator_colors" />
                 </LinearLayout>
 
 
@@ -161,10 +167,12 @@
                         android:padding="5dp"
                         android:src="@drawable/cogs" />
 
-                    <TextView
+                    <pl.slapps.dot.layout.FontedTextView
                         android:layout_width="fill_parent"
+                        custom:bold="true"
+
                         android:layout_height="wrap_content"
-                        android:text="config" />
+                        android:text="@string/generator_config" />
                 </LinearLayout>
 
 
@@ -203,11 +211,13 @@
                         android:src="@drawable/construct" />
 
 
-                    <TextView
+                    <pl.slapps.dot.layout.FontedTextView
                         android:id="@+id/tv_construct_title"
+                        custom:bold="true"
+
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:text="0 elements" />
+                        android:text="@string/generator_construct" />
 
 
                 </LinearLayout>
@@ -220,63 +230,6 @@
             </LinearLayout>
 
 
-            <LinearLayout
-                android:visibility="gone"
-                android:id="@+id/layout_routes_base"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:animateLayoutChanges="true"
-                android:orientation="vertical">
-
-
-                <LinearLayout
-                    android:id="@+id/toggle_routes"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/selector_menu_drawer"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:padding="5dp">
-
-                    <ImageView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_margin="5dp"
-                        android:background="@drawable/circle_btn_selector"
-                        android:duplicateParentState="true"
-                        android:padding="5dp"
-                        android:src="@drawable/path" />
-
-                    <LinearLayout
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="fill_parent"
-                            android:layout_height="wrap_content"
-                            android:text="routes" />
-
-                        <TextView
-                            android:id="@+id/tv_current_x"
-                            android:layout_width="fill_parent"
-                            android:layout_height="wrap_content"
-                            android:text="current x:" />
-
-                        <TextView
-                            android:id="@+id/tv_current_y"
-                            android:layout_width="fill_parent"
-                            android:layout_height="wrap_content"
-                            android:text="current y:" />
-                    </LinearLayout>
-                </LinearLayout>
-
-
-                <View
-                    android:layout_width="fill_parent"
-                    android:layout_height="1dp"
-                    android:background="#ffcbcbcb" />
-            </LinearLayout>
 
 
             <LinearLayout
@@ -304,10 +257,12 @@
                         android:padding="5dp"
                         android:src="@drawable/note" />
 
-                    <TextView
+                    <pl.slapps.dot.layout.FontedTextView
+                        custom:bold="true"
+
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:text="sounds" />
+                        android:text="@string/generator_sounds" />
                 </LinearLayout>
 
 
@@ -346,10 +301,12 @@
                         android:padding="5dp"
                         android:src="@drawable/text" />
 
-                    <TextView
+                    <pl.slapps.dot.layout.FontedTextView
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:text="strings" />
+                        custom:bold="true"
+
+                        android:text="@string/generator_strings" />
                 </LinearLayout>
 
 
@@ -386,10 +343,12 @@
                         android:padding="5dp"
                         android:src="@drawable/world" />
 
-                    <TextView
+                    <pl.slapps.dot.layout.FontedTextView
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:text="choose world" />
+                        custom:bold="true"
+
+                        android:text="@string/generator_choose_world" />
                 </LinearLayout>
 
 
@@ -427,10 +386,12 @@
                         android:padding="5dp"
                         android:src="@drawable/play" />
 
-                    <TextView
+                    <pl.slapps.dot.layout.FontedTextView
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:text="preview" />
+                        custom:bold="true"
+
+                        android:text="@string/generator_preview" />
                 </LinearLayout>
 
 
@@ -468,10 +429,12 @@
                         android:padding="5dp"
                         android:src="@drawable/lights" />
 
-                    <TextView
+                    <pl.slapps.dot.layout.FontedTextView
                         android:layout_width="fill_parent"
+                        custom:bold="true"
+
                         android:layout_height="wrap_content"
-                        android:text="lights" />
+                        android:text="@string/generator_lights" />
                 </LinearLayout>
 
 
@@ -509,10 +472,12 @@
                         android:padding="5dp"
                         android:src="@drawable/effects" />
 
-                    <TextView
+                    <pl.slapps.dot.layout.FontedTextView
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:text="effects" />
+                        custom:bold="true"
+
+                        android:text="@string/generator_effects" />
                 </LinearLayout>
 
 
@@ -546,10 +511,12 @@
                     android:padding="5dp"
                     android:src="@drawable/floppydisc" />
 
-                <TextView
+                <pl.slapps.dot.layout.FontedTextView
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:text="save" />
+                    custom:bold="true"
+
+                    android:text="@string/generator_save" />
 
                 <View
                     android:layout_width="fill_parent"

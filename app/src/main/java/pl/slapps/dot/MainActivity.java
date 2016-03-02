@@ -7,18 +7,24 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.crashlytics.android.Crashlytics;
 import com.facebook.FacebookSdk;
 import com.google.android.gms.ads.AdListener;
@@ -33,10 +39,16 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.lang.reflect.Field;
+import java.net.URL;
+import java.net.URLConnection;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -45,6 +57,7 @@ import pl.slapps.dot.layout.AnimationShow;
 import pl.slapps.dot.layout.MainMenu;
 import pl.slapps.dot.layout.AnimationScoreLayout;
 import pl.slapps.dot.model.Stage;
+import pl.slapps.dot.model.World;
 
 public class MainActivity extends Activity {
 
@@ -56,15 +69,18 @@ public class MainActivity extends Activity {
 
     private String TAG = "MainActivity";
     private SurfaceRenderer surfaceRenderer;
+    public RelativeLayout gameHolder;
+    public View mockView;
+    private ImageView btnSettings;
 
 
-    private final String STAGES_FILE = "stages.json";
+    public final String WORLDS_FILE = "worlds.json";
 
 
     private SoundsManager soundsManager;
 
     private SharedPreferences preferences;
-    public JSONArray stages;
+    public ArrayList<Stage> stages;
 
     private int currentStage = 0;
     private int unlockedStage = 0;
@@ -85,6 +101,119 @@ public class MainActivity extends Activity {
     public static float screenHeight;
 
 
+    public String android_id;
+
+    public static ArrayList<String> sounds;
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    private class DownloadFile extends AsyncTask<String, Integer, String> {
+
+        private JSONObject o;
+
+        public DownloadFile(JSONObject object) {
+            this.o = object;
+        }
+
+        @Override
+        protected String doInBackground(String... arg) {
+            int count;
+            try {
+
+                String path = o.has("path") ? o.getString("path") : null;
+                String name = o.has("originalname") ? o.getString("originalname") : null;
+
+                if (path == null) {
+                 Log.d("aaa","path null");
+                    return null;
+                }
+
+                File f = new File(MainActivity.this.getCacheDir() + "/" + name);
+
+                if (f.exists())
+                {
+                    Log.d("aaa","file exist");
+                    return null;
+                }
+
+                URL url = new URL(DAO.url_files+path);
+                URLConnection conexion = url.openConnection();
+                conexion.connect();
+                // this will be useful so that you can show a tipical 0-100% progress bar
+                int lenghtOfFile = conexion.getContentLength();
+
+                // downlod the file
+                InputStream input = new BufferedInputStream(url.openStream());
+                OutputStream output = new FileOutputStream(f.getPath());
+
+                byte data[] = new byte[1024];
+
+                long total = 0;
+
+                while ((count = input.read(data)) != -1) {
+                    total += count;
+                    // publishing the progress....
+                    Log.d("aaa", "progress " + (total * 100 / lenghtOfFile));
+                    //publishProgress((int) (total * 100 / lenghtOfFile));
+                    output.write(data, 0, count);
+                }
+
+                output.flush();
+                output.close();
+                input.close();
+                Log.d("aaa", "file saved");
+                listCatche();
+            } catch (Exception e) {
+                Log.d("aaa",e.toString());
+            }
+            return null;
+        }
+
+    }
+
+    private void loadSounds() {
+
+
+        DAO.getSounds(this, new Response.Listener() {
+            @Override
+            public void onResponse(Object response) {
+
+
+                Log.d(TAG, response.toString());
+                JSONObject object = null;
+                try {
+                    object = new JSONObject(response.toString());
+
+                    object = object.has("api") ? object.getJSONObject("api") : object;
+
+                    JSONArray array = object.has("results") ? object.getJSONArray("results") : new JSONArray();
+
+                    for (int i = 0; i < array.length(); i++) {
+                        JSONObject o = array.getJSONObject(i);
+
+                        new DownloadFile(o).execute();
+
+                    }
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                Log.d(TAG, error.toString());
+            }
+        });
+
+
+    }
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public static ArrayList<String> listRaw() {
         ArrayList<String> files = new ArrayList<>();
         Field[] fields = R.raw.class.getFields();
@@ -93,7 +222,27 @@ public class MainActivity extends Activity {
             files.add(fields[count].getName());
 
         }
+        for(int i=0;i<sounds.size();i++)
+        {
+            files.add(sounds.get(i));
+        }
+        files.add("");
         return files;
+    }
+
+    public void listCatche() {
+        sounds = new ArrayList<>();
+
+        File f = new File(getCacheDir().getPath());
+        File[] files1 = f.listFiles();
+
+        for(int i=0;i<files1.length;i++)
+        {
+            if(files1[i].getAbsolutePath().endsWith("mp3"))
+                sounds.add(files1[i].getAbsolutePath());
+        }
+
+
     }
 
     public void setCurrent(final float value) {
@@ -158,10 +307,21 @@ public class MainActivity extends Activity {
         });
     }
 
+    public View getButtonSettings() {
+        return btnSettings;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Fabric.with(this, new Crashlytics());
+
+
+        listCatche();
+        loadSounds();
+
+        android_id = Settings.Secure.getString(getContentResolver(),
+                Settings.Secure.ANDROID_ID);
 
         screenHeight = this.getResources().getDisplayMetrics().heightPixels;
         screenWidth = this.getResources().getDisplayMetrics().widthPixels;
@@ -206,8 +366,13 @@ public class MainActivity extends Activity {
         tvMin = (TextView) findViewById(R.id.tv_min_time);
         tvCur = (TextView) findViewById(R.id.tv_current_time);
 
-
+        btnSettings = (ImageView) findViewById(R.id.btn_settings);
+        btnSettings.setVisibility(View.GONE);
         surfaceRenderer = (SurfaceRenderer) findViewById(R.id.game);
+        gameHolder = (RelativeLayout) findViewById(R.id.game_holder);
+        mockView = findViewById(R.id.mock_view);
+        gameHolder.removeView(mockView);
+
 
         mainMenu = new MainMenu(this, surfaceRenderer);
         scoreLayout = new AnimationScoreLayout(surfaceRenderer);
@@ -220,11 +385,7 @@ public class MainActivity extends Activity {
         //initMainMenu();
 
 
-        try {
-            loadStage(Stage.valueOf(stages.getJSONObject(currentStage)));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        loadStage(stages.get(currentStage));
 
 
         //soundsManager.playBackgroundBirds();
@@ -279,11 +440,9 @@ public class MainActivity extends Activity {
     public void clearStageState()
 
     {
-        try {
-            surfaceRenderer.loadStageData(Stage.valueOf(stages.getJSONObject(currentStage)));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+
+        surfaceRenderer.loadStageData(stages.get(currentStage));
+
     }
 
     public void loadStage(final Stage stage) {
@@ -292,13 +451,13 @@ public class MainActivity extends Activity {
         try {
 
 
-            soundsManager.configure(stage.config.sounds);
-            soundsManager.playBackgroundSound();
+            //soundsManager.configure(stage.config.sounds);
+            //soundsManager.playBackgroundSound();
 
-
-            final int color = Color.parseColor(stage.config.colors.colorBackground);
-            int c = Color.argb(100, Color.red(color), Color.green(color), Color.blue(color));
-            mainMenu.menuBkg.setBackgroundColor(c);
+            mainMenu.setColor(stage.config.colors.colorBackground);
+            //final int color = Color.parseColor(stage.config.colors.colorBackground);
+            //int c = Color.argb(100, Color.red(color), Color.green(color), Color.blue(color));
+            //mainMenu.getBackground().setBackgroundColor(c);
             scoreLayout.config(stage);
             mainMenu.loadStage(stage);
 
@@ -322,7 +481,7 @@ public class MainActivity extends Activity {
 
 
         currentStage++;
-        if (currentStage >= stages.length())
+        if (currentStage >= stages.size())
             currentStage = 0;
 
 
@@ -335,7 +494,7 @@ public class MainActivity extends Activity {
         handler.post(new Runnable() {
             @Override
             public void run() {
-                Log.d("Zzz", "load stage " + currentStage + " " + stages.length());
+                Log.d("Zzz", "load stage " + currentStage + " " + stages.size());
                 //mainMenu.getAnimationMainMenu().showMe;
 
 
@@ -346,13 +505,11 @@ public class MainActivity extends Activity {
 
                         Log.d("zzz", "move to next stage");
                         //mainMenu.playStage(false);
-                        try {
-                            loadStage(Stage.valueOf(stages.getJSONObject(currentStage)));
-                            //surfaceRenderer.setRunnig(true);
-                            surfaceRenderer.setDrawing(true);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+
+                        loadStage(stages.get(currentStage));
+                        //surfaceRenderer.setRunnig(true);
+                        surfaceRenderer.setDrawing(true);
+
 
                     }
 
@@ -373,6 +530,7 @@ public class MainActivity extends Activity {
         return soundsManager;
     }
 
+
     public void loadStagesFile() {
         StringBuilder returnString = new StringBuilder();
         InputStream fIn = null;
@@ -380,7 +538,7 @@ public class MainActivity extends Activity {
         BufferedReader input = null;
         try {
             fIn = getResources().getAssets()
-                    .open(STAGES_FILE, Context.MODE_WORLD_READABLE);
+                    .open(WORLDS_FILE, Context.MODE_WORLD_READABLE);
             isr = new InputStreamReader(fIn);
             input = new BufferedReader(isr);
             String line = "";
@@ -403,10 +561,16 @@ public class MainActivity extends Activity {
         }
 
         try {
+            ArrayList<World> worlds = new ArrayList<>();
             JSONObject jsonData = new JSONObject(returnString.toString());
             JSONObject api = jsonData.has("api") ? jsonData.getJSONObject("api") : new JSONObject();
-            stages = api.has("results") ? api.getJSONArray("results") : new JSONArray();
-            Log.d(TAG, "stages loaded");
+
+            JSONArray jsonArray = api.has("results") ? api.getJSONArray("results") : new JSONArray();
+            for (int i = 0; i < jsonArray.length(); i++) {
+                worlds.add(World.valueOf(jsonArray.getJSONObject(i)));
+            }
+            stages = worlds.get(0).stages;
+            Log.d(TAG, "stages loaded " + stages.size());
         } catch (JSONException e) {
             e.printStackTrace();
             Log.d(TAG, e.toString());
@@ -418,15 +582,17 @@ public class MainActivity extends Activity {
     public void onBackPressed() {
         Log.d("zzz", "on back pressd");
 
-        mainMenu.layoutMenu.clearAnimation();
+        mainMenu.clearAnimation();
 
         if (surfaceRenderer.onBackPressed()) {
-            if (mainMenu.layoutMenu.getVisibility() == View.GONE) {
+            if (mainMenu.getLayout().getParent() == null) {
+                //if (mainMenu.layoutMenu.getVisibility() == View.GONE) {
                 surfaceRenderer.setRunnig(false);
                 mainMenu.getAnimationMainMenu().showMenu();
-
+                gameHolder.removeView(mockView);
+                Log.d("zzz", "mock view added ");
                 mAdView.setVisibility(View.VISIBLE);
-                mainMenu.btnSettings.setVisibility(View.GONE);
+                btnSettings.setVisibility(View.GONE);
 
                 drawerContent.removeAllViews();
                 drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);

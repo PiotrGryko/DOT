@@ -64,6 +64,7 @@ public class Stage {
         Stage stage = new Stage();
 
 
+        /*
         int maxLogSize = 1000;
         for(int i = 0; i <= object.toString().length() / maxLogSize; i++) {
             int start = i * maxLogSize;
@@ -71,7 +72,7 @@ public class Stage {
             end = end > object.toString().length() ? object.toString().length() : end;
             Log.v(TAG, object.toString().substring(start, end));
         }
-
+*/
         try {
             String id = object.has("_id") ? object.getString("_id") : "";
 

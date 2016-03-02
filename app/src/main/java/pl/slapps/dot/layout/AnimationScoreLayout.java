@@ -3,6 +3,7 @@ package pl.slapps.dot.layout;
 import android.graphics.Color;
 import android.support.v4.view.ViewCompat;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
@@ -28,7 +29,7 @@ public class AnimationScoreLayout {
     private TextView tvName;
     private TextView tvDesc;
 
-    public LinearLayout layoutHeader;
+    private LinearLayout layoutHeader;
 
     private AnimationEntrance headerEntranceAnimation;
     private AnimationShow headerShowAnimation;
@@ -44,7 +45,13 @@ public class AnimationScoreLayout {
     private Animation colorAnimation;
 
     private SurfaceRenderer renderer;
+    private MainActivity context;
 
+    private View layout;
+    public View getLayout()
+    {
+        return layout;
+    }
 
     public AnimationScoreLayout(SurfaceRenderer renderer) {
         this.renderer = renderer;
@@ -83,13 +90,17 @@ public class AnimationScoreLayout {
 
     }
 
-    public void initLayout(MainActivity context) {
-        scoreLayout = (RelativeLayout) context.findViewById(R.id.layout_score);
-        tvScore = (TextView) context.findViewById(R.id.tv_score);
+    public void initLayout(final MainActivity context) {
 
-        tvName = (TextView) context.findViewById(R.id.tv_score_lvl);
-        tvDesc = (TextView) context.findViewById(R.id.tv_score_desc);
-        layoutHeader = (LinearLayout) context.findViewById(R.id.layout_score_header);
+        this.context=context;
+        layout = LayoutInflater.from(context).inflate(R.layout.layout_score,null);
+
+        scoreLayout = (RelativeLayout) layout.findViewById(R.id.layout_score);
+        tvScore = (TextView) layout.findViewById(R.id.tv_score);
+
+        tvName = (TextView) layout.findViewById(R.id.tv_score_lvl);
+        tvDesc = (TextView) layout.findViewById(R.id.tv_score_desc);
+        layoutHeader = (LinearLayout) layout.findViewById(R.id.layout_score_header);
 
         layoutHeader.setVisibility(View.GONE);
 
@@ -107,7 +118,9 @@ public class AnimationScoreLayout {
 
             @Override
             public void onAnimationEnd(Animation animation) {
+                context.gameHolder.removeView(layout);
                 renderer.setRunnig(true);
+
             }
 
             @Override
@@ -190,8 +203,15 @@ public class AnimationScoreLayout {
     }
 
     public void showScore(final String score, final AnimationShow.OnAnimationListener listener) {
+
+
+        if(layout.getParent()==null) {
+            context.gameHolder.addView(layout);
+            Log.d("aaaa","score layout showed");
+        }
         tvScore.setText(score);
         ViewCompat.setAlpha(tvScore, 1);
+
 
 
         entranceAnimation.clearAnimation();
