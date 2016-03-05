@@ -7,6 +7,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.graphics.Color;
+import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -70,8 +71,15 @@ public class MainActivity extends Activity {
     private String TAG = "MainActivity";
     private SurfaceRenderer surfaceRenderer;
     public RelativeLayout gameHolder;
-    public View mockView;
+    public RelativeLayout rootLayout;
+    private View mockView;
     private ImageView btnSettings;
+    private ImageView btnPlay;
+    private ImageView btnPalette;
+    private ImageView btnLights;
+    private ImageView btnSounds;
+
+    private LinearLayout layoutButtons;
 
 
     public final String WORLDS_FILE = "worlds.json";
@@ -125,19 +133,18 @@ public class MainActivity extends Activity {
                 String name = o.has("originalname") ? o.getString("originalname") : null;
 
                 if (path == null) {
-                 Log.d("aaa","path null");
+                    Log.d("aaa", "path null");
                     return null;
                 }
 
                 File f = new File(MainActivity.this.getCacheDir() + "/" + name);
 
-                if (f.exists())
-                {
-                    Log.d("aaa","file exist");
+                if (f.exists()) {
+                    Log.d("aaa", "file exist");
                     return null;
                 }
 
-                URL url = new URL(DAO.url_files+path);
+                URL url = new URL(DAO.url_files + path);
                 URLConnection conexion = url.openConnection();
                 conexion.connect();
                 // this will be useful so that you can show a tipical 0-100% progress bar
@@ -165,7 +172,7 @@ public class MainActivity extends Activity {
                 Log.d("aaa", "file saved");
                 listCatche();
             } catch (Exception e) {
-                Log.d("aaa",e.toString());
+                Log.d("aaa", e.toString());
             }
             return null;
         }
@@ -222,8 +229,7 @@ public class MainActivity extends Activity {
             files.add(fields[count].getName());
 
         }
-        for(int i=0;i<sounds.size();i++)
-        {
+        for (int i = 0; i < sounds.size(); i++) {
             files.add(sounds.get(i));
         }
         files.add("");
@@ -236,9 +242,8 @@ public class MainActivity extends Activity {
         File f = new File(getCacheDir().getPath());
         File[] files1 = f.listFiles();
 
-        for(int i=0;i<files1.length;i++)
-        {
-            if(files1[i].getAbsolutePath().endsWith("mp3"))
+        for (int i = 0; i < files1.length; i++) {
+            if (files1[i].getAbsolutePath().endsWith("mp3"))
                 sounds.add(files1[i].getAbsolutePath());
         }
 
@@ -311,6 +316,49 @@ public class MainActivity extends Activity {
         return btnSettings;
     }
 
+    public View getMockView() {
+        return mockView;
+    }
+
+    public ImageView getButtonPlay() {
+        return btnPlay;
+    }
+
+    public ImageView getButtonColours() {
+        return btnPalette;
+    }
+
+    public ImageView getButtonSounds() {
+        return btnSounds;
+    }
+
+    public ImageView getButtonLights() {
+        return btnLights;
+    }
+
+    public LinearLayout getLayoutButtons() {
+        return layoutButtons;
+    }
+
+
+    private void initGeneratorButtons() {
+        btnSettings = (ImageView) findViewById(R.id.btn_settings);
+        btnSettings.setVisibility(View.GONE);
+
+        btnPlay = (ImageView) findViewById(R.id.btn_play);
+        btnPlay.setVisibility(View.GONE);
+
+        btnPalette = (ImageView) findViewById(R.id.btn_colours);
+        btnPalette.setVisibility(View.GONE);
+
+        btnLights = (ImageView) findViewById(R.id.btn_lights);
+        btnLights.setVisibility(View.GONE);
+
+        btnSounds = (ImageView) findViewById(R.id.btn_sounds);
+        btnSounds.setVisibility(View.GONE);
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -366,12 +414,17 @@ public class MainActivity extends Activity {
         tvMin = (TextView) findViewById(R.id.tv_min_time);
         tvCur = (TextView) findViewById(R.id.tv_current_time);
 
-        btnSettings = (ImageView) findViewById(R.id.btn_settings);
-        btnSettings.setVisibility(View.GONE);
+        initGeneratorButtons();
+
         surfaceRenderer = (SurfaceRenderer) findViewById(R.id.game);
         gameHolder = (RelativeLayout) findViewById(R.id.game_holder);
+        rootLayout = (RelativeLayout) findViewById(R.id.root_layout);
+
         mockView = findViewById(R.id.mock_view);
+        layoutButtons = (LinearLayout) findViewById(R.id.layout_buttons);
+
         gameHolder.removeView(mockView);
+        rootLayout.removeView(layoutButtons);
 
 
         mainMenu = new MainMenu(this, surfaceRenderer);
@@ -454,7 +507,7 @@ public class MainActivity extends Activity {
             //soundsManager.configure(stage.config.sounds);
             //soundsManager.playBackgroundSound();
 
-            mainMenu.setColor(stage.config.colors.colorBackground);
+            mainMenu.setColor(stage.config);
             //final int color = Color.parseColor(stage.config.colors.colorBackground);
             //int c = Color.argb(100, Color.red(color), Color.green(color), Color.blue(color));
             //mainMenu.getBackground().setBackgroundColor(c);
@@ -569,7 +622,13 @@ public class MainActivity extends Activity {
             for (int i = 0; i < jsonArray.length(); i++) {
                 worlds.add(World.valueOf(jsonArray.getJSONObject(i)));
             }
-            stages = worlds.get(0).stages;
+
+
+            stages = new ArrayList<>();
+            for (World w : worlds) {
+                stages.addAll(w.stages);
+            }
+
             Log.d(TAG, "stages loaded " + stages.size());
         } catch (JSONException e) {
             e.printStackTrace();
@@ -590,9 +649,16 @@ public class MainActivity extends Activity {
                 surfaceRenderer.setRunnig(false);
                 mainMenu.getAnimationMainMenu().showMenu();
                 gameHolder.removeView(mockView);
+                rootLayout.removeView(layoutButtons);
+
                 Log.d("zzz", "mock view added ");
                 mAdView.setVisibility(View.VISIBLE);
+
                 btnSettings.setVisibility(View.GONE);
+                btnPalette.setVisibility(View.GONE);
+                btnSounds.setVisibility(View.GONE);
+                btnLights.setVisibility(View.GONE);
+                btnPlay.setVisibility(View.GONE);
 
                 drawerContent.removeAllViews();
                 drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);

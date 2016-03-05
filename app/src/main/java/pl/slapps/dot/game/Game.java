@@ -362,8 +362,9 @@ public class Game {
 
     public void removeExplosion(Explosion e) {
         explosions.remove(e);
-        if (e == currentExplosion)
-            currentExplosion = null;
+        if (e == currentExplosion){
+
+            currentExplosion = null;}
         //if(explosions.size()==0)
         //    toggleColors();
         // Log.d(TAG, Integer.toString(explosions.size()));
@@ -446,6 +447,7 @@ public class Game {
                 mainSprite.setInitialProgress(startRoute.height / 2);
         }
 
+        maze.initPoints();
         stopDot();
     }
 

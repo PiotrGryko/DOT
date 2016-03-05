@@ -6,7 +6,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import com.android.volley.Response;
@@ -17,9 +16,10 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import pl.slapps.dot.DAO;
+import pl.slapps.dot.R;
 import pl.slapps.dot.SurfaceRenderer;
 import pl.slapps.dot.generator.gui.GeneratorLayout;
-import pl.slapps.dot.generator.widget.PathPopup;
+import pl.slapps.dot.generator.widget.PopupLayoutFactory;
 import pl.slapps.dot.model.Config;
 import pl.slapps.dot.model.Route;
 import pl.slapps.dot.model.Stage;
@@ -54,10 +54,13 @@ public class Generator {
 
     private boolean runPreview;
 
-    private PathPopup pathPopup;
+    private PopupLayoutFactory popupFactory;
 
-    public PathPopup getPathPopup() {
-        return pathPopup;
+
+
+
+    public PopupLayoutFactory getPathPopup() {
+        return popupFactory;
     }
 
     public Config getConfig() {
@@ -104,6 +107,7 @@ public class Generator {
             }
         });
 
+
         initGrid(width, gridY);
 
         Log.d(TAG, "generator loaded " + this.tiles.size());
@@ -111,8 +115,10 @@ public class Generator {
 
         layout = new GeneratorLayout(view.context, this, tiles.get(10));
 
-        this.pathPopup = new PathPopup(this);
+        this.popupFactory = new PopupLayoutFactory(this);
 
+
+/*
         this.view.context.drawer.setDrawerListener(new DrawerLayout.DrawerListener() {
             @Override
             public void onDrawerSlide(View drawerView, float slideOffset) {
@@ -122,7 +128,7 @@ public class Generator {
 
             @Override
             public void onDrawerOpened(View drawerView) {
-                pathPopup.dissmiss();
+                pathPopup.dissmissPath();
             }
 
             @Override
@@ -135,19 +141,66 @@ public class Generator {
 
             }
         });
+*/
+        view.context.getButtonPlay().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (getPreview()) {
+                    stopPreview();
+                    Generator.this.view.context.getButtonPlay().setImageDrawable(Generator.this.view.context.getResources().getDrawable(R.drawable.play));
+                } else {
+                    startPreview();
+                    Generator.this.view.context.getButtonPlay().setImageDrawable(Generator.this.view.context.getResources().getDrawable(R.drawable.stop));
+                }
+            }
+        });
 
+        view.context.getButtonPlay().setVisibility(View.GONE);
+
+        view.context.getButtonColours().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                popupFactory.showColours();
+
+
+            }
+        });
+
+        view.context.getButtonLights().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                popupFactory.showLights();
+
+
+            }
+        });
+
+
+        view.context.getButtonSounds().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                popupFactory.showSounds();
+
+
+            }
+        });
 
     }
+
+
 
     public void reset() {
         //int currentX = this.getLayout().tile.horizontalPos;
         //int currentY = this.getLayout().tile.verticalPos;
         view.getGame().setPreview(false);
-        getPathPopup().dissmiss();
+        getPathPopup().dissmissPath();
         initGrid(9, 15);
         configure(new Config());
         getLayout().setCurrentWorld(null);
-
+        _id=null;
         getLayout().tile = tiles.get(10);
         //getLayout().tile.setCurrentTile(true);
 
@@ -520,7 +573,7 @@ public class Generator {
 
     public void refreashMaze() {
 
-        Log.d("zzz", "refreash maze");
+        Log.d("zzz", "refreash maze ");
         configure(config);
 
         if (runPreview) {
@@ -579,6 +632,7 @@ public class Generator {
                     step.put("to", t.to);
                     step.put("background_color", t.backgroundColor);
                     step.put("ratio", t.speedRatio);
+                    step.put("draw_coin", t.drawCoin);
                     if (t.sound != null)
                         step.put("sound", t.sound);
 
@@ -728,7 +782,7 @@ public class Generator {
                 if (t.contains(x, y)) {
                     layout.setCurrentTile(t);
 
-                    pathPopup.show(event.getX(), event.getY());
+                    popupFactory.showPath(event.getX(), event.getY());
 
 
                     return true;
@@ -760,6 +814,7 @@ public class Generator {
         view.getGame().initStage(Stage.valueOf(dumpMaze()));
         //view.context.drawer.closeDrawer(view.context.drawerContent);
         runPreview = true;
+        popupFactory.dissmissPath();
         getLayout().showPreviewControlls();
 
     }

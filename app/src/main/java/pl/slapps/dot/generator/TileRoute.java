@@ -53,6 +53,7 @@ public class TileRoute {
     public Generator generator;
 
     private boolean currentTile = false;
+    public boolean drawCoin = false;
 
     public void setCurrentTile(boolean flag) {
         currentTile = flag;
@@ -87,6 +88,7 @@ public class TileRoute {
         backgroundColor = route.backgroundColor;
         sound = route.sound;
         speedRatio = route.speedRatio;
+        drawCoin=route.drawCoin;
 
 
         initData(screenWidth, screenHeight, widthBlocksCount, heightBlocksCount, route.x, route.y, route.from.name(), route.to.name(), Route.Type.valueOf(route.type.name()));
@@ -354,6 +356,7 @@ public class TileRoute {
 
         if (currentTile) {
             Matrix.setIdentityM(mModelMatrix, 0);
+
 
 
             long time = SystemClock.uptimeMillis() % 10000L;

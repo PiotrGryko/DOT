@@ -40,6 +40,7 @@ import pl.slapps.dot.R;
 import pl.slapps.dot.SurfaceRenderer;
 import pl.slapps.dot.adapter.AdapterStages;
 import pl.slapps.dot.adapter.AdapterWorlds;
+import pl.slapps.dot.model.Config;
 import pl.slapps.dot.model.Stage;
 import pl.slapps.dot.model.World;
 
@@ -68,6 +69,7 @@ public class MainMenu {
     private ImageButton btnGenerate;
     private ImageButton btnStages;
     private ImageButton btnOnline;
+    private ImageButton btnShuffle;
 
     private String currentColor = null;
 
@@ -106,7 +108,8 @@ public class MainMenu {
         return animationMainMenu;
     }
 
-    public void setColor(String colorString) {
+    public void setColor(Config config) {
+        String colorString = config.colors.colorRoute;
         if (currentColor == null) {
             final int color = Color.parseColor(colorString);
             int c = Color.argb(100, Color.red(color), Color.green(color), Color.blue(color));
@@ -128,6 +131,8 @@ public class MainMenu {
         btnGenerate.setEnabled(false);
         btnStages.setEnabled(false);
         btnOnline.setEnabled(false);
+        btnShuffle.setEnabled(false);
+
     }
 
     public void enableButtons() {
@@ -136,6 +141,8 @@ public class MainMenu {
         btnGenerate.setEnabled(true);
         btnStages.setEnabled(true);
         btnOnline.setEnabled(true);
+        btnShuffle.setEnabled(true);
+
     }
 
     public MainActivity context;
@@ -155,7 +162,7 @@ public class MainMenu {
 
     public void loadStage(Stage stage) {
 
-        final int color = Color.parseColor(stage.config.colors.colorRoute);
+        final int color = Color.parseColor(stage.config.colors.colorShip);
 
 
         //layoutMenu.clearAnimation();
@@ -223,6 +230,8 @@ public class MainMenu {
         btnGenerate = (ImageButton) layout.findViewById(R.id.btn_generate);
         btnStages = (ImageButton) layout.findViewById(R.id.btn_stages);
         btnOnline = (ImageButton) layout.findViewById(R.id.btn_online);
+        btnShuffle = (ImageButton) layout.findViewById(R.id.btn_shuffle);
+
         LoginButton loginButton = (LoginButton) layout.findViewById(R.id.login_button);
 
         context.gameHolder.addView(layout);
@@ -275,11 +284,17 @@ public class MainMenu {
                 game.initGenerator();
                 game.setRunnig(true);
                 context.getButtonSettings().setVisibility(View.VISIBLE);
+                context.getButtonColours().setVisibility(View.VISIBLE);
+                context.getButtonLights().setVisibility(View.VISIBLE);
+                context.getButtonSounds().setVisibility(View.VISIBLE);
+
 
                 context.gameHolder.removeView(layout);
 
                 context.gameHolder.removeView(layoutMenu);
-                context.gameHolder.addView(context.mockView);
+                context.gameHolder.addView(context.getMockView());
+                context.rootLayout.addView(context.getLayoutButtons());
+
                 //menuHideAnimation.startAnimation(500);
                 context.mAdView.setVisibility(View.GONE);
 
@@ -299,7 +314,7 @@ public class MainMenu {
             public void onClick(View view) {
 
 
-                /*
+
 
                 Log.d(TAG, "online stages fetched");
 
@@ -359,7 +374,23 @@ public class MainMenu {
                 worldsDialog.setContentView(v);
                 worldsDialog.show();
 
-*/
+
+
+
+
+
+
+
+
+            }
+        });
+
+        btnOnline.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+
 
 
                 Log.d(TAG, "button online pressed");
@@ -435,9 +466,7 @@ public class MainMenu {
 
             }
         });
-
-
-        btnOnline.setOnClickListener(new View.OnClickListener() {
+        btnShuffle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 

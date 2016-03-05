@@ -114,4 +114,15 @@ public class Sprite {
         return centerY;
     }
 
+    public boolean cointains(Verticle v)
+    {
+        if(v.x<centerX+width/2
+                && v.x>centerX-width/2
+                && v.y<centerY+height/2
+                && v.y>centerY-height/2)
+            return true;
+
+        return false;
+    }
+
 }

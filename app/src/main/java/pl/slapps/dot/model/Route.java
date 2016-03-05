@@ -32,6 +32,9 @@ public class Route {
     public Direction from;
     public Direction to;
 
+    public boolean drawCoin = false;
+
+
 
     public JSONObject toJson() {
         JSONObject data = new JSONObject();
@@ -46,6 +49,8 @@ public class Route {
             data.put("x", x);
             data.put("y", y);
             data.put("ratio", speedRatio);
+            data.put("draw_coin", drawCoin);
+
 
 
         } catch (JSONException e) {
@@ -70,6 +75,7 @@ public class Route {
             int x = o.has("x") ? o.getInt("x") : 0;
             int y = o.has("y") ? o.getInt("y") : 0;
             double ratio = o.has("ratio") ? o.getDouble("ratio") : 1;
+            boolean drawCoin = o.has("draw_coin") ? o.getBoolean("draw_coin"):false;
 
 
             r.next = Movement.valueOf(next);
@@ -81,6 +87,8 @@ public class Route {
             r.x = x;
             r.y = y;
             r.speedRatio=ratio;
+            r.drawCoin=drawCoin;
+
 
         } catch (JSONException e) {
             e.printStackTrace();

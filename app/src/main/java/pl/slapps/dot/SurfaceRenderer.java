@@ -63,7 +63,7 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
             generator.stopPreview();
             return false;
         }
-        generator.getPathPopup().dissmiss();
+        generator.getPathPopup().dissmissPath();
         return true;
     }
 
@@ -269,7 +269,7 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
 
     public void setRunnig(boolean isRunnig) {
         this.isRunning = isRunnig;
-        this.isDrawing=isRunnig;
+       /// this.isDrawing=isRunnig;
 
         if (!isRunnig) {
             context.resetLogs();

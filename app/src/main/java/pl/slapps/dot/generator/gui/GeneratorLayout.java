@@ -432,7 +432,7 @@ public class GeneratorLayout {
         generator.loadWorld(world);
 
         this.tile.setCurrentTile(true);
-        this.generator.getPathPopup().show(this.tile.centerX, this.tile.centerY);
+        this.generator.getPathPopup().showPath(this.tile.centerX, this.tile.centerY);
         context.drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
         context.drawer.closeDrawer(context.drawerContent);
     }
@@ -659,11 +659,15 @@ public class GeneratorLayout {
 
 
                 if (layoutWorldsList.getLayout().getParent() == null) {
+                    toggleChooseWorld.setSelected(true);
+                    layoutChooseWorldBase.addView(layoutWorldsList.getLayout());
+                    toggleChooseWorld.setEnabled(false);
                     layoutWorldsList.buildWorldsList(new GeneratorLayoutWorldsList.OnListBuildedListener() {
                         @Override
-                        public void onListBuilded() {
-                            toggleChooseWorld.setSelected(true);
-                            layoutChooseWorldBase.addView(layoutWorldsList.getLayout());
+                        public void onListBuilded(boolean flag) {
+                            toggleChooseWorld.setEnabled(true);
+                            if(!flag)
+                                toggleChooseWorld.setSelected(false);
                         }
                     });
                 } else {

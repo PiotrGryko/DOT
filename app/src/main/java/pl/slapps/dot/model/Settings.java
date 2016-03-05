@@ -14,17 +14,18 @@ public class Settings {
     public float dotLightDistance=0.3f;
 
     public float explosionOneLightShinning=1.0f;
-    public float explosionOneLightDistance=0.7f;
+    public float explosionOneLightDistance=0.5f;
 
-    public float explosionTwoLightShinning=0.7f;
-    public float explosionTwoLightDistance=1f;
+    public float explosionTwoLightShinning=1.0f;
+    public float explosionTwoLightDistance=0.5f;
 
     public int explosionParticlesCount=40;
 
     public boolean switchBackgroundColors=false;
     public boolean switchRouteColors=false;
-    public boolean switchDotLightDistance=false;
+    public boolean switchDotColor=false;
 
+    public boolean switchDotLightDistance=false;
 
     public float dotLightDistanceStart=0.3f;
     public float dotLightDistanceEnd=0.8f;
@@ -48,6 +49,7 @@ public class Settings {
             settings.put("switch_background_colors", switchBackgroundColors);
             settings.put("switch_route_colors", switchRouteColors);
             settings.put("switch_lights_distance", switchDotLightDistance);
+            settings.put("switch_dot_color", switchDotColor);
 
 
             settings.put("dot_light_distance_start", dotLightDistanceStart);
@@ -88,6 +90,7 @@ public class Settings {
             boolean switchBackgroundColors = settings.has("switch_background_colors") ? settings.getBoolean("switch_background_colors"):returnObject.switchBackgroundColors;
             boolean switchRouteColors = settings.has("switch_route_colors") ? settings.getBoolean("switch_route_colors"):returnObject.switchRouteColors;
             boolean switchLightsDistance = settings.has("switch_lights_distance") ? settings.getBoolean("switch_lights_distance"):returnObject.switchRouteColors;
+            boolean switchDotColor = settings.has("switch_dot_color") ? settings.getBoolean("switch_dot_color"):returnObject.switchDotColor;
 
 
 
@@ -106,6 +109,8 @@ public class Settings {
             returnObject.switchBackgroundColors=switchBackgroundColors;
             returnObject.switchRouteColors=switchRouteColors;
             returnObject.switchDotLightDistance=switchLightsDistance;
+            returnObject.switchDotColor=switchDotColor;
+
 
         } catch (JSONException e) {
             e.printStackTrace();

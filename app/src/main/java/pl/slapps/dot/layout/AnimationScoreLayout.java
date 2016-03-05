@@ -61,12 +61,12 @@ public class AnimationScoreLayout {
     public void config(Stage stage) {
 
         Config config = stage.config;
-        textColor = config.colors.colorRoute;
+        textColor = config.colors.colorShip;
         tvName.setText(stage.name);
         tvDesc.setText(stage.description);
 
-        tvName.setTextColor(Color.parseColor(config.colors.colorRoute));
-        tvDesc.setTextColor(Color.parseColor(config.colors.colorRoute));
+        tvName.setTextColor(Color.parseColor(textColor));
+        tvDesc.setTextColor(Color.parseColor(textColor));
 
 
         if (scoreLayout.getVisibility() == View.GONE) {

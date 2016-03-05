@@ -78,7 +78,6 @@ public class AnimationMainMenu {
             @Override
             public void onAnimationEnd(Animation animation) {
 
-                menu.getGame().setRunnig(true);
                 menu.getLayoutMenu().setVisibility(View.GONE);
                 menuHideAnimation.clearAnimation();
                 entranceAnimation.clearAnimation();
@@ -86,6 +85,7 @@ public class AnimationMainMenu {
                 headerHideAnimation.clearAnimation();
 
                 menu.context.gameHolder.removeView(menu.getLayout());
+                menu.getGame().setRunnig(true);
 
 
 

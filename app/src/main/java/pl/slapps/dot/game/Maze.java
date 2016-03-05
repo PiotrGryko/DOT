@@ -1,11 +1,9 @@
 package pl.slapps.dot.game;
 
-import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
 import android.util.Log;
 
-import pl.slapps.dot.drawing.Util;
 import pl.slapps.dot.drawing.Wall;
 import pl.slapps.dot.model.Config;
 import pl.slapps.dot.model.Route;
@@ -33,7 +31,11 @@ public class Maze {
     private Path path;
     private Fence fence;
 
+    private ArrayList<Coin> coins;
+
     private float mazeLength;
+
+    private Config config;
 
 
     public void onProgressChanged(float value) {
@@ -43,6 +45,7 @@ public class Maze {
     }
 
     public void configure(Config config) {
+        this.config=config;
         path.configure(config);
         fence.configure(config);
 
@@ -78,7 +81,22 @@ public class Maze {
 
         routes = output;
 
+        initPoints();
 
+    }
+
+    public void initPoints()
+    {
+        coins.clear();
+        for(int i=0;i<routes.size();i++)
+        {
+            TileRoute r = routes.get(i);
+            if(r.drawCoin)
+            {
+                Coin coin = new Coin(game,r.centerX,r.centerY,game.dotSize,game.dotSize);
+                coins.add(coin);
+            }
+        }
     }
 
     private float calculateLength() {
@@ -158,8 +176,9 @@ public class Maze {
 
         Log.d(TAG, "maze created");
 
-
+        config=stage.config;
         this.game = game;
+        coins = new ArrayList<>();
 
         horizontalSize = stage.xMax;
 
@@ -255,6 +274,19 @@ public class Maze {
         return null;
     }
 
+    public Coin checkCoinCollision(MainSprite sprite)
+    {
+        for(Coin c: coins)
+        {
+            if(c.checkColision(sprite,config))
+            {
+                coins.remove(c);
+                return c;
+            }
+        }
+        return null;
+    }
+
 
     public Wall.Type checkCollision(float x, float y, float width) {
 
@@ -288,6 +320,11 @@ public class Maze {
     public void drawGL20(float[] mvpMatrix) {
         path.drawGl2(mvpMatrix);
         fence.drawGl2(mvpMatrix);
+
+        for(Coin c: coins)
+        {
+            c.drawGl2(mvpMatrix);
+        }
 
 
 

@@ -112,15 +112,31 @@ public class MainSprite extends Sprite {
             lightDistance = config.settings.dotLightDistanceStart + (config.settings.dotLightDistanceEnd - config.settings.dotLightDistanceStart) * value;
         }
 
+        if (config.settings.switchDotColor) {
+            String finalColor = Util.calculateColorsSwitch(config.colors.colorSwitchDotStart, config.colors.colorSwitchDotEnd, value);
+            color = Util.parseColor(finalColor);
+        }
+
     }
 
     public void configure(Config config) {
         this.config = config;
-        color = Util.parseColor(config.colors.colorShip);
+
+        if (!config.settings.switchDotColor) {
+            color = Util.parseColor(config.colors.colorShip);
+        } else {
+            color = Util.parseColor(config.colors.colorSwitchDotStart);
+
+        }
+
+        Log.d(TAG,"configure dot");
+
         if (!config.settings.switchDotLightDistance)
             lightDistance = config.settings.dotLightDistance;
         else
             lightDistance = config.settings.dotLightDistanceStart;
+
+
 
         lightShinning = config.settings.dotLightShinning;
 
@@ -134,8 +150,11 @@ public class MainSprite extends Sprite {
 
         movingProgres += Math.abs(this.x) + Math.abs(this.y);
         if (movingProgres != 0 && movingProgres < fence.getMazeLength()) {
-            if (listener != null)
+            if (listener != null) {
                 listener.onProgressChanged(movingProgres / fence.getMazeLength());
+
+
+            }
             //Log.d("aaa", "moving progress " + movingProgres);
         }
         //fence.setMove(-x, -y);
@@ -153,6 +172,8 @@ public class MainSprite extends Sprite {
 
         TileRoute collision = fence.checkRouteCollision(centerX, centerY, width / 2);
         TileRoute tmpCurrent = fence.getCurrentRouteObject(centerX, centerY);
+
+        fence.checkCoinCollision(this);
 
 
         if (tmpCurrent != null && currentTile != tmpCurrent) {

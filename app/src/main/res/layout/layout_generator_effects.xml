@@ -148,6 +148,75 @@
         android:orientation="vertical">
 
         <CheckBox
+            android:id="@+id/cb_switch_dot_color"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Switch dot color?" />
+
+
+        <LinearLayout
+            android:id="@+id/tv_dot_color_start"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/abc_list_selector_holo_light"
+            android:orientation="horizontal"
+
+            android:padding="5dp">
+
+            <View
+                android:id="@+id/color_dot_start"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+
+                android:layout_margin="5dp"></View>
+
+            <pl.slapps.dot.layout.FontedTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="Dot color start" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/tv_dot_color_end"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/abc_list_selector_holo_light"
+            android:orientation="horizontal"
+
+            android:padding="5dp">
+
+            <View
+                android:id="@+id/color_dot_end"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+
+                android:layout_margin="5dp"></View>
+
+            <pl.slapps.dot.layout.FontedTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="Dot color end" />
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <CheckBox
             android:id="@+id/cb_switch_dot_light"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

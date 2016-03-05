@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -66,6 +68,7 @@ public class GeneratorLayoutPath {
     private TextView btnSound;
     private ImageView btnPlay;
     private ImageView imgTrash;
+    private CheckBox drawCoin;
 
 
     public View getLayout() {
@@ -613,12 +616,15 @@ public class GeneratorLayoutPath {
             tvFinishLeft.setVisibility(View.GONE);
             tvFinishRight.setVisibility(View.GONE);
 
+            generator.view.context.getButtonPlay().setVisibility(View.GONE);
+
         } else {
             tvStartBottom.setVisibility(View.GONE);
             tvStartTop.setVisibility(View.GONE);
             tvStartLeft.setVisibility(View.GONE);
             tvStartRight.setVisibility(View.GONE);
 
+            generator.view.context.getButtonPlay().setVisibility(View.VISIBLE);
 
         }
 
@@ -958,6 +964,8 @@ public class GeneratorLayoutPath {
         if (generatorLayout.tile.sound != null && !generatorLayout.tile.sound.equals(""))
             btnSound.setText(generatorLayout.tile.sound);
 
+        drawCoin.setChecked(generatorLayout.tile.drawCoin);
+
 
     }
 
@@ -1016,6 +1024,7 @@ public class GeneratorLayoutPath {
         etSpeedRatio = (NumberPickerTextView) layoutDetails.findViewById(R.id.et_speed_ratio);
         btnSound = (TextView) layoutDetails.findViewById(R.id.btn_choose_sound);
         btnPlay = (ImageView) layoutDetails.findViewById(R.id.btn_play_sound);
+        drawCoin = (CheckBox)layoutDetails.findViewById(R.id.draw_coin);
 
         tvBottomLeft = (ImageView) layoutRoutes.findViewById(R.id.tv_bottomleft);
         tvBottomRight = (ImageView) layoutRoutes.findViewById(R.id.tv_bottomright);
@@ -1166,7 +1175,7 @@ public class GeneratorLayoutPath {
 
 
                     if (r.getType() == Route.Type.FINISH) {
-                        generator.getPathPopup().dissmiss();
+                        generator.getPathPopup().dissmissPath();
                         return;
                     }
 
@@ -1266,6 +1275,14 @@ public class GeneratorLayoutPath {
                 }
 
                 generator.view.context.getSoundsManager().playRawFile(generatorLayout.tile.sound);
+            }
+        });
+
+        drawCoin.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                generatorLayout.tile.drawCoin=b;
+                Toast.makeText(generator.view.context,"draw coin "+b,Toast.LENGTH_LONG).show();
             }
         });
 

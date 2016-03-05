@@ -27,8 +27,10 @@ public class Colors {
     public String colorSwitchRouteStart = "#ff66ff";
     public String colorSwitchRouteEnd = "#8b2323";
 
-    public String colorSwitchShipStart = "#FFFFFF";
-    public String colorSwitchShipEnd = "#FFFFFF";
+
+
+    public String colorSwitchDotStart = "#FFFFFF";
+    public String colorSwitchDotEnd = "#FFFFFF";
 
 
 
@@ -47,6 +49,9 @@ public class Colors {
 
             colors.put("switch_route_start", colorSwitchRouteStart);
             colors.put("switch_route_end", colorSwitchRouteEnd);
+
+            colors.put("switch_dot_start", colorSwitchDotStart);
+            colors.put("switch_dot_end", colorSwitchDotEnd);
 
 
         } catch (JSONException e) {
@@ -76,6 +81,10 @@ public class Colors {
             String switchRouteStart = colors.has("switch_route_start") ? colors.getString("switch_route_start") : returnObject.colorSwitchRouteStart;
             String switchRouteEnd = colors.has("switch_route_end") ? colors.getString("switch_route_end") : returnObject.colorSwitchRouteEnd;
 
+            String switchDotStart = colors.has("switch_dot_start") ? colors.getString("switch_dot_start") : returnObject.colorSwitchDotStart;
+            String switchDotEnd = colors.has("switch_dot_end") ? colors.getString("switch_dot_end") : returnObject.colorSwitchDotEnd;
+
+
 
 
             returnObject.colorBackground = colorBackground;
@@ -90,6 +99,9 @@ public class Colors {
 
             returnObject.colorSwitchRouteStart=switchRouteStart;
             returnObject.colorSwitchRouteEnd=switchRouteEnd;
+
+            returnObject.colorSwitchDotStart=switchDotStart;
+            returnObject.colorSwitchDotEnd=switchDotEnd;
         } catch (JSONException e) {
             e.printStackTrace();
         }

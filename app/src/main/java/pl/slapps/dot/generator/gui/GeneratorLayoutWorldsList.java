@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.android.volley.Response;
@@ -20,6 +21,7 @@ import org.json.JSONObject;
 import pl.slapps.dot.DAO;
 import pl.slapps.dot.R;
 import pl.slapps.dot.generator.Generator;
+import pl.slapps.dot.layout.AnimationHide;
 import pl.slapps.dot.model.World;
 
 /**
@@ -29,9 +31,12 @@ public class GeneratorLayoutWorldsList {
 
     private String TAG = GeneratorLayoutWorldsList.class.getName();
     private LinearLayout layoutWorldsList;
+    private LinearLayout woldsBase;
+    private ProgressBar progressBar;
     private Generator generator;
     private GeneratorLayout generatorLayout;
 
+    private boolean isLoading;
 
     public LinearLayout getLayout()
     {
@@ -44,16 +49,35 @@ public class GeneratorLayoutWorldsList {
 
 
         layoutWorldsList = (LinearLayout)LayoutInflater.from(generator.view.context).inflate(R.layout.layout_generator_worlds_list, null);
-
+        woldsBase = (LinearLayout)layoutWorldsList.findViewById(R.id.base);
+        progressBar = (ProgressBar)layoutWorldsList.findViewById(R.id.bar);
+        progressBar.setVisibility(View.GONE);
     }
 
     public interface OnListBuildedListener
     {
-        public void onListBuilded();
+        public void onListBuilded(boolean flag);
+    }
+    private void isLoading(boolean flag)
+    {
+        this.isLoading = flag;
+        if(isLoading)
+            progressBar.setVisibility(View.VISIBLE);
+        else
+        {
+            progressBar.setVisibility(View.GONE);
+            //AnimationHide ah = new AnimationHide(progressBar,null);
+            //ah.startAnimation(300);
+        }
+
     }
 
     public void buildWorldsList(final OnListBuildedListener listener)
     {
+        if(isLoading)
+            return;
+        isLoading(true);
+        woldsBase.removeAllViews();
         DAO.getWorlds(generator.view.context, new Response.Listener() {
             @Override
             public void onResponse(Object response) {
@@ -68,14 +92,14 @@ public class GeneratorLayoutWorldsList {
                     JSONArray jsonArray = api.has("results") ? api.getJSONArray("results") : new JSONArray();
 
 
-                    layoutWorldsList.removeAllViews();
+                    //layoutWorldsList.removeAllViews();
 
 
                     for (int i = 0; i < jsonArray.length(); i++) {
                         final World w = World.valueOf(jsonArray.getJSONObject(i));
                         View v = getWorldRow(w, i);
 
-                        layoutWorldsList.addView(v);
+                        woldsBase.addView(v);
                         v.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
@@ -90,11 +114,16 @@ public class GeneratorLayoutWorldsList {
 
 
                     if(listener!=null)
-                        listener.onListBuilded();
+                        listener.onListBuilded(true);
+
+
+
 
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+
+                isLoading(false);
 
             }
         }, new Response.ErrorListener() {
@@ -102,6 +131,10 @@ public class GeneratorLayoutWorldsList {
             public void onErrorResponse(VolleyError error) {
                 Log.d(TAG, "get worlds error ");
                 Log.d(TAG, error.toString());
+                isLoading(false);
+                if(listener!=null)
+                    listener.onListBuilded(false);
+
             }
         }, false);
     }
