@@ -110,6 +110,22 @@ public class PopupLayoutFactory {
                 popup.dismiss();
         }
 
+        public void animateToTop(float progress)
+        {
+
+
+
+            float initX = mCurrentX+((MainActivity.screenWidth-mCurrentX)*(progress));
+            float initY = mCurrentY *(1-progress);
+
+
+
+            popup.update((int) initX, (int) initY, -1, -1);
+
+
+
+        }
+
         public void show(final float mCurrentX, final float mCurrentY) {
 
             //layoutPath.refreashLayout();
@@ -217,6 +233,7 @@ public class PopupLayoutFactory {
             public void onDrawerSlide(View drawerView, float slideOffset) {
 
               //  pathPopup.onDrawerSlide(slideOffset);
+                popupControls.animateToTop(slideOffset);
             }
 
             @Override
