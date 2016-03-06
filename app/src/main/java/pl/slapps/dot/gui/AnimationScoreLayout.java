@@ -1,4 +1,4 @@
-package pl.slapps.dot.layout;
+package pl.slapps.dot.gui;
 
 import android.graphics.Color;
 import android.support.v4.view.ViewCompat;

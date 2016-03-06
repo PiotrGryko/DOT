@@ -9,7 +9,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
 
-        <pl.slapps.dot.layout.FontedTextView
+        <pl.slapps.dot.gui.FontedTextView
             custom:bold="true"
             android:id="@+id/tv_world_number"
             android:layout_width="wrap_content"
@@ -41,13 +41,13 @@
             android:orientation="vertical"
             android:padding="5dp">
 
-            <pl.slapps.dot.layout.FontedTextView
+            <pl.slapps.dot.gui.FontedTextView
                 android:id="@+id/tv_world_name"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="name" />
 
-            <pl.slapps.dot.layout.FontedTextView
+            <pl.slapps.dot.gui.FontedTextView
                 android:id="@+id/tv_stages_count"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"

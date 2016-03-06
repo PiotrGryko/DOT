@@ -13,7 +13,7 @@
         android:id="@+id/iv_left"
         android:src="@drawable/arrow_number_left"/>
 
-    <pl.slapps.dot.layout.FontedTextView
+    <pl.slapps.dot.gui.FontedTextView
         custom:bold="true"
         android:layout_width="30dp"
         android:gravity="center"

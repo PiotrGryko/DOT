@@ -99,13 +99,6 @@ public class Generator {
         //this.elements=elements;
         this.config = new Config();
         this.view = view;
-        this.view.context.getButtonSettings().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //GeneratorDialog.showGeneratorMenuDialog(Generator.this);
-                view.context.toggleMenu();
-            }
-        });
 
 
         initGrid(width, gridY);
@@ -116,7 +109,6 @@ public class Generator {
         layout = new GeneratorLayout(view.context, this, tiles.get(10));
 
         this.popupFactory = new PopupLayoutFactory(this);
-
 
 /*
         this.view.context.drawer.setDrawerListener(new DrawerLayout.DrawerListener() {
@@ -142,52 +134,6 @@ public class Generator {
             }
         });
 */
-        view.context.getButtonPlay().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (getPreview()) {
-                    stopPreview();
-                    Generator.this.view.context.getButtonPlay().setImageDrawable(Generator.this.view.context.getResources().getDrawable(R.drawable.play));
-                } else {
-                    startPreview();
-                    Generator.this.view.context.getButtonPlay().setImageDrawable(Generator.this.view.context.getResources().getDrawable(R.drawable.stop));
-                }
-            }
-        });
-
-        view.context.getButtonPlay().setVisibility(View.GONE);
-
-        view.context.getButtonColours().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                popupFactory.showColours();
-
-
-            }
-        });
-
-        view.context.getButtonLights().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                popupFactory.showLights();
-
-
-            }
-        });
-
-
-        view.context.getButtonSounds().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                popupFactory.showSounds();
-
-
-            }
-        });
-
     }
 
 
@@ -202,6 +148,7 @@ public class Generator {
         getLayout().setCurrentWorld(null);
         _id=null;
         getLayout().tile = tiles.get(10);
+        getPathPopup().showControls();
         //getLayout().tile.setCurrentTile(true);
 
     }
@@ -275,6 +222,28 @@ public class Generator {
     }
 
     public void initGrid(int width, int height) {
+        this.gridX = width;
+        this.gridY = height;
+
+
+        this.tiles = new ArrayList<>();
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                this.tiles.add(new TileRoute(view.screenWidth, view.screenHeight, width, height, j, i, "LEFT", "RIGHT", Route.Type.TILE, this));
+
+            }
+        }
+    }
+
+
+    public void resizeGrid(int width, int height) {
+
+        int widthDiff = width-this.gridX;
+        int heightDiff = height - this.gridY-height;
+
+
+
+
         this.gridX = width;
         this.gridY = height;
 

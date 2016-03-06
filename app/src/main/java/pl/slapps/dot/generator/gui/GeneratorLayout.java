@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -30,6 +31,7 @@ import java.util.ArrayList;
 import pl.slapps.dot.DAO;
 import pl.slapps.dot.MainActivity;
 import pl.slapps.dot.R;
+import pl.slapps.dot.adapter.AdapterStages;
 import pl.slapps.dot.generator.Generator;
 import pl.slapps.dot.generator.TileRoute;
 import pl.slapps.dot.model.Stage;
@@ -168,18 +170,21 @@ public class GeneratorLayout {
                     JSONObject api = out.has("api") ? out.getJSONObject("api") : new JSONObject();
                     final JSONArray results = api.has("results") ? api.getJSONArray("results") : new JSONArray();
 
-                    final Dialog stages = new Dialog(context);
-                    stages.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                    final Dialog dialogStages = new Dialog(context);
+                    dialogStages.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
-                    View v = LayoutInflater.from(context).inflate(R.layout.dialog_stages, null);
-                    ListView listView = (ListView) v.findViewById(R.id.lv);
-                    ArrayList<String> entries = new ArrayList<String>();
+                    View v = LayoutInflater.from(context).inflate(R.layout.dialog_worlds, null);
+
+                    GridView gridView = (GridView) v.findViewById(R.id.grid_view);
+
+
+                    ArrayList<Stage> entries = new ArrayList<Stage>();
                     for (int i = 0; i < results.length(); i++) {
-                        entries.add(Integer.toString(i));
+                        entries.add(Stage.valueOf(results.getJSONObject(i)));
                     }
-                    listView.setAdapter(new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, entries));
+                    gridView.setAdapter(new AdapterStages(context, entries));
 
-                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                             try {
@@ -188,14 +193,14 @@ public class GeneratorLayout {
 
                                 ArrayList<TileRoute> currentRoutes = generator.getPath();
                                 layoutConstruct.refreashLayout(currentRoutes);
-                                stages.dismiss();
+                                dialogStages.dismiss();
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
                         }
                     });
-                    stages.setContentView(v);
-                    stages.show();
+                    dialogStages.setContentView(v);
+                    dialogStages.show();
 
 
                 } catch (JSONException e) {
@@ -219,7 +224,7 @@ public class GeneratorLayout {
         View v = LayoutInflater.from(context).inflate(R.layout.dialog_stages, null);
         ListView listView = (ListView) v.findViewById(R.id.lv);
         ArrayList<String> entries = new ArrayList<String>();
-        for (int i = 0; i < context.stages.size(); i++) {
+        for (int i = 0; i < context.getActivityLoader().stages.size(); i++) {
             entries.add(Integer.toString(i));
         }
         listView.setAdapter(new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, entries));
@@ -228,7 +233,7 @@ public class GeneratorLayout {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View v, int i, long l) {
 
-                loadRoute(context.stages.get(i));
+                loadRoute(context.getActivityLoader().stages.get(i));
                 generator._id = null;
                 generator.startRouteConfiguration();
 

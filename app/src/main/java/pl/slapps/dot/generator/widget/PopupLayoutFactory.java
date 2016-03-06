@@ -1,28 +1,25 @@
 package pl.slapps.dot.generator.widget;
 
-import android.content.Context;
-import android.graphics.Color;
-import android.support.v4.view.ViewCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import pl.slapps.dot.MainActivity;
 import pl.slapps.dot.R;
 import pl.slapps.dot.generator.Generator;
-import pl.slapps.dot.generator.TileRoute;
-import pl.slapps.dot.generator.gui.GeneratorLayout;
 import pl.slapps.dot.generator.gui.GeneratorLayoutColors;
+import pl.slapps.dot.generator.gui.GeneratorLayoutControls;
+import pl.slapps.dot.generator.gui.GeneratorLayoutGrid;
 import pl.slapps.dot.generator.gui.GeneratorLayoutLights;
 import pl.slapps.dot.generator.gui.GeneratorLayoutPath;
 import pl.slapps.dot.generator.gui.GeneratorLayoutSounds;
-import pl.slapps.dot.model.Colors;
 
 /**
  * Created by piotr on 17/02/16.
@@ -36,20 +33,37 @@ public class PopupLayoutFactory {
         private float mCurrentX;
         private float mCurrentY;
 
+        public float getmCurrentX()
+        {
+            return mCurrentX;
+        }
+        public float getmCurrentY()
+        {
+            return mCurrentY;
+        }
 
-        public PopupLayout(View layout) {
+        public PopupLayout(View layout, boolean closable, String title) {
             this.layout = layout;
 
-            View v = LayoutInflater.from(generator.view.context).inflate(R.layout.dialog_path, null);
+            View v = LayoutInflater.from(generator.view.context).inflate(R.layout.dialog_popup, null);
 
             View drag = v.findViewById(R.id.base_drag);
             View close = v.findViewById(R.id.btn_close);
+            TextView tvTitle = (TextView)v.findViewById(R.id.tv_drag);
+            tvTitle.setText(title);
             close.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     popup.dismiss();
                 }
             });
+
+            if(!closable)
+            {
+                tvTitle.setVisibility(View.GONE);
+                close.setVisibility(View.GONE);
+            }
+
             LinearLayout pathBase = (LinearLayout) v.findViewById(R.id.base_path);
 
             pathBase.addView(layout);
@@ -102,11 +116,14 @@ public class PopupLayoutFactory {
 
             //ViewCompat.setAlpha(v,1);
 
+
+
+
             if (!popup.isShowing()) {
                 this.mCurrentX = mCurrentX;
                 this.mCurrentY = mCurrentY;
 
-                popup.showAtLocation(generator.view, Gravity.NO_GRAVITY, (int) mCurrentX, (int) mCurrentY);
+                popup.showAtLocation(generator.view.context.gameHolder, Gravity.NO_GRAVITY, (int) mCurrentX, (int) mCurrentY);
             }
             //layoutPath.estimateAllDirections();
 
@@ -118,6 +135,10 @@ public class PopupLayoutFactory {
     private PopupLayout popupColors;
     private PopupLayout popupLights;
     private PopupLayout popupSounds;
+    private PopupLayout popupGrid;
+    private PopupLayout popupControls;
+
+
 
     private Generator generator;
 
@@ -125,7 +146,8 @@ public class PopupLayoutFactory {
     private GeneratorLayoutColors layoutColors;
     private GeneratorLayoutLights layoutLights;
     private GeneratorLayoutSounds layoutSounds;
-
+    private GeneratorLayoutGrid layoutGrid;
+    private GeneratorLayoutControls layoutControls;
 
     //private View v;
 
@@ -134,6 +156,7 @@ public class PopupLayoutFactory {
         layoutColors.refreashLayout();
         layoutLights.refreashLayout();
         layoutSounds.refreashLayout();
+        layoutGrid.refreashLayout();
 
     }
 
@@ -149,14 +172,14 @@ public class PopupLayoutFactory {
         layoutPath.initLayout(generator.getLayout());
         layoutPath.refreashLayout();
 
-        popupPath = new PopupLayout(layoutPath.getLayout());
+        popupPath = new PopupLayout(layoutPath.getLayout(),true,"Path");
 
 
         layoutColors = new GeneratorLayoutColors();
         layoutColors.initLayout(generator.getLayout());
         layoutColors.refreashLayout();
 
-        popupColors = new PopupLayout(layoutColors.getLayout());
+        popupColors = new PopupLayout(layoutColors.getLayout(),true,"Colours");
 
         /// initView(path, layoutPath.getLayout(), popupPath);
         layoutLights = new GeneratorLayoutLights();
@@ -164,7 +187,7 @@ public class PopupLayoutFactory {
         layoutLights.refreashLayout();
 
 
-        popupLights = new PopupLayout(layoutLights.getLayout());
+        popupLights = new PopupLayout(layoutLights.getLayout(),true,"Lights");
 
 
         layoutSounds = new GeneratorLayoutSounds();
@@ -172,7 +195,45 @@ public class PopupLayoutFactory {
         layoutSounds.refreashLayout();
 
 
-        popupSounds = new PopupLayout(layoutSounds.getLayout());
+        popupSounds = new PopupLayout(layoutSounds.getLayout(),true,"Sounds");
+
+        layoutGrid = new GeneratorLayoutGrid();
+        layoutGrid.initLayout(generator.getLayout());
+        layoutGrid.refreashLayout();
+
+
+        popupGrid = new PopupLayout(layoutGrid.getLayout(),true,"Grid");
+
+
+        layoutControls = new GeneratorLayoutControls();
+        layoutControls.initLayout(generator.getLayout());
+        //layoutControls.refreashLayout();
+
+        popupControls = new PopupLayout(layoutControls.getLayout(),false,"");
+
+
+        generator.view.context.drawer.setDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+
+              //  pathPopup.onDrawerSlide(slideOffset);
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+              //  pathPopup.dissmissPath();
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+
+            }
+        });
 
     }
 
@@ -218,6 +279,19 @@ public class PopupLayoutFactory {
 
     }
 
+    public void dissmissGrod() {
+
+        popupGrid.dissmiss();
+    }
+
+    public void showGrid() {
+
+        layoutGrid.refreashLayout();
+
+        popupGrid.show(200, 200);
+
+    }
+
 
 
     public void dissmissSounds() {
@@ -230,6 +304,20 @@ public class PopupLayoutFactory {
         layoutSounds.refreashLayout();
 
         popupSounds.show(200, 200);
+
+    }
+
+
+    public void dissmissControls() {
+
+        popupControls.dissmiss();
+    }
+
+    public void showControls() {
+
+        //layoutControls.refreashLayout();
+
+        popupControls.show(MainActivity.screenWidth, 0);
 
     }
 }

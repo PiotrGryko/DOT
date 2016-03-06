@@ -1,11 +1,14 @@
-package pl.slapps.dot.layout;
+package pl.slapps.dot.gui.fragment;
 
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.GridView;
@@ -27,9 +30,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -40,17 +40,35 @@ import pl.slapps.dot.R;
 import pl.slapps.dot.SurfaceRenderer;
 import pl.slapps.dot.adapter.AdapterStages;
 import pl.slapps.dot.adapter.AdapterWorlds;
+import pl.slapps.dot.gui.AnimationMainMenu;
 import pl.slapps.dot.model.Config;
 import pl.slapps.dot.model.Stage;
 import pl.slapps.dot.model.World;
 
 /**
- * Created by piotr on 09.12.15.
+ * Created by piotr on 05/03/16.
  */
-public class MainMenu {
+public class FragmentMainMenu extends Fragment {
 
 
-    private String TAG = MainMenu.class.getName();
+    //private MainMenu mainMenu;
+
+    public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState)
+    {
+
+        this.context = (MainActivity)getActivity();
+        this.game = context.surfaceRenderer;
+        //mainMenu = new MainMenu(context,context.surfaceRenderer);
+
+
+
+        View v = init();
+
+        return v;
+
+    }
+
+    private String TAG = FragmentMainMenu.class.getName();
 
     public View layout;
 
@@ -60,12 +78,12 @@ public class MainMenu {
     private LinearLayout layoutMenu;
     private LinearLayout layoutBtns;
     private LinearLayout layoutHeader;
-    private TextView tvHeader;
+    //private TextView tvHeader;
     private LinearLayout menuBkg;
 
 
     private ImageButton btnPlay;
-    private ImageButton btnExit;
+    //private ImageButton btnExit;
     private ImageButton btnGenerate;
     private ImageButton btnStages;
     private ImageButton btnOnline;
@@ -87,8 +105,9 @@ public class MainMenu {
         return layoutHeader;
     }
 
-    public TextView getTvHeader() {
-        return tvHeader;
+
+    public ImageView getStartButton() {
+        return btnPlay;
     }
 
     public LinearLayout getBackground() {
@@ -111,6 +130,8 @@ public class MainMenu {
     public void setColor(Config config) {
         String colorString = config.colors.colorRoute;
         if (currentColor == null) {
+
+
             final int color = Color.parseColor(colorString);
             int c = Color.argb(100, Color.red(color), Color.green(color), Color.blue(color));
 
@@ -122,12 +143,13 @@ public class MainMenu {
 
             animationMainMenu.setColor(currentColor, colorString);
             currentColor = colorString;
+
         }
     }
 
     public void disableButtons() {
         btnPlay.setEnabled(false);
-        btnExit.setEnabled(false);
+        //btnExit.setEnabled(false);
         btnGenerate.setEnabled(false);
         btnStages.setEnabled(false);
         btnOnline.setEnabled(false);
@@ -137,7 +159,7 @@ public class MainMenu {
 
     public void enableButtons() {
         btnPlay.setEnabled(true);
-        btnExit.setEnabled(true);
+        //btnExit.setEnabled(true);
         btnGenerate.setEnabled(true);
         btnStages.setEnabled(true);
         btnOnline.setEnabled(true);
@@ -152,12 +174,7 @@ public class MainMenu {
         return game;
     }
 
-    public MainMenu(MainActivity context, SurfaceRenderer game) {
-        this.context = context;
-        this.game = game;
 
-
-    }
 
 
     public void loadStage(Stage stage) {
@@ -183,7 +200,7 @@ public class MainMenu {
         BufferedReader input = null;
         try {
             fIn = context.getResources().getAssets()
-                    .open(context.WORLDS_FILE, Context.MODE_WORLD_READABLE);
+                    .open(context.getActivityLoader().WORLDS_FILE, Context.MODE_WORLD_READABLE);
             isr = new InputStreamReader(fIn);
             input = new BufferedReader(isr);
             String line = "";
@@ -208,16 +225,16 @@ public class MainMenu {
     }
 
 
-    public void init() {
+    public View init() {
 
         animationMainMenu = new AnimationMainMenu(this);
 
-        layout = LayoutInflater.from(context).inflate(R.layout.layout_menu, null);
+        layout = LayoutInflater.from(context).inflate(R.layout.fragment_main_menu, null);
 
         layoutMenu = (LinearLayout) layout.findViewById(R.id.layout_menu);
         layoutBtns = (LinearLayout) layout.findViewById(R.id.layout_btns);
         layoutHeader = (LinearLayout) layout.findViewById(R.id.layout_header);
-        tvHeader = (TextView) layout.findViewById(R.id.tv_header);
+        //tvHeader = (TextView) layout.findViewById(R.id.tv_header);
 
         menuBkg = (LinearLayout) layout.findViewById(R.id.menu_bkg);
 
@@ -225,7 +242,7 @@ public class MainMenu {
         tvName = (TextView) layout.findViewById(R.id.tv_lvl);
         tvDesc = (TextView) layout.findViewById(R.id.tv_desc);
 
-        btnExit = (ImageButton) layout.findViewById(R.id.btn_exit);
+        //btnExit = (ImageButton) layout.findViewById(R.id.btn_exit);
         btnPlay = (ImageButton) layout.findViewById(R.id.btn_play);
         btnGenerate = (ImageButton) layout.findViewById(R.id.btn_generate);
         btnStages = (ImageButton) layout.findViewById(R.id.btn_stages);
@@ -234,7 +251,7 @@ public class MainMenu {
 
         LoginButton loginButton = (LoginButton) layout.findViewById(R.id.login_button);
 
-        context.gameHolder.addView(layout);
+        //context.gameHolder.addView(layout);
 
         animationMainMenu.init();
         loginButton.setReadPermissions("user_friends");
@@ -282,18 +299,22 @@ public class MainMenu {
             public void onClick(View view) {
                 context.getSoundsManager().stopBackgroundPlayer();
                 game.initGenerator();
+
                 game.setRunnig(true);
-                context.getButtonSettings().setVisibility(View.VISIBLE);
-                context.getButtonColours().setVisibility(View.VISIBLE);
-                context.getButtonLights().setVisibility(View.VISIBLE);
-                context.getButtonSounds().setVisibility(View.VISIBLE);
 
 
-                context.gameHolder.removeView(layout);
 
-                context.gameHolder.removeView(layoutMenu);
+
+                ///context.gameHolder.removeView(layout);
+
+
+
+                //context.gameHolder.removeView(layoutMenu);
+
+                context.removeCurrentFragment();
+
                 context.gameHolder.addView(context.getMockView());
-                context.rootLayout.addView(context.getLayoutButtons());
+                context.rootLayout.addView(context.getActivityControls().getLayoutButtons());
 
                 //menuHideAnimation.startAnimation(500);
                 context.mAdView.setVisibility(View.GONE);
@@ -301,14 +322,14 @@ public class MainMenu {
 
             }
         });
-
+/*
         btnExit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 context.onBackPressed();
             }
         });
-
+*/
         btnStages.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -503,9 +524,14 @@ public class MainMenu {
 
             }
         });
+        context.loadStage(context.getCurrentStage());
 
 
+
+        return layout;
     }
+
+
 
 
 }

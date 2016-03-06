@@ -26,7 +26,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <pl.slapps.dot.layout.FontedTextView
+                <pl.slapps.dot.gui.FontedTextView
                     custom:bold="true"
                     android:id="@+id/tv_score_lvl"
 
@@ -38,7 +38,7 @@
                     android:textSize="25sp"
                     android:textStyle="bold" />
 
-                <pl.slapps.dot.layout.FontedTextView
+                <pl.slapps.dot.gui.FontedTextView
                     android:id="@+id/tv_score_desc"
 
                     android:layout_width="fill_parent"
@@ -50,7 +50,7 @@
                     android:textSize="20sp" />
             </LinearLayout>
 
-            <pl.slapps.dot.layout.FontedTextView
+            <pl.slapps.dot.gui.FontedTextView
                 custom:bold="true"
                 android:id="@+id/tv_score"
                 android:layout_width="wrap_content"

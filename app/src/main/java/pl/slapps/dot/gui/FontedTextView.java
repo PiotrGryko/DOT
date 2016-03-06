@@ -1,4 +1,4 @@
-package pl.slapps.dot.layout;
+package pl.slapps.dot.gui;
 
 import android.content.Context;
 import android.content.res.TypedArray;

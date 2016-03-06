@@ -15,5 +15,6 @@
     <integer name="enemy_delay_type1">2000</integer>
     <integer name="enemy_delay_type2">1200</integer>
     <integer name="bonus_time">7000</integer>
+    <dimen name="ambiwarna_size">160dp</dimen>
 
 </resources>

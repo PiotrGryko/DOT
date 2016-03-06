@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <pl.slapps.dot.layout.FontedTextView
+            <pl.slapps.dot.gui.FontedTextView
                 android:id="@+id/tv_load"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -28,7 +28,7 @@
                 android:paddingTop="5dp"
                 android:text="Load stage" />
 
-            <pl.slapps.dot.layout.FontedTextView
+            <pl.slapps.dot.gui.FontedTextView
                 android:id="@+id/tv_load_online"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -40,7 +40,7 @@
                 android:text="Load online stage" />
 
 
-            <pl.slapps.dot.layout.FontedTextView
+            <pl.slapps.dot.gui.FontedTextView
                 android:id="@+id/tv_delete_online"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"

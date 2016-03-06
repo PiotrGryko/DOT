@@ -6,7 +6,7 @@
     android:gravity="center"
     android:layout_height="match_parent">
 
-    <pl.slapps.dot.layout.FontedTextView
+    <pl.slapps.dot.gui.FontedTextView
         custom:bold="true"
         android:id="@+id/tv_label"
         android:layout_width="fill_parent"

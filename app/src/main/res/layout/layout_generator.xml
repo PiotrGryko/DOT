@@ -42,7 +42,7 @@
                         android:padding="5dp"
                         android:src="@drawable/world" />
 
-                    <pl.slapps.dot.layout.FontedTextView
+                    <pl.slapps.dot.gui.FontedTextView
                         android:layout_width="fill_parent"
                         custom:bold="true"
                         android:layout_height="wrap_content"
@@ -82,7 +82,7 @@
                         android:padding="5dp"
                         android:src="@drawable/spread" />
 
-                    <pl.slapps.dot.layout.FontedTextView
+                    <pl.slapps.dot.gui.FontedTextView
                         android:layout_width="fill_parent"
                         custom:bold="true"
 
@@ -124,7 +124,7 @@
                         android:padding="5dp"
                         android:src="@drawable/palette" />
 
-                    <pl.slapps.dot.layout.FontedTextView
+                    <pl.slapps.dot.gui.FontedTextView
                         custom:bold="true"
 
                         android:layout_width="fill_parent"
@@ -167,7 +167,7 @@
                         android:padding="5dp"
                         android:src="@drawable/cogs" />
 
-                    <pl.slapps.dot.layout.FontedTextView
+                    <pl.slapps.dot.gui.FontedTextView
                         android:layout_width="fill_parent"
                         custom:bold="true"
 
@@ -211,7 +211,7 @@
                         android:src="@drawable/construct" />
 
 
-                    <pl.slapps.dot.layout.FontedTextView
+                    <pl.slapps.dot.gui.FontedTextView
                         android:id="@+id/tv_construct_title"
                         custom:bold="true"
 
@@ -257,7 +257,7 @@
                         android:padding="5dp"
                         android:src="@drawable/note" />
 
-                    <pl.slapps.dot.layout.FontedTextView
+                    <pl.slapps.dot.gui.FontedTextView
                         custom:bold="true"
 
                         android:layout_width="fill_parent"
@@ -301,7 +301,7 @@
                         android:padding="5dp"
                         android:src="@drawable/text" />
 
-                    <pl.slapps.dot.layout.FontedTextView
+                    <pl.slapps.dot.gui.FontedTextView
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         custom:bold="true"
@@ -343,7 +343,7 @@
                         android:padding="5dp"
                         android:src="@drawable/world" />
 
-                    <pl.slapps.dot.layout.FontedTextView
+                    <pl.slapps.dot.gui.FontedTextView
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         custom:bold="true"
@@ -386,7 +386,7 @@
                         android:padding="5dp"
                         android:src="@drawable/play" />
 
-                    <pl.slapps.dot.layout.FontedTextView
+                    <pl.slapps.dot.gui.FontedTextView
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         custom:bold="true"
@@ -429,7 +429,7 @@
                         android:padding="5dp"
                         android:src="@drawable/lights" />
 
-                    <pl.slapps.dot.layout.FontedTextView
+                    <pl.slapps.dot.gui.FontedTextView
                         android:layout_width="fill_parent"
                         custom:bold="true"
 
@@ -472,7 +472,7 @@
                         android:padding="5dp"
                         android:src="@drawable/effects" />
 
-                    <pl.slapps.dot.layout.FontedTextView
+                    <pl.slapps.dot.gui.FontedTextView
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         custom:bold="true"
@@ -511,7 +511,7 @@
                     android:padding="5dp"
                     android:src="@drawable/floppydisc" />
 
-                <pl.slapps.dot.layout.FontedTextView
+                <pl.slapps.dot.gui.FontedTextView
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     custom:bold="true"

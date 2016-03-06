@@ -1,230 +1,287 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <LinearLayout
-        android:id="@+id/layout_colors"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+    <RelativeLayout
+        android:layout_width="wrap_content"
+
+        android:layout_height="wrap_content">
 
         <LinearLayout
-            android:visibility="gone"
-            android:id="@+id/tv_dot_light_color"
-            android:layout_width="fill_parent"
+            android:id="@+id/tv_current_color"
+
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/abc_list_selector_holo_light"
-            android:orientation="horizontal"
+            android:orientation="vertical">
 
-            android:padding="5dp">
-
-            <View
-                android:id="@+id/color_dot_light"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-
-                android:layout_margin="5dp"></View>
-
-            <pl.slapps.dot.layout.FontedTextView
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
+                android:background="@drawable/abc_list_selector_holo_light"
+                android:orientation="horizontal"
+
+                android:padding="5dp">
+
+                <View
+                    android:id="@+id/color_current"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+
+                    android:layout_margin="5dp"></View>
+
+                <pl.slapps.dot.gui.FontedTextView
+                    android:id="@+id/current_color_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:text="Current color" />
+
+
+            </LinearLayout>
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:background="#c3c3c3c3"></View>
+        </LinearLayout>
+
+        <pl.slapps.dot.gui.AmbilWarnaView
+            android:id="@+id/ambilwarna"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_current_color"></pl.slapps.dot.gui.AmbilWarnaView>
+
+
+        <LinearLayout
+            android:id="@+id/layout_colors"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_current_color"
+            android:layout_margin="5dp"
+            android:background="#ffffff"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:id="@+id/tv_dot_light_color"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/abc_list_selector_holo_light"
+                android:orientation="horizontal"
                 android:padding="5dp"
-                android:text="Dot light color" />
+
+                android:visibility="gone">
+
+                <View
+                    android:id="@+id/color_dot_light"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+
+                    android:layout_margin="5dp"></View>
+
+                <pl.slapps.dot.gui.FontedTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:text="Dot light color" />
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/tv_explosion_ligh_color"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/abc_list_selector_holo_light"
+                android:orientation="horizontal"
+                android:padding="5dp"
+
+                android:visibility="gone">
+
+                <View
+                    android:id="@+id/color_explosion_light"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+
+                    android:layout_margin="5dp"></View>
+
+                <pl.slapps.dot.gui.FontedTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:text="Explosion light color" />
+
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/tv_route_color"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/abc_list_selector_holo_light"
+                android:orientation="horizontal"
+
+                android:padding="5dp">
+
+                <View
+                    android:id="@+id/color_route"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+
+                    android:layout_margin="5dp"></View>
+
+                <pl.slapps.dot.gui.FontedTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:text="Route color" />
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/tv_fence_color"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/abc_list_selector_holo_light"
+                android:orientation="horizontal"
+
+                android:padding="5dp">
+
+                <View
+                    android:id="@+id/color_fence"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+
+                    android:layout_margin="5dp"></View>
+
+                <pl.slapps.dot.gui.FontedTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:text="Fence color" />
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/tv_background_color"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/abc_list_selector_holo_light"
+
+                android:orientation="horizontal"
+
+                android:padding="5dp">
+
+                <View
+                    android:id="@+id/color_background"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+
+                    android:layout_margin="5dp"></View>
+
+                <pl.slapps.dot.gui.FontedTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:text="Background color" />
+
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/tv_dot_color"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/abc_list_selector_holo_light"
+                android:orientation="horizontal"
+
+
+                android:padding="5dp">
+
+                <View
+                    android:id="@+id/color_dot"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+
+                    android:layout_margin="5dp"></View>
+
+                <pl.slapps.dot.gui.FontedTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:text="Dot color" />
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/tv_explosion_start_color"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/abc_list_selector_holo_light"
+                android:orientation="horizontal"
+
+                android:padding="5dp">
+
+                <View
+                    android:id="@+id/color_explosion_start"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+
+                    android:layout_margin="5dp"></View>
+
+                <pl.slapps.dot.gui.FontedTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:text="Explosion start" />
+
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/tv_explosion_end_color"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/abc_list_selector_holo_light"
+                android:orientation="horizontal"
+                android:padding="5dp">
+
+                <View
+                    android:id="@+id/color_explosion_end"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+
+                    android:layout_margin="5dp"></View>
+
+                <pl.slapps.dot.gui.FontedTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:text="Explosion end" />
+
+
+            </LinearLayout>
 
 
         </LinearLayout>
 
-        <LinearLayout
-            android:visibility="gone"
-            android:id="@+id/tv_explosion_ligh_color"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/abc_list_selector_holo_light"
-            android:orientation="horizontal"
 
-            android:padding="5dp">
-
-            <View
-                android:id="@+id/color_explosion_light"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-
-                android:layout_margin="5dp"></View>
-
-            <pl.slapps.dot.layout.FontedTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="5dp"
-                android:text="Explosion light color" />
-
-
-        </LinearLayout>
-
-
-
-        <LinearLayout
-            android:id="@+id/tv_route_color"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/abc_list_selector_holo_light"
-            android:orientation="horizontal"
-
-            android:padding="5dp">
-
-            <View
-                android:id="@+id/color_route"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-
-                android:layout_margin="5dp"></View>
-
-            <pl.slapps.dot.layout.FontedTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="5dp"
-                android:text="Route color" />
-
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/tv_fence_color"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/abc_list_selector_holo_light"
-            android:orientation="horizontal"
-
-            android:padding="5dp">
-
-            <View
-                android:id="@+id/color_fence"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-
-                android:layout_margin="5dp"></View>
-
-            <pl.slapps.dot.layout.FontedTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="5dp"
-                android:text="Fence color" />
-
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/tv_background_color"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/abc_list_selector_holo_light"
-
-            android:orientation="horizontal"
-
-            android:padding="5dp">
-
-            <View
-                android:id="@+id/color_background"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-
-                android:layout_margin="5dp"></View>
-
-            <pl.slapps.dot.layout.FontedTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="5dp"
-                android:text="Background color" />
-
-
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:id="@+id/tv_dot_color"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/abc_list_selector_holo_light"
-            android:orientation="horizontal"
-
-
-            android:padding="5dp">
-
-            <View
-                android:id="@+id/color_dot"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-
-                android:layout_margin="5dp"></View>
-
-            <pl.slapps.dot.layout.FontedTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="5dp"
-                android:text="Dot color" />
-
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/tv_explosion_start_color"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/abc_list_selector_holo_light"
-            android:orientation="horizontal"
-
-            android:padding="5dp">
-
-            <View
-                android:id="@+id/color_explosion_start"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-
-                android:layout_margin="5dp"></View>
-
-            <pl.slapps.dot.layout.FontedTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="5dp"
-                android:text="Explosion start" />
-
-
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:id="@+id/tv_explosion_end_color"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/abc_list_selector_holo_light"
-            android:orientation="horizontal"
-            android:padding="5dp">
-
-            <View
-                android:id="@+id/color_explosion_end"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-
-                android:layout_margin="5dp"></View>
-
-            <pl.slapps.dot.layout.FontedTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="5dp"
-                android:text="Explosion end" />
-
-
-        </LinearLayout>
-
-
-    </LinearLayout>
+    </RelativeLayout>
 
 </LinearLayout>

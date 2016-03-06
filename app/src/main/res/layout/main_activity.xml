@@ -31,6 +31,12 @@
 
             </View>
 
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:id="@+id/fragments_container"></LinearLayout>
+
 
             <com.google.android.gms.ads.AdView
                 android:id="@+id/adView"
@@ -66,48 +72,6 @@
         android:orientation="vertical"
         android:padding="5dp">
 
-        <ImageView
-            android:id="@+id/btn_settings"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-
-            android:layout_alignParentRight="true"
-            android:background="@drawable/circle_still_selector"
-            android:src="@drawable/cogs" />
-
-
-        <ImageView
-            android:id="@+id/btn_play"
-
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:background="@drawable/circle_still_selector"
-            android:padding="5dp"
-            android:src="@drawable/play" />
-
-        <ImageView
-            android:id="@+id/btn_colours"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:background="@drawable/circle_still_selector"
-            android:padding="5dp"
-            android:src="@drawable/palette" />
-
-        <ImageView
-            android:id="@+id/btn_lights"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:background="@drawable/circle_still_selector"
-            android:padding="5dp"
-            android:src="@drawable/lights" />
-
-        <ImageView
-            android:id="@+id/btn_sounds"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:background="@drawable/circle_still_selector"
-            android:padding="5dp"
-            android:src="@drawable/note" />
 
 
         <LinearLayout

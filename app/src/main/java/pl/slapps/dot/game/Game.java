@@ -210,7 +210,7 @@ public class Game {
 
         if (currentProgress != value) {
             currentProgress = value;
-            context.setCurrent(value * 100);
+            context.getActivityControls().setCurrent(value * 100);
             if (background != null)
                 background.onProgressChanged(value);
             if (maze != null)

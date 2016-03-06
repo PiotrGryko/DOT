@@ -148,8 +148,8 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
         long renderTime = System.currentTimeMillis() - currentTime;
 
         if (startMonitoring && isRunning) {
-            context.setMax(renderTime);
-            context.setMin(renderTime);
+            context.getActivityControls().setMax(renderTime);
+            context.getActivityControls().setMin(renderTime);
             //context.setCurrent(renderTime);
         }
 
@@ -272,7 +272,7 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
        /// this.isDrawing=isRunnig;
 
         if (!isRunnig) {
-            context.resetLogs();
+            context.getActivityControls().resetLogs();
         }
         if (!isRunnig && drawGenerator) {
             context.drawerContent.removeAllViews();

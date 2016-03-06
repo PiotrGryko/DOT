@@ -27,6 +27,40 @@ public class DAO {
     final public static String url_files = "http://188.166.101.11:4321/";
 
 
+    public static void addRemoveFav(Context context, Response.Listener listener, Response.ErrorListener errorListener, String stageId, String deviceId) {
+        RequestQueue queue = Volley.newRequestQueue(context);
+
+// Request a string response from the provided URL.
+        String request = url + "/v1/stage?device_id="+deviceId+"&fav="+stageId;
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, request,
+                listener, errorListener);
+// Add the request to the RequestQueue.
+
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                10 * 1000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        queue.add(stringRequest);
+    }
+
+    public static void getFav(Context context, Response.Listener listener, Response.ErrorListener errorListener, String stageId, String deviceId) {
+        RequestQueue queue = Volley.newRequestQueue(context);
+
+// Request a string response from the provided URL.
+        String request = url + "device_id?find";
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, request,
+                listener, errorListener);
+// Add the request to the RequestQueue.
+
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                10 * 1000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        queue.add(stringRequest);
+    }
+
     public static void getSounds(Context context, Response.Listener listener, Response.ErrorListener errorListener) {
         RequestQueue queue = Volley.newRequestQueue(context);
 

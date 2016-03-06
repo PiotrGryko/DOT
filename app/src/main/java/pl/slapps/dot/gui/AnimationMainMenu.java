@@ -1,27 +1,27 @@
-package pl.slapps.dot.layout;
+package pl.slapps.dot.gui;
 
 import android.graphics.Color;
-import android.support.v4.view.ViewCompat;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
 
 import pl.slapps.dot.drawing.Util;
+import pl.slapps.dot.gui.fragment.FragmentMainMenu;
 
 /**
  * Created by piotr on 23/02/16.
  */
 public class AnimationMainMenu {
 
-    private MainMenu menu;
+    private FragmentMainMenu menu;
     public AnimationHide menuHideAnimation;
     public AnimationShow menuShowAnimation;
     public AnimationHide headerHideAnimation;
     public AnimationHide btnsHideAnimation;
     public AnimationEntrance entranceAnimation;
 
-    public AnimationMainMenu(MainMenu menu)
+    public AnimationMainMenu(FragmentMainMenu menu)
     {
         this.menu=menu;
 
@@ -84,7 +84,8 @@ public class AnimationMainMenu {
                 btnsHideAnimation.clearAnimation();
                 headerHideAnimation.clearAnimation();
 
-                menu.context.gameHolder.removeView(menu.getLayout());
+                menu.context.removeCurrentFragment();
+                //menu.context.gameHolder.removeView(menu.getLayout());
                 menu.getGame().setRunnig(true);
 
 
@@ -97,7 +98,7 @@ public class AnimationMainMenu {
             }
         });
         menuShowAnimation = new AnimationShow(menu.getLayoutMenu());
-        headerHideAnimation = new AnimationHide(menu.getTvHeader(), new Animation.AnimationListener() {
+        headerHideAnimation = new AnimationHide(menu.getStartButton(), new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
 

@@ -21,7 +21,6 @@ import org.json.JSONObject;
 import pl.slapps.dot.DAO;
 import pl.slapps.dot.R;
 import pl.slapps.dot.generator.Generator;
-import pl.slapps.dot.layout.AnimationHide;
 import pl.slapps.dot.model.World;
 
 /**
