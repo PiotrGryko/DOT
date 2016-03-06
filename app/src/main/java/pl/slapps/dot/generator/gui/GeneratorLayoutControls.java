@@ -65,6 +65,21 @@ public class GeneratorLayoutControls {
         return layoutControls;
     }
 
+    public void refreshLayout()
+    {
+
+        if(generator.getStartRoute()==null)
+        {
+            getButtonPlay().setVisibility(View.GONE);
+
+        }
+        else {
+            getButtonPlay().setVisibility(View.VISIBLE);
+            getButtonPlay().setImageDrawable(generator.view.context.getResources().getDrawable(R.drawable.play));
+
+        }
+    }
+
     public void initLayout(GeneratorLayout generatorLayout) {
         this.generatorLayout=generatorLayout;
         this.generator=generatorLayout.generator;
@@ -107,6 +122,7 @@ public class GeneratorLayoutControls {
                 }
             }
         });
+        getButtonPlay().setVisibility(View.GONE);
 
 
         getButtonColours().setOnClickListener(new View.OnClickListener() {
@@ -151,6 +167,7 @@ public class GeneratorLayoutControls {
         });
 
 
+        refreshLayout();
 
     }
 

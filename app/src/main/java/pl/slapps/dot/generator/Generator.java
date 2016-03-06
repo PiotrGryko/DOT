@@ -138,6 +138,7 @@ public class Generator {
 
 
 
+
     public void reset() {
         //int currentX = this.getLayout().tile.horizontalPos;
         //int currentY = this.getLayout().tile.verticalPos;

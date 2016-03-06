@@ -951,6 +951,8 @@ public class GeneratorLayoutPath {
         refreashDetailsLayout();
 
         refreashLabels();
+
+
     }
 
 
@@ -1230,10 +1232,13 @@ public class GeneratorLayoutPath {
                         refreashLayout();
 
                     }
+                    generator.getPathPopup().getLayoutControls().refreshLayout();
+
                     //      initPathLayout(generator, nextTile, r);
                 }
             }
         };
+
         tvBottomLeft.setOnClickListener(listener);
         tvBottomRight.setOnClickListener(listener);
         tvBottomTop.setOnClickListener(listener);

@@ -63,7 +63,13 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
             generator.stopPreview();
             return false;
         }
+        generator.getPathPopup().dissmissControls();
         generator.getPathPopup().dissmissPath();
+        generator.getPathPopup().dissmissSounds();
+        generator.getPathPopup().dissmissColours();
+        generator.getPathPopup().dissmissLights();
+        generator.getPathPopup().dissmissGrod();
+
         return true;
     }
 

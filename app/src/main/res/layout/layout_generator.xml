@@ -58,6 +58,7 @@
 
 
             <LinearLayout
+                android:visibility="gone"
                 android:id="@+id/layout_grid_size_base"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -100,6 +101,7 @@
 
 
             <LinearLayout
+                android:visibility="gone"
                 android:id="@+id/layout_colors_base"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -233,6 +235,7 @@
 
 
             <LinearLayout
+                android:visibility="gone"
                 android:id="@+id/layout_sounds_base"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -361,6 +364,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:visibility="gone"
                 android:id="@+id/layout_preview_base"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -404,6 +408,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:visibility="gone"
                 android:id="@+id/layout_lights_base"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"

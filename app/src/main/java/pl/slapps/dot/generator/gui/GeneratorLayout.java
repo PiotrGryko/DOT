@@ -154,6 +154,7 @@ public class GeneratorLayout {
         layoutEffects.refreashLayout();
 
 
+
     }
 
     public void loadOnlineMaze() {
@@ -194,6 +195,7 @@ public class GeneratorLayout {
                                 ArrayList<TileRoute> currentRoutes = generator.getPath();
                                 layoutConstruct.refreashLayout(currentRoutes);
                                 dialogStages.dismiss();
+                                context.drawer.closeDrawer(context.drawerContent);
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -371,19 +373,19 @@ public class GeneratorLayout {
 
 
     public void showPreviewControlls() {
-        layoutGridBase.setVisibility(View.GONE);
-        layoutColorsBase.setVisibility(View.VISIBLE);
+        //layoutGridBase.setVisibility(View.GONE);
+        //layoutColorsBase.setVisibility(View.VISIBLE);
         layoutConfigBase.setVerticalGravity(View.GONE);
         //layoutRutesBase.setVisibility(View.GONE);
-        layoutSoundsBase.setVisibility(View.VISIBLE);
-        layoutLightsBase.setVisibility(View.VISIBLE);
+        //layoutSoundsBase.setVisibility(View.VISIBLE);
+        //layoutLightsBase.setVisibility(View.VISIBLE);
         layoutEffectsBase.setVisibility(View.VISIBLE);
 
         layoutStringsBase.setVisibility(View.GONE);
         layoutConfigBase.setVisibility(View.GONE);
         layoutConstructBase.setVisibility(View.VISIBLE);
         toggleSave.setVisibility(View.VISIBLE);
-        layoutPreviewBase.setVisibility(View.VISIBLE);
+        //layoutPreviewBase.setVisibility(View.VISIBLE);
         toggleWorld.setVisibility(View.GONE);
         layoutChooseWorldBase.setVisibility(View.GONE);
     }
@@ -392,16 +394,15 @@ public class GeneratorLayout {
         toggleWorld.setVisibility(View.GONE);
         layoutChooseWorldBase.setVisibility(View.GONE);
 
-        layoutGridBase.setVisibility(View.VISIBLE);
-        layoutColorsBase.setVisibility(View.VISIBLE);
-        layoutConfigBase.setVerticalGravity(View.VISIBLE);
-        layoutSoundsBase.setVisibility(View.VISIBLE);
+        //layoutGridBase.setVisibility(View.VISIBLE);
+        //layoutColorsBase.setVisibility(View.VISIBLE);
+        //layoutSoundsBase.setVisibility(View.VISIBLE);
         layoutStringsBase.setVisibility(View.VISIBLE);
         layoutConfigBase.setVisibility(View.VISIBLE);
         layoutConstructBase.setVisibility(View.VISIBLE);
         toggleSave.setVisibility(View.VISIBLE);
-        layoutPreviewBase.setVisibility(View.VISIBLE);
-        layoutLightsBase.setVisibility(View.VISIBLE);
+        //layoutPreviewBase.setVisibility(View.VISIBLE);
+        //layoutLightsBase.setVisibility(View.VISIBLE);
         layoutEffectsBase.setVisibility(View.VISIBLE);
 
     }
@@ -410,17 +411,17 @@ public class GeneratorLayout {
         toggleWorld.setVisibility(View.VISIBLE);
         layoutChooseWorldBase.setVisibility(View.VISIBLE);
 
-        layoutGridBase.setVisibility(View.GONE);
-        layoutColorsBase.setVisibility(View.GONE);
+        //layoutGridBase.setVisibility(View.GONE);
+        //layoutColorsBase.setVisibility(View.GONE);
         layoutConfigBase.setVerticalGravity(View.GONE);
         //layoutRutesBase.setVisibility(View.VISIBLE);
-        layoutSoundsBase.setVisibility(View.GONE);
+        //layoutSoundsBase.setVisibility(View.GONE);
         layoutStringsBase.setVisibility(View.GONE);
         layoutConfigBase.setVisibility(View.GONE);
         layoutConstructBase.setVisibility(View.GONE);
         toggleSave.setVisibility(View.GONE);
-        layoutPreviewBase.setVisibility(View.GONE);
-        layoutLightsBase.setVisibility(View.GONE);
+        //layoutPreviewBase.setVisibility(View.GONE);
+        ///layoutLightsBase.setVisibility(View.GONE);
         layoutEffectsBase.setVisibility(View.GONE);
 
     }
@@ -439,7 +440,7 @@ public class GeneratorLayout {
         this.tile.setCurrentTile(true);
         this.generator.getPathPopup().showPath(this.tile.centerX, this.tile.centerY);
         context.drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-        context.drawer.closeDrawer(context.drawerContent);
+        //context.drawer.closeDrawer(context.drawerContent);
     }
 
 

@@ -193,6 +193,7 @@ public class Game {
         context.getSoundsManager().configure(stage.config.sounds);
         context.getSoundsManager().playBackgroundSound();
 
+
         currentStage = stage;
         background = null;
         Explosion.initBuffers();
@@ -344,6 +345,7 @@ public class Game {
             maze.configRoute(route);
     }
 
+
     public void configure() {
         if (background != null)
             background.configure(currentStage.config);
@@ -351,6 +353,8 @@ public class Game {
             mainSprite.configure(currentStage.config);
         if (maze != null)
             maze.configure(currentStage.config);
+
+        context.getSoundsManager().configure(currentStage.config.sounds);
     }
 
     public void addExplosion(Explosion e) {

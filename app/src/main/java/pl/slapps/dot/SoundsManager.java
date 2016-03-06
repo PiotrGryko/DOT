@@ -128,6 +128,7 @@ public class SoundsManager {
     }
 
 
+
     public void playBackgroundSound() {
         asyncPlayerBackground.stop();
         if (backgroundSound == null)

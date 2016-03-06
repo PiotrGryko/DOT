@@ -155,6 +155,9 @@ public class GeneratorLayoutSounds {
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                         generator.getConfig().sounds.soundBackground = adapterView.getItemAtPosition(i).toString();
                         btnSoundBackground.setText(generator.getConfig().sounds.soundBackground);
+                        generator.refreashMaze();
+                        generator.view.context.getSoundsManager().playBackgroundSound();
+
                         dialogChooseSound.dismiss();
                     }
                 });
