@@ -1,8 +1,6 @@
 package pl.slapps.dot.game;
 
-import android.graphics.Color;
 import android.opengl.GLES20;
-import android.opengl.Matrix;
 import android.util.Log;
 import android.view.MotionEvent;
 
@@ -10,10 +8,9 @@ import java.util.ArrayList;
 
 import pl.slapps.dot.MainActivity;
 import pl.slapps.dot.SurfaceRenderer;
-import pl.slapps.dot.model.Config;
 import pl.slapps.dot.model.Route;
 import pl.slapps.dot.model.Stage;
-import pl.slapps.dot.generator.TileRoute;
+import pl.slapps.dot.generator.builder.TileRoute;
 
 /**
  * Created by piotr on 10/02/16.

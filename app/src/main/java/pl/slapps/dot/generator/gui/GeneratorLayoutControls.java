@@ -67,6 +67,9 @@ public class GeneratorLayoutControls {
 
     public void refreshLayout()
     {
+        getButtonPlay().setVisibility(View.VISIBLE);
+
+        /*
 
         if(generator.getStartRoute()==null)
         {
@@ -78,6 +81,7 @@ public class GeneratorLayoutControls {
             getButtonPlay().setImageDrawable(generator.view.context.getResources().getDrawable(R.drawable.play));
 
         }
+*/
     }
 
     public void initLayout(GeneratorLayout generatorLayout) {

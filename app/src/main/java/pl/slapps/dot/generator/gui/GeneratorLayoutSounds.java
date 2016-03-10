@@ -180,6 +180,7 @@ public class GeneratorLayoutSounds {
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                         generator.getConfig().sounds.soundPress = adapterView.getItemAtPosition(i).toString();
                         btnSoundPress.setText(generator.getConfig().sounds.soundPress);
+                        generator.refreashMaze();
 
                         dialogChooseSound.dismiss();
                     }
@@ -203,6 +204,7 @@ public class GeneratorLayoutSounds {
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                         generator.getConfig().sounds.soundCrash = adapterView.getItemAtPosition(i).toString();
                         btnSoundCrash.setText(generator.getConfig().sounds.soundCrash);
+                        generator.refreashMaze();
 
                         dialogChooseSound.dismiss();
                     }
@@ -226,6 +228,7 @@ public class GeneratorLayoutSounds {
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                         generator.getConfig().sounds.soundFinish = adapterView.getItemAtPosition(i).toString();
                         btnSoundFinish.setText(generator.getConfig().sounds.soundFinish);
+                        generator.refreashMaze();
 
                         dialogChooseSound.dismiss();
                     }

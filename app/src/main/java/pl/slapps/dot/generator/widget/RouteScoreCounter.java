@@ -1,6 +1,6 @@
 package pl.slapps.dot.generator.widget;
 
-import pl.slapps.dot.generator.TileRoute;
+import pl.slapps.dot.generator.builder.TileRoute;
 
 /**
  * Created by piotr on 21/02/16.

@@ -188,7 +188,7 @@ public class MainActivity extends FragmentActivity {
         gameHolder = (RelativeLayout) findViewById(R.id.game_holder);
         rootLayout = (RelativeLayout) findViewById(R.id.root_layout);
         fragmentContainer = (LinearLayout)findViewById(R.id.fragments_container);
-        mockView = findViewById(R.id.mock_view);
+        mockView = (View)findViewById(R.id.mock_view);
 
         gameHolder.removeView(mockView);
 

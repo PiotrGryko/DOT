@@ -350,7 +350,9 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
 
         switch (event.getActionMasked()) {
 
-            case MotionEvent.ACTION_DOWN: {
+            case MotionEvent.ACTION_DOWN:
+            case MotionEvent.ACTION_MOVE:
+            case MotionEvent.ACTION_UP:{
 
 
                 if (isRunning) {
@@ -361,10 +363,7 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
                 }
                 break;
             }
-            case MotionEvent.ACTION_UP: {
 
-                break;
-            }
 
         }
 

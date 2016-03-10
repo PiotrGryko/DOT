@@ -11,7 +11,6 @@ import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Response;
@@ -33,7 +32,7 @@ import pl.slapps.dot.MainActivity;
 import pl.slapps.dot.R;
 import pl.slapps.dot.adapter.AdapterStages;
 import pl.slapps.dot.generator.Generator;
-import pl.slapps.dot.generator.TileRoute;
+import pl.slapps.dot.generator.builder.TileRoute;
 import pl.slapps.dot.model.Stage;
 import pl.slapps.dot.model.World;
 
@@ -190,9 +189,9 @@ public class GeneratorLayout {
                         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                             try {
                                 loadRoute(Stage.valueOf(results.getJSONObject(i)));
-                                generator.startRouteConfiguration();
+                                generator.getPathBuilderPopup().startRouteConfiguration();
 
-                                ArrayList<TileRoute> currentRoutes = generator.getPath();
+                                ArrayList<TileRoute> currentRoutes = generator.getPathBuilderPopup().getPath();
                                 layoutConstruct.refreashLayout(currentRoutes);
                                 dialogStages.dismiss();
                                 context.drawer.closeDrawer(context.drawerContent);
@@ -237,9 +236,9 @@ public class GeneratorLayout {
 
                 loadRoute(context.getActivityLoader().stages.get(i));
                 generator._id = null;
-                generator.startRouteConfiguration();
+                generator.getPathBuilderPopup().startRouteConfiguration();
 
-                ArrayList<TileRoute> currentRoutes = generator.getPath();
+                ArrayList<TileRoute> currentRoutes = generator.getPathBuilderPopup().getPath();
                 layoutConstruct.refreashLayout(currentRoutes);
                 stages.dismiss();
 
@@ -438,9 +437,9 @@ public class GeneratorLayout {
         generator.loadWorld(world);
 
         this.tile.setCurrentTile(true);
-        this.generator.getPathPopup().showPath(this.tile.centerX, this.tile.centerY);
+        //this.generator.getPathPopup().showPath(this.tile.centerX, this.tile.centerY);
         context.drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-        //context.drawer.closeDrawer(context.drawerContent);
+        context.drawer.closeDrawer(context.drawerContent);
     }
 
 
@@ -597,8 +596,8 @@ public class GeneratorLayout {
             public void onClick(View view) {
                 if (layoutConstruct.getLayout().getParent() == null) {
 
-                    generator.startRouteConfiguration();
-                    ArrayList<TileRoute> currentRoutes = generator.getPath();
+                    generator.getPathBuilderPopup().startRouteConfiguration();
+                    ArrayList<TileRoute> currentRoutes = generator.getPathBuilderPopup().getPath();
                     layoutConstruct.refreashLayout(currentRoutes);
 
 

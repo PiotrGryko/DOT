@@ -1,15 +1,14 @@
-package pl.slapps.dot.generator;
+package pl.slapps.dot.generator.builder;
 
-import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.os.SystemClock;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import pl.slapps.dot.drawing.Junction;
 import pl.slapps.dot.drawing.Wall;
+import pl.slapps.dot.generator.Generator;
 import pl.slapps.dot.model.Config;
 import pl.slapps.dot.model.Route;
 
@@ -61,7 +60,7 @@ public class TileRoute {
     //public SurfaceRenderer generator;
 
 
-    public TileRoute(float screenWidth, float screenHeight, float widthBlocksCount, float heightBlocksCount, int widthNumber, int heightNumber, String from, String to, Route.Type t, Generator generator) {
+    public TileRoute(float screenWidth, float screenHeight, float widthBlocksCount, float heightBlocksCount, int widthNumber, int heightNumber, Route.Direction from, Route.Direction to, Route.Type t, Generator generator) {
         this.generator = generator;
         initData(screenWidth, screenHeight, widthBlocksCount, heightBlocksCount, widthNumber, heightNumber, from, to, t);
 
@@ -77,7 +76,7 @@ public class TileRoute {
         speedRatio = route.speedRatio;
 
 
-        initData(screenWidth, screenHeight, widthBlocksCount, heightBlocksCount, route.x, route.y, route.from.name(), route.to.name(), Route.Type.valueOf(route.type.name()));
+        initData(screenWidth, screenHeight, widthBlocksCount, heightBlocksCount, route.x, route.y, route.from, route.to, Route.Type.valueOf(route.type.name()));
 
 
     }
@@ -91,7 +90,7 @@ public class TileRoute {
         drawCoin=route.drawCoin;
 
 
-        initData(screenWidth, screenHeight, widthBlocksCount, heightBlocksCount, route.x, route.y, route.from.name(), route.to.name(), Route.Type.valueOf(route.type.name()));
+        initData(screenWidth, screenHeight, widthBlocksCount, heightBlocksCount, route.x, route.y, route.from, route.to, Route.Type.valueOf(route.type.name()));
 
 
     }
@@ -113,6 +112,8 @@ public class TileRoute {
         if (type == Route.Type.TILE || type == Route.Type.BLOCK) {
             borderX = 0;
             borderY = 0;
+            walls = new ArrayList<>();
+
             walls.add(new Wall(new Junction(topX + borderX, topY + height - borderY, 0), new Junction(topX + borderX, topY + borderY, 0), Wall.Type.LEFT, generator));
             walls.add(new Wall(new Junction(topX + borderX, topY + borderY, 0), new Junction(topX + width - borderX, topY + borderY, 0), Wall.Type.TOP, generator));
             walls.add(new Wall(new Junction(topX + width - borderX, topY + borderY, 0), new Junction(topX + width - borderX, topY + height - borderY, 0), Wall.Type.RIGHT, generator));
@@ -123,6 +124,7 @@ public class TileRoute {
             return;
         }
 
+        Log.d("xxx","init route "+type +" "+from +" "+to +" "+d);
         switch (d) {
 
             case BOTTOMRIGHT:
@@ -266,6 +268,7 @@ public class TileRoute {
 
                 Wall bWall = new Wall(new Junction(topX, topY + height - borderY, 0),
                         new Junction(topX + width, topY + height - borderY, 0), Wall.Type.BOTTOM, generator);
+                walls = new ArrayList<>();
 
                 walls.add(tWall);
                 walls.add(bWall);
@@ -286,6 +289,7 @@ public class TileRoute {
                         Wall.Type.LEFT, generator);
 
                 Wall rWall = new Wall(new Junction(topX + width - borderX, topY + height, 0), new Junction(topX + width - borderX, topY, 0), Wall.Type.RIGHT, generator);
+                walls = new ArrayList<>();
 
                 walls.add(lWall);
                 walls.add(rWall);
@@ -303,7 +307,7 @@ public class TileRoute {
     }
 
 
-    private void initData(float screenWidth, float screenHeight, float widthBlocksCount, float heightBlocksCount, int widthNumber, int heightNumber, String from, String to, Route.Type t) {
+    private void initData(float screenWidth, float screenHeight, float widthBlocksCount, float heightBlocksCount, int widthNumber, int heightNumber, Route.Direction from, Route.Direction  to, Route.Type t) {
         this.type = t;
         width = screenWidth / widthBlocksCount;
         height = screenHeight / heightBlocksCount;
@@ -316,8 +320,8 @@ public class TileRoute {
         this.borderY = (height - routeHeight) / 2;
         this.horizontalPos = widthNumber;
         this.verticalPos = heightNumber;
-        this.from = Route.Direction.valueOf(from);
-        this.to = Route.Direction.valueOf(to);
+        this.from = from;
+        this.to = to;
         this.walls = new ArrayList<>();
         this.centerX = topX + width / 2;
         this.centerY = topY + height / 2;

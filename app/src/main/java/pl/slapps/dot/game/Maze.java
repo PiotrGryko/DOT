@@ -8,9 +8,9 @@ import pl.slapps.dot.drawing.Wall;
 import pl.slapps.dot.model.Config;
 import pl.slapps.dot.model.Route;
 import pl.slapps.dot.model.Stage;
-import pl.slapps.dot.generator.TileRoute;
-import pl.slapps.dot.generator.TileRouteFinish;
-import pl.slapps.dot.generator.TileRouteStart;
+import pl.slapps.dot.generator.builder.TileRoute;
+import pl.slapps.dot.generator.builder.TileRouteFinish;
+import pl.slapps.dot.generator.builder.TileRouteStart;
 
 public class Maze {
 

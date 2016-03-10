@@ -2,14 +2,11 @@ package pl.slapps.dot.generator.gui;
 
 import android.app.Dialog;
 import android.graphics.drawable.Drawable;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -18,10 +15,9 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import pl.slapps.dot.MainActivity;
 import pl.slapps.dot.R;
 import pl.slapps.dot.generator.Generator;
-import pl.slapps.dot.generator.TileRoute;
+import pl.slapps.dot.generator.builder.TileRoute;
 import pl.slapps.dot.generator.widget.NumberPickerTextView;
 import pl.slapps.dot.model.Route;
 
@@ -163,10 +159,10 @@ public class GeneratorLayoutConstruct {
             public void onClick(View view) {
                 generator.view.context.getSoundsManager().playRawFile("construct");
 
-                TileRoute r = new TileRoute(generator.view.screenWidth, generator.view.screenHeight, generator.gridX, generator.gridY, route.horizontalPos, route.verticalPos, Route.Direction.TOP.name(), Route.Direction.RIGHT.name(), Route.Type.TILE,generator);
+                TileRoute r = new TileRoute(generator.view.screenWidth, generator.view.screenHeight, generator.gridX, generator.gridY, route.horizontalPos, route.verticalPos, Route.Direction.TOP, Route.Direction.RIGHT, Route.Type.TILE,generator);
                 generator.tiles.remove(route);
                 generator.tiles.add(r);
-                ArrayList<TileRoute> currentRoutes = generator.getPath();
+                ArrayList<TileRoute> currentRoutes = generator.getPathBuilderPopup().getPath();
                 refreashLayout(currentRoutes);
 
             }

@@ -1,13 +1,11 @@
-package pl.slapps.dot.generator;
+package pl.slapps.dot.generator.builder;
 
-import android.graphics.Color;
 import android.opengl.GLES20;
-
-import javax.microedition.khronos.opengles.GL10;
 
 import pl.slapps.dot.SurfaceRenderer;
 import pl.slapps.dot.drawing.Sprite;
 import pl.slapps.dot.drawing.Util;
+import pl.slapps.dot.generator.Generator;
 import pl.slapps.dot.model.Config;
 
 /**

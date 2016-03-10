@@ -1,6 +1,5 @@
 package pl.slapps.dot.game;
 
-import android.graphics.Color;
 import android.opengl.GLES20;
 import android.util.Log;
 
@@ -11,13 +10,11 @@ import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import javax.microedition.khronos.opengles.GL10;
-
 import pl.slapps.dot.SurfaceRenderer;
 import pl.slapps.dot.drawing.Quad;
 import pl.slapps.dot.drawing.Util;
-import pl.slapps.dot.generator.TileRoute;
-import pl.slapps.dot.generator.TileRouteBackground;
+import pl.slapps.dot.generator.builder.TileRoute;
+import pl.slapps.dot.generator.builder.TileRouteBackground;
 import pl.slapps.dot.model.Config;
 
 /**

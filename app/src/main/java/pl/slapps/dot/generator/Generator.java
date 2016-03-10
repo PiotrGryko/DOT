@@ -2,10 +2,8 @@ package pl.slapps.dot.generator;
 
 import android.graphics.Color;
 import android.opengl.GLES20;
-import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.View;
 import android.widget.Toast;
 
 import com.android.volley.Response;
@@ -16,8 +14,13 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import pl.slapps.dot.DAO;
-import pl.slapps.dot.R;
 import pl.slapps.dot.SurfaceRenderer;
+import pl.slapps.dot.generator.builder.PathBuilderDraw;
+import pl.slapps.dot.generator.builder.PathBuilderPopup;
+import pl.slapps.dot.generator.builder.TileRoute;
+import pl.slapps.dot.generator.builder.TileRouteFinish;
+import pl.slapps.dot.generator.builder.TileRouteManager;
+import pl.slapps.dot.generator.builder.TileRouteStart;
 import pl.slapps.dot.generator.gui.GeneratorLayout;
 import pl.slapps.dot.generator.widget.PopupLayoutFactory;
 import pl.slapps.dot.model.Config;
@@ -34,6 +37,8 @@ public class Generator {
 
 
     public ArrayList<TileRoute> tiles;
+
+    private TileRouteManager tileRouteManager;
 
 
     public int gridX;
@@ -55,6 +60,9 @@ public class Generator {
     private boolean runPreview;
 
     private PopupLayoutFactory popupFactory;
+    private PathBuilderPopup pathBuilderPopup;
+    private PathBuilderDraw pathBuilderDraw;
+
 
 
 
@@ -94,13 +102,29 @@ public class Generator {
 
     private GeneratorLayout layout;
 
+    public TileRouteManager getTileRouteManager()
+    {
+        return tileRouteManager;
+    }
 
+    public PathBuilderPopup getPathBuilderPopup()
+    {
+        return pathBuilderPopup;
+    }
+
+    public PathBuilderDraw getPathBuilderDraw()
+    {
+        return pathBuilderDraw;
+    }
     public Generator(final SurfaceRenderer view, int width, int gridY) {
         //this.elements=elements;
         this.config = new Config();
         this.view = view;
 
+        tileRouteManager = new TileRouteManager(this);
+        pathBuilderDraw =new PathBuilderDraw(this);
 
+        pathBuilderPopup =new PathBuilderPopup(this);
         initGrid(width, gridY);
 
         Log.d(TAG, "generator loaded " + this.tiles.size());
@@ -109,6 +133,9 @@ public class Generator {
         layout = new GeneratorLayout(view.context, this, tiles.get(10));
 
         this.popupFactory = new PopupLayoutFactory(this);
+
+
+
 
 /*
         this.view.context.drawer.setDrawerListener(new DrawerLayout.DrawerListener() {
@@ -150,6 +177,7 @@ public class Generator {
         _id=null;
         getLayout().tile = tiles.get(10);
         getPathPopup().showControls();
+
         //getLayout().tile.setCurrentTile(true);
 
     }
@@ -230,7 +258,7 @@ public class Generator {
         this.tiles = new ArrayList<>();
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                this.tiles.add(new TileRoute(view.screenWidth, view.screenHeight, width, height, j, i, "LEFT", "RIGHT", Route.Type.TILE, this));
+                this.tiles.add(new TileRoute(view.screenWidth, view.screenHeight, width, height, j, i, Route.Direction.LEFT, Route.Direction.RIGHT, Route.Type.TILE, this));
 
             }
         }
@@ -252,7 +280,7 @@ public class Generator {
         this.tiles = new ArrayList<>();
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                this.tiles.add(new TileRoute(view.screenWidth, view.screenHeight, width, height, j, i, "LEFT", "RIGHT", Route.Type.TILE, this));
+                this.tiles.add(new TileRoute(view.screenWidth, view.screenHeight, width, height, j, i, Route.Direction.LEFT, Route.Direction.RIGHT, Route.Type.TILE, this));
 
             }
         }
@@ -267,266 +295,16 @@ public class Generator {
         return null;
     }
 
-    public void startRouteConfiguration() {
-        ArrayList<TileRoute> routes = new ArrayList<>();
-        TileRoute startRoute = null;
-        TileRoute nextRoute = null;
-        Route.Direction from = null;
+    public TileRoute findTileByCoords(float x, float y) {
         for (int i = 0; i < tiles.size(); i++) {
             TileRoute t = tiles.get(i);
-            if (t.getType() == Route.Type.START) {
-                startRoute = t;
-                break;
-            }
-        }
-
-        if (startRoute != null) {
-            Route.Movement movement = startRoute.getDirection();
-            switch (movement) {
-                case LEFTRIGHT:
-                    from = Route.Direction.LEFT;
-                    nextRoute = findTile(startRoute.horizontalPos + 1, startRoute.verticalPos);
-                    break;
-
-                case RIGHTLEFT:
-                    from = Route.Direction.RIGHT;
-                    nextRoute = findTile(startRoute.horizontalPos - 1, startRoute.verticalPos);
-                    break;
-                case BOTTOMTOP:
-                    from = Route.Direction.BOTTOM;
-                    nextRoute = findTile(startRoute.horizontalPos, startRoute.verticalPos - 1);
-                    break;
-                case TOPBOTTOM:
-                    from = Route.Direction.TOP;
-                    nextRoute = findTile(startRoute.horizontalPos, startRoute.verticalPos + 1);
-                    break;
-
-
-            }
-            Log.d(TAG, "config started ");
-            Log.d(TAG, "route configured from:" + startRoute.from.name() + " to: " + startRoute.to.name() + " movement: " + startRoute.getDirection().name() + " type: " + startRoute.getType().name());
-
-            configRoute(nextRoute, from, routes);
-
-
-            Log.d(TAG, "config end  " + routes.size());
-
-            for (int i = 0; i < routes.size(); i++) {
-                routes.get(i).next = getNextMove(i, routes);
-
-            }
-
-            Log.d(TAG, "next moves set   " + routes.size());
-
-            for (int i = 0; i < routes.size(); i++) {
-                Log.d(TAG, "next move : " + i + " " + routes.get(i).next);
-            }
-
-
-        }
-
-
-    }
-
-    public ArrayList<TileRoute> getPath() {
-        ArrayList<TileRoute> path = new ArrayList<>();
-        TileRoute startRoute = getStartRoute();
-
-
-        while (startRoute != null) {
-            if (startRoute.getType() == Route.Type.TILE)
-                break;
-            path.add(startRoute);
-            if (startRoute.getType() == Route.Type.FINISH)
-                break;
-            Route.Movement movement = startRoute.getDirection();
-            switch (movement) {
-                case LEFTRIGHT:
-                case TOPRIGHT:
-                case BOTTOMRIGHT:
-                    startRoute = findTile(startRoute.horizontalPos + 1, startRoute.verticalPos);
-                    break;
-
-                case RIGHTLEFT:
-                case TOPLEFT:
-                case BOTTOMLEFT:
-                    startRoute = findTile(startRoute.horizontalPos - 1, startRoute.verticalPos);
-                    break;
-                case BOTTOMTOP:
-                case RIGHTTOP:
-                case LEFTTOP:
-                    startRoute = findTile(startRoute.horizontalPos, startRoute.verticalPos - 1);
-                    break;
-                case TOPBOTTOM:
-                case LEFTBOTTOM:
-                case RIGHTBOTTOM:
-                    startRoute = findTile(startRoute.horizontalPos, startRoute.verticalPos + 1);
-                    break;
-                default:
-                    startRoute = null;
-
-
-            }
-        }
-        for (int i = 0; i < tiles.size(); i++) {
-            if (tiles.get(i).getType() == Route.Type.ROUTE || tiles.get(i).getType() == Route.Type.FINISH || tiles.get(i).getType() == Route.Type.START) {
-                if (!path.contains(tiles.get(i)))
-                    path.add(tiles.get(i));
-            }
-        }
-
-        return path;
-    }
-
-    private void configRoute(TileRoute route, Route.Direction target_from, ArrayList<TileRoute> routes) {
-        //route.from=from;
-
-
-        Route.Movement t = route.getDirection();
-        Route.Direction target_to = route.to;
-        int targetX = route.horizontalPos;
-        int targetY = route.verticalPos;
-
-        Route.Direction nextFrom = target_from;
-
-        //Log.d(TAG, "config route from: " + target_from);
-
-        switch (target_from) {
-            case LEFT:
-
-                switch (t) {
-                    case RIGHTLEFT:
-                    case LEFTRIGHT:
-                        target_to = Route.Direction.RIGHT;
-                        nextFrom = Route.Direction.LEFT;
-                        targetX++;
-                        break;
-                    case BOTTOMLEFT:
-                    case LEFTBOTTOM:
-                        target_to = Route.Direction.BOTTOM;
-                        nextFrom = Route.Direction.TOP;
-                        targetY++;
-                        break;
-                    case TOPLEFT:
-                    case LEFTTOP:
-                        targetY--;
-                        nextFrom = Route.Direction.BOTTOM;
-                        target_to = Route.Direction.TOP;
-                        break;
-
-                }
-                break;
-            case RIGHT:
-                switch (t) {
-                    case LEFTRIGHT:
-                    case RIGHTLEFT:
-                        targetX--;
-
-                        nextFrom = Route.Direction.RIGHT;
-                        target_to = Route.Direction.LEFT;
-                        break;
-                    case BOTTOMRIGHT:
-                    case RIGHTBOTTOM:
-                        targetY++;
-
-                        nextFrom = Route.Direction.TOP;
-                        target_to = Route.Direction.BOTTOM;
-                        break;
-                    case TOPRIGHT:
-                    case RIGHTTOP:
-                        targetY--;
-
-                        nextFrom = Route.Direction.BOTTOM;
-                        target_to = Route.Direction.TOP;
-                        break;
-
-                }
-                break;
-            case TOP:
-
-                switch (t) {
-                    case BOTTOMTOP:
-                    case TOPBOTTOM:
-                        targetY++;
-                        nextFrom = Route.Direction.TOP;
-                        target_to = Route.Direction.BOTTOM;
-                        break;
-                    case LEFTTOP:
-                    case TOPLEFT:
-                        targetX--;
-                        nextFrom = Route.Direction.RIGHT;
-                        target_to = Route.Direction.LEFT;
-                        break;
-                    case RIGHTTOP:
-                    case TOPRIGHT:
-                        targetX++;
-                        nextFrom = Route.Direction.LEFT;
-                        target_to = Route.Direction.RIGHT;
-                        break;
-
-                }
-                break;
-            case BOTTOM:
-                switch (t) {
-                    case TOPBOTTOM:
-                    case BOTTOMTOP:
-                        nextFrom = Route.Direction.BOTTOM;
-                        target_to = Route.Direction.TOP;
-                        targetY--;
-
-                        break;
-                    case LEFTBOTTOM:
-                    case BOTTOMLEFT:
-                        nextFrom = Route.Direction.RIGHT;
-                        target_to = Route.Direction.LEFT;
-                        targetX--;
-
-                        break;
-                    case RIGHTBOTTOM:
-                    case BOTTOMRIGHT:
-                        nextFrom = Route.Direction.LEFT;
-                        target_to = Route.Direction.RIGHT;
-                        targetX++;
-
-                        break;
-
-                }
-                break;
-
-
-        }
-        route.from = target_from;
-        route.to = target_to;
-        routes.add(route);
-        Log.d(TAG, "route configured from:" + target_from + " to: " + target_to + " movement: " + route.getDirection().name() + " type: " + route.getType().name());
-
-        TileRoute nextRoute = findTile(targetX, targetY);
-
-        if (route.getType() == Route.Type.FINISH)
-            return;
-
-        if (nextRoute != null && nextRoute.getType() != Route.Type.TILE && nextRoute != route) {
-            configRoute(nextRoute, nextFrom, routes);
-        }
-
-
-    }
-
-    public Route.Movement getNextMove(int start, ArrayList<TileRoute> routes) {
-
-
-        for (int i = start; i < routes.size(); i++) {
-
-            Route.Movement type = routes.get(i).getDirection();
-            if (type != Route.Movement.LEFTRIGHT && type != Route.Movement.RIGHTLEFT && type != Route.Movement.BOTTOMTOP && type != Route.Movement.TOPBOTTOM)
-                return type;
-            else {
-                continue;
-            }
-
+            if (t.contains(x,y))
+                return t;
         }
         return null;
     }
+
+
 
 
     public TileRoute getStartRoute() {
@@ -566,7 +344,7 @@ public class Generator {
 
 
     private JSONObject dumpMaze() {
-        startRouteConfiguration();
+        pathBuilderPopup.startRouteConfiguration();
 
         JSONObject output = new JSONObject();
 
@@ -686,7 +464,7 @@ public class Generator {
 
         for (int i = 0; i < gridY; i++) {
             for (int j = 0; j < gridX; j++) {
-                this.tiles.add(new TileRoute(view.screenWidth, view.screenHeight, gridX, gridY, j, i, "LEFT", "RIGHT", Route.Type.TILE, this));
+                this.tiles.add(new TileRoute(view.screenWidth, view.screenHeight, gridX, gridY, j, i, Route.Direction.LEFT, Route.Direction.RIGHT, Route.Type.TILE, this));
 
             }
         }
@@ -743,21 +521,9 @@ public class Generator {
         if (runPreview) {
             view.getGame().onTouchEvent(event);
         } else {
-            float x = event.getX();
-            float y = event.getY();
 
-
-            for (int i = 0; i < tiles.size(); i++) {
-                TileRoute t = tiles.get(i);
-                if (t.contains(x, y)) {
-                    layout.setCurrentTile(t);
-
-                    popupFactory.showPath(event.getX(), event.getY());
-
-
-                    return true;
-                }
-            }
+            pathBuilderDraw.onTouch(event);
+            //pathBuilderPopup.onTouch(event);
         }
 
         return true;

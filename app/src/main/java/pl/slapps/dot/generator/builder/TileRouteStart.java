@@ -1,9 +1,8 @@
-package pl.slapps.dot.generator;
-
-import android.util.Log;
+package pl.slapps.dot.generator.builder;
 
 import pl.slapps.dot.drawing.Junction;
 import pl.slapps.dot.drawing.Wall;
+import pl.slapps.dot.generator.Generator;
 import pl.slapps.dot.model.Route;
 
 /**
@@ -12,8 +11,7 @@ import pl.slapps.dot.model.Route;
 public class TileRouteStart extends TileRoute {
 
 
-    public Wall lWall;
-    public Wall rWall;
+
 
 
 
@@ -33,7 +31,7 @@ public class TileRouteStart extends TileRoute {
 
 
 
-    public TileRouteStart(float screenWidth, float screenHeight, float widthBlocksCount, float heightBlocksCount, int widthNumber, int heightNumber, String from, String to, Generator generator) {
+    public TileRouteStart(float screenWidth, float screenHeight, float widthBlocksCount, float heightBlocksCount, int widthNumber, int heightNumber, Route.Direction from,Route.Direction to, Generator generator) {
         super(screenWidth, screenHeight, widthBlocksCount, heightBlocksCount, widthNumber, heightNumber, from, to, Route.Type.START,generator);
 
     }
