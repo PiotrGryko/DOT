@@ -314,7 +314,7 @@ public class FragmentMainMenu extends Fragment {
                 context.removeCurrentFragment();
 
                 context.gameHolder.addView(context.getMockView());
-                context.rootLayout.addView(context.getActivityControls().getLayoutButtons());
+                //context.rootLayout.addView(context.getActivityControls().getLayoutButtons());
 
                 //menuHideAnimation.startAnimation(500);
                 context.mAdView.setVisibility(View.GONE);

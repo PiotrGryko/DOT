@@ -26,12 +26,8 @@ public class PathBuilderDraw {
     }
 
 
-
-
-
     public boolean onTouch(MotionEvent event) {
 
-        //canvasView.onTouch(event);
 
         TileRoute result = fingerTracker.trackFinger(event);
 
@@ -43,66 +39,78 @@ public class PathBuilderDraw {
     class FingerTracker {
 
 
+        TileRoute lastTile;
+        private boolean isDraging;
+
         public void setCurrentTile(TileRoute tile) {
 
-            if (this.currentTile != null)
-                this.currentTile.setCurrentTile(false);
-            this.currentTile = tile;
-            this.currentTile.setCurrentTile(true);
+            if (this.lastTile != null)
+                this.lastTile.setCurrentTile(false);
+            this.lastTile = tile;
+            this.lastTile.setCurrentTile(true);
 
-            generator.getLayout().setCurrentTile(currentTile);
-        }
-
-        public void setDraging(boolean draging) {
-            this.isDraging = draging;
+            generator.getLayout().setCurrentTile(lastTile);
         }
 
         private void finishDraging(float x, float y) {
 
-            currentTile = lastTile;
-            if (currentTile != null && currentTile.getType() == Route.Type.ROUTE) {
 
-                TileRoute r = generator.getTileRouteManager().getRouteFinishFromTile(currentTile.from, currentTile.to, currentTile);
-                //  TileRoute r = new TileRouteFinish(generator.view.screenWidth, generator.view.screenHeight, generator.gridX, generator.gridY, currentTile.horizontalPos, currentTile.verticalPos, currentTile.from.name(), currentTile.to.name(),
-                //          generator);
-                generator.tiles.remove(currentTile);
-                generator.tiles.add(r);
+            TileRoute finalTile = generator.findTileByCoords(x, y);
 
-                setCurrentTile(r);
-                lastTile = r;
-                Log.d("aaa", "dragging finished");
-
+            if(finalTile.type== Route.Type.START)
+            {
+                TileRoute blankTile = generator.getTileRouteManager().getTileFromRoute(finalTile);
+                generator.tiles.remove(finalTile);
+                generator.tiles.add(blankTile);
+                setCurrentTile(blankTile);
             }
 
             isDraging = false;
         }
 
-
-        TileRoute currentTile;
-        TileRoute lastTile;
-        private boolean isDraging;
-
-
         private TileRoute drag(float x, float y) {
 
 
             //newTile - tile in front
-            //current tile - in that case tile to draw. Nearest empty tile
             //lasttile - end of the current maze
             TileRoute newTile = generator.findTileByCoords(x, y);
-            if (currentTile != newTile
-                //&& generator.getTileRouteManager().isNeighboor(currentTile, newTile)
+            if (lastTile != newTile
                     ) {
 
-                /*
-                if(newTile.type== Route.Type.ROUTE  && generator.getTileRouteManager().areConnected(currentTile,newTile))
-                {
-                    Log.d("rrr","are connected");
-                    generator.tiles.remove(currentTile);
-                    setCurrentTile(newTile);
+                if (lastTile != null) {
+
+                    TileRoute previousTile = generator.getTileRouteManager().getPreviousTileForRoute(lastTile);
+
+                    if (newTile == previousTile) {
+                        TileRoute blankTile = generator.getTileRouteManager().getTileFromRoute(lastTile);
+                        generator.tiles.remove(lastTile);
+                        generator.tiles.add(blankTile);
+
+
+                        /*
+                        if (previousTile.type == Route.Type.START) {
+
+                            blankTile = generator.getTileRouteManager().getTileFromRoute(lastTile);
+                            finishDraging(x, y);
+
+                            generator.tiles.remove(previousTile);
+                            generator.tiles.add(blankTile);
+                            setCurrentTile(blankTile);
+                            return null;
+                        }
+*/
+                        setCurrentTile(previousTile);
+                           if (previousTile.type != Route.Type.START) {
+                        TileRoute newLastTile = generator.getTileRouteManager().getRouteFinishFromTile(previousTile.from, previousTile.to, previousTile);
+                        generator.tiles.remove(previousTile);
+                        generator.tiles.add(newLastTile);
+                        setCurrentTile(newLastTile);
+                         }
+                        return previousTile;
+                    }
                 }
-                else
-                */
+
+
                 if (newTile.type != Route.Type.TILE)
 
                 {
@@ -112,48 +120,35 @@ public class PathBuilderDraw {
                 //we know new tile from
                 //we know old tile to
 
-                Route.Direction newfrom = generator.getTileRouteManager().getFrom(currentTile, newTile);
-                newTile.from = newfrom;
-                Route.Direction currentto = generator.getTileRouteManager().getTo(currentTile, newTile);
-                currentTile.to = currentto;
 
-                //TileRoute sh = buildConnection(currentTile, newTile);
+                TileRoute r = null;
+                if (generator.getStartRoute() == null && lastTile != null) {
 
+                    lastTile.to = generator.getTileRouteManager().getTo(lastTile, newTile);
+                    lastTile.from = generator.getTileRouteManager().getOposite(lastTile.to);
 
-                TileRoute r;
-                if (generator.getStartRoute() == null) {
-                    currentTile.from = newfrom;
-                    Log.d("www", "current tile as a start route " + currentTile.from + " " + currentTile.to);
+                    Log.d("www", "current tile as a start route " + lastTile.from + " " + lastTile.to);
 
-                    r = generator.getTileRouteManager().getRouteStartFromTile(currentTile.from, currentTile.to, currentTile);
+                    r = generator.getTileRouteManager().getRouteStartFromTile(lastTile.from, lastTile.to, lastTile);
                     if (r != null) {
+                        generator.tiles.remove(lastTile);
                         generator.tiles.add(r);
-                        lastTile = r;
-                        //addNewAndRefreshOldTile(r);
+                        setCurrentTile(r);
                     }
-                    setCurrentTile(newTile);
-                } else {
-
+                } else if (lastTile != null) {
+                    lastTile.to = generator.getTileRouteManager().getTo(lastTile, newTile);
 
                     while (true) {
-                        if (lastTile != null) {
-                            r = generator.getTileRouteManager().getStep(lastTile, newTile);
+                        r = generator.getTileRouteManager().getStep(lastTile, newTile);
 
-                            if (r == null)
-                                break;
-
-                            addNewAndRefreshOldTile(r);
+                        if (r == null) {
+                            Log.d("www", "step == null");
+                            break;
                         }
+                        addNewAndRefreshOldTile(r);
+
                     }
-                    setCurrentTile(newTile);
-                    //generator.getTileRouteManager().getRouteFinishFromTile(currentTile.from, currentTile.to, currentTile);
-
-
                 }
-
-
-                //generator.tiles.remove(currentTile);
-
 
                 return r;
 
@@ -164,7 +159,6 @@ public class PathBuilderDraw {
         private void addNewAndRefreshOldTile(TileRoute r) {
             if (lastTile != null) {
                 lastTile.to = generator.getTileRouteManager().getTo(lastTile, r);
-                //lastTile.from=generator.getTileRouteManager().getFrom(lastTile,r);
 
                 if (lastTile.type == Route.Type.FINISH) {
                     TileRoute newLastRoute = generator.getTileRouteManager().getRouteFromTile(lastTile.from, lastTile.to, lastTile);
@@ -179,13 +173,8 @@ public class PathBuilderDraw {
 
 
             }
-
-            //generator.tiles.remove(currentTile);
-
             generator.tiles.add(r);
-            lastTile = r;
-            //lastTile = generator.getTileRouteManager().getRouteFromTile(r.from, r.to, r);
-//            Log.d("www", "last tile value seted  " + lastTile.to + " last tile from  " + lastTile.from);
+            setCurrentTile(r);
 
             Log.d("www", "new tile added " + r.type + " " + r.from + " " + r.to + "####################################");
         }
@@ -209,7 +198,7 @@ public class PathBuilderDraw {
                         isDraging = true;
                         Log.d("aaa", "draging setted to true");
 
-                    } else if (this.currentTile != null && this.currentTile.contains(x, y)) {
+                    } else if (this.lastTile != null && this.lastTile.contains(x, y)) {
                         isDraging = true;
                         Log.d("aaa", "draging setted to true");
                     }

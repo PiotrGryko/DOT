@@ -145,8 +145,9 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
 
         if (isDrawing) {
-            if (drawGenerator && generator != null)
+            if (drawGenerator && generator != null) {
                 generator.onDraw(mMVPMatrix);
+            }
             else if (game != null)
                 game.onDraw(mMVPMatrix);
         }

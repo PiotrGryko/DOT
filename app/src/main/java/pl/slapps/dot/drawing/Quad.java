@@ -44,6 +44,8 @@ public class Quad {
 
     }
 
+
+
     public void initVertexArray(float centerX, float centerY, float width,
                                 float height) {
 

@@ -95,7 +95,6 @@ public class MainSprite extends Sprite {
         this.game = view;
         fence = view.getMaze();
 
-
         spriteSpeed = view.context.getResources().getDimension(R.dimen.speed);
 
         configure(config);
@@ -229,7 +228,7 @@ public class MainSprite extends Sprite {
             } else {
                 game.explodeDot(true);
 
-                if(new Random().nextFloat()>0.8f)
+                if(new Random().nextFloat()>0.9f)
                     game.context.showAdv();
 
                 game.resetDot();

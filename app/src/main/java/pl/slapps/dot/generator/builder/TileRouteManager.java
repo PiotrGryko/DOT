@@ -75,35 +75,87 @@ public class TileRouteManager {
 
     }
 
-    public TileRoute getStep(TileRoute currentTile, TileRoute tile) {
+    public boolean compareTilesPosition(TileRoute currentTile, TileRoute tile)
+    {
+        if(currentTile.verticalPos==tile.verticalPos && currentTile.horizontalPos ==tile.horizontalPos)
+            return true;
 
-        if(currentTile.verticalPos==tile.verticalPos && currentTile.horizontalPos==tile.horizontalPos)
+        return false;
+    }
+
+
+    public TileRoute getPreviousTileForRoute(TileRoute currentTile)
+    {
+        if(currentTile.type== Route.Type.TILE)
             return null;
 
-        Route.Direction startFrom = getOposite(currentTile.to);
+        //Route.Direction nextRouteFrom = getOposite(currentTile.to);
         int xStart = currentTile.horizontalPos;
         int yStart = currentTile.verticalPos;
-        switch (startFrom)
+        switch (currentTile.from)
         {
 
             case LEFT:
-                xStart+=1;
-                break;
-            case RIGHT:
                 xStart-=1;
                 break;
+            case RIGHT:
+                xStart+=1;
+                break;
             case TOP:
-                yStart+=1;
+                yStart-=1;
                 break;
             case BOTTOM:
-                yStart-=1;
+                yStart+=1;
                 break;
 
         }
 
-        TileRoute toRemove = generator.findTile(xStart,yStart);
-        if(toRemove==tile)
-            toRemove=null;
+        TileRoute nextTile = generator.findTile(xStart,yStart);
+        return nextTile;
+    }
+
+    public TileRoute getNextTileForRoute(TileRoute currentTile)
+    {
+        if(currentTile.type== Route.Type.TILE)
+            return null;
+
+        //Route.Direction nextRouteFrom = getOposite(currentTile.to);
+        int xStart = currentTile.horizontalPos;
+        int yStart = currentTile.verticalPos;
+        switch (currentTile.to)
+        {
+
+            case LEFT:
+                xStart-=1;
+                break;
+            case RIGHT:
+                xStart+=1;
+                break;
+            case TOP:
+                yStart-=1;
+                break;
+            case BOTTOM:
+                yStart+=1;
+                break;
+
+        }
+
+        TileRoute nextTile = generator.findTile(xStart,yStart);
+        return nextTile;
+    }
+
+    public TileRoute getStep(TileRoute currentTile, TileRoute tile) {
+
+        if(currentTile==null|| tile==null)
+            return null;
+
+        if(compareTilesPosition(currentTile,tile))
+            return null;
+
+        TileRoute toRemove = getNextTileForRoute(currentTile);
+
+        //if(toRemove==tile)
+        //    toRemove=null;
 
 
         if(toRemove==null)
@@ -112,18 +164,27 @@ public class TileRouteManager {
         if(toRemove.type!= Route.Type.TILE)
             toRemove=null;
 
-        Route.Direction from = getFrom(currentTile, toRemove);
-        Route.Direction to = getTo(toRemove, tile);
+        if(toRemove!=tile) {
+            Route.Direction from = getFrom(currentTile, toRemove);
+            Route.Direction to = getTo(toRemove, tile);
+            if(from==null||to==null)
+                return null;
+            generator.tiles.remove(toRemove);
+            return getRouteFromTile(from, to, toRemove);
+        }
+        else
+        {
+            Route.Direction from = getFrom(currentTile, toRemove);
+            Route.Direction to = getOposite(from);
+            Log.d("xxx","prepared for finish "+from +" "+to);
+            generator.tiles.remove(toRemove);
+            return getRouteFinishFromTile(from, to, toRemove);
 
-        Log.d("www","STEP from: " +from +" to: "+to+"type: ROUTE  coords: "+xStart +" "+yStart);
+        }
 
-        if(from==null)
-            return null;
-
+        //Log.d("www","STEP from: " +from +" to: "+to+"type: ROUTE  coords: "+xStart +" "+yStart);
 
 
-        generator.tiles.remove(toRemove);
-        return getRouteFromTile(from, to, toRemove);
     }
 
 
@@ -142,6 +203,9 @@ public class TileRouteManager {
     }
 
     public Route.Direction getTo(TileRoute currentTile, TileRoute newTile) {
+        if(currentTile==null | newTile==null)
+            return null;
+
         if (currentTile.horizontalPos < newTile.horizontalPos) {
             return Route.Direction.RIGHT;
         }
@@ -161,6 +225,8 @@ public class TileRouteManager {
 
     public Route.Direction getFrom(TileRoute currentTile, TileRoute newTile) {
 
+        if(currentTile==null | newTile==null)
+            return null;
 
         if (currentTile.horizontalPos < newTile.horizontalPos) {
             return Route.Direction.LEFT;
@@ -177,6 +243,28 @@ public class TileRouteManager {
         return null;
 
     }
+
+
+
+
+
+
+
+
+
+    public TileRoute getTileFromRoute(TileRoute currentTile) {
+
+        return new TileRoute(generator.view.screenWidth,
+                generator.view.screenHeight,
+                generator.gridX,
+                generator.gridY,
+                currentTile.horizontalPos,
+                currentTile.verticalPos,
+                currentTile.from,
+                currentTile.to,
+                Route.Type.TILE, generator);
+    }
+
 
 
     public TileRoute getRouteFromTile(Route.Direction from, Route.Direction to, TileRoute currentTile) {

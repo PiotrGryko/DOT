@@ -1,5 +1,7 @@
 package pl.slapps.dot.game;
 
+import android.util.Log;
+
 import java.nio.FloatBuffer;
 
 import pl.slapps.dot.drawing.Quad;
@@ -10,7 +12,7 @@ public class Particle extends Quad {
 
 
     private Maze fence;
-    public long lifeTime = 1000;
+    public long lifeTime = 2000;
     private long creationTime;
     private Explosion explosion;
     float startX;
@@ -85,6 +87,13 @@ public class Particle extends Quad {
     }
 
 
+    private void scale(float scale)
+    {
+        Log.d("yyy","scale "+scale);
+        width=width*scale;
+        height=height*scale;
+    }
+
     public void update(long current) {
 
         moveX += x;
@@ -96,6 +105,11 @@ public class Particle extends Quad {
             width = 0;
             height = 0;
         }
+        else
+        {
+           // scale(1-(float)elapsedTime/(float)lifeTime);
+        }
+
 
         bottomLeft.update(x, y);
         bottomRight.update(x, y);

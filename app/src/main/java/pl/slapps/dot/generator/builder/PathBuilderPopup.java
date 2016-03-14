@@ -18,9 +18,8 @@ public class PathBuilderPopup {
 
     private String TAG = PathBuilderPopup.class.getName();
 
-    public PathBuilderPopup(Generator generator)
-    {
-        this.generator=generator;
+    public PathBuilderPopup(Generator generator) {
+        this.generator = generator;
     }
 
 
@@ -64,7 +63,6 @@ public class PathBuilderPopup {
             Log.d(TAG, "route configured from:" + startRoute.from.name() + " to: " + startRoute.to.name() + " movement: " + startRoute.getDirection().name() + " type: " + startRoute.getType().name());
 
 
-
             configRoute(nextRoute, from, routes);
 
 
@@ -78,7 +76,7 @@ public class PathBuilderPopup {
             Log.d(TAG, "next moves set   " + routes.size());
 
             for (int i = 0; i < routes.size(); i++) {
-                Log.d(TAG, "next move : " + i + " " + routes.get(i).next +" "+routes.get(i).from +" "+routes.get(i).to +" "+routes.get(i).type);
+                Log.d(TAG, "next move : " + i + " " + routes.get(i).next + " " + routes.get(i).from + " " + routes.get(i).to + " " + routes.get(i).type);
             }
 
 
@@ -97,7 +95,7 @@ public class PathBuilderPopup {
         int targetY = route.verticalPos;
 
         Route.Direction nextFrom = target_from;
-        Log.d(TAG, "config route from: " + target_from +" movement  "+t +" "+route.from +"  "+route.to+" type "+route.type);
+        Log.d(TAG, "config route from: " + target_from + " movement  " + t + " " + route.from + "  " + route.to + " type " + route.type);
 
         switch (target_from) {
             case LEFT:
@@ -290,21 +288,38 @@ public class PathBuilderPopup {
     public boolean onTouch(MotionEvent event) {
 
 
-            float x = event.getX();
-            float y = event.getY();
+        float x = event.getX();
+        float y = event.getY();
+
+        int action = event.getAction();
+
+        switch (action) {
+
+            case MotionEvent.ACTION_DOWN: {
+                for (int i = 0; i < generator.tiles.size(); i++) {
+                    TileRoute t = generator.tiles.get(i);
+                    if (t.contains(x, y)) {
+
+                        //tmp
+                        if (t.type == Route.Type.FINISH) {
+                            generator.getLayout().setCurrentTile(t);
+                            return true;
+                        }
+                        if (t.type != Route.Type.ROUTE)
+                            return true;
+
+                        generator.getLayout().setCurrentTile(t);
+
+                        generator.getPathPopup().showPath(event.getX(), event.getY());
 
 
-            for (int i = 0; i < generator.tiles.size(); i++) {
-                TileRoute t = generator.tiles.get(i);
-                if (t.contains(x, y)) {
-                    generator.getLayout().setCurrentTile(t);
-
-                    generator.getPathPopup().showPath(event.getX(), event.getY());
-
-
-                    return true;
+                        return true;
+                    }
                 }
+                break;
             }
+
+        }
 
 
         return true;

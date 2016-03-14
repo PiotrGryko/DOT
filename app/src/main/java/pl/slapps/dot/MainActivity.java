@@ -35,7 +35,6 @@ import pl.slapps.dot.model.Stage;
 public class MainActivity extends FragmentActivity {
 
 
-
     private String TAG = "MainActivity";
     private LinearLayout fragmentContainer;
     public SurfaceRenderer surfaceRenderer;
@@ -43,8 +42,6 @@ public class MainActivity extends FragmentActivity {
     public RelativeLayout rootLayout;
     private View mockView;
     private Stage CURRENT_STAGE;
-
-
 
 
     private SoundsManager soundsManager;
@@ -57,14 +54,15 @@ public class MainActivity extends FragmentActivity {
     private Handler handler = new Handler();
 
 
-    public Handler getHandler()
-    {return handler;}
+    public Handler getHandler() {
+        return handler;
+    }
+
     public InterstitialAd mInterstitialAd;
     public AdView mAdView;
 
     //public MainMenu mainMenu;
     public AnimationScoreLayout scoreLayout;
-
 
 
     public DrawerLayout drawer;
@@ -81,23 +79,21 @@ public class MainActivity extends FragmentActivity {
 
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-    public Stage getCurrentStage()
-    {
+    public Stage getCurrentStage() {
         return CURRENT_STAGE;
     }
 
-    public ActivityLoader getActivityLoader()
-    {
+    public ActivityLoader getActivityLoader() {
         return activityLoader;
     }
-    public ActivityControls getActivityControls()
-    {
+
+    public ActivityControls getActivityControls() {
         return activityControls;
     }
+
     public SoundsManager getSoundsManager() {
         return soundsManager;
     }
-
 
 
     public View getMockView() {
@@ -105,39 +101,33 @@ public class MainActivity extends FragmentActivity {
     }
 
 
-
-
-
-    private void setupFragment()
-    {
-        if(fragmentContainer.getParent()==null)
+    private void setupFragment() {
+        if (fragmentContainer.getParent() == null)
             gameHolder.addView(fragmentContainer);
-        FragmentManager fm= getSupportFragmentManager();
-        fm.beginTransaction().add(R.id.fragments_container,new FragmentMainMenu()).commitAllowingStateLoss();
+        FragmentManager fm = getSupportFragmentManager();
+        fm.beginTransaction().add(R.id.fragments_container, new FragmentMainMenu()).commitAllowingStateLoss();
 
 
         //  FragmentManager fm = getFragmentManager();
 
     }
 
-    public Fragment getCurrentFragment()
-    {
+    public Fragment getCurrentFragment() {
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragments_container);
         return fragment;
     }
 
-    public void removeCurrentFragment()
-    {
+    public void removeCurrentFragment() {
         Fragment f = getCurrentFragment();
-        if(f!=null) {
+        if (f != null) {
             getSupportFragmentManager().beginTransaction().remove(f).commitAllowingStateLoss();
             Log.d("aaa", "fragment removed");
-            if(fragmentContainer.getParent()!=null)
+            if (fragmentContainer.getParent() != null)
                 gameHolder.removeView(fragmentContainer);
 
         }
 
-        Log.d("aaa","current fragment not removed");
+        Log.d("aaa", "current fragment not removed");
 
     }
 
@@ -152,7 +142,6 @@ public class MainActivity extends FragmentActivity {
         activityLoader.loadSounds();
         activityLoader.listRaw();
         activityLoader.loadStagesFile();
-
 
 
         android_id = Settings.Secure.getString(getContentResolver(),
@@ -180,19 +169,19 @@ public class MainActivity extends FragmentActivity {
         setContentView(R.layout.main_activity);
 
 
-        activityControls = new ActivityControls(this,handler);
+        activityControls = new ActivityControls(this, handler);
         activityControls.initLayout();
         //initGeneratorButtons();
 
         surfaceRenderer = (SurfaceRenderer) findViewById(R.id.game);
         gameHolder = (RelativeLayout) findViewById(R.id.game_holder);
         rootLayout = (RelativeLayout) findViewById(R.id.root_layout);
-        fragmentContainer = (LinearLayout)findViewById(R.id.fragments_container);
-        mockView = (View)findViewById(R.id.mock_view);
+        fragmentContainer = (LinearLayout) findViewById(R.id.fragments_container);
+        mockView = (View) findViewById(R.id.mock_view);
 
         gameHolder.removeView(mockView);
 
-        rootLayout.removeView(activityControls.getLayoutButtons());
+        //rootLayout.removeView(activityControls.getLayoutButtons());
 
 
         //mainMenu = new MainMenu(this, surfaceRenderer);
@@ -208,8 +197,13 @@ public class MainActivity extends FragmentActivity {
         scoreLayout.initLayout(this);
         //initMainMenu();
 
-        loadStage(activityLoader.stages.get(currentStage));
+        if (currentStage < activityLoader.stages.size())
+            loadStage(activityLoader.stages.get(currentStage));
+        else {
+            currentStage = 0;
+            loadStage(activityLoader.stages.get(currentStage));
 
+        }
 
 
         //soundsManager.playBackgroundBirds();
@@ -235,7 +229,6 @@ public class MainActivity extends FragmentActivity {
         });
 
         requestNewInterstitial();
-
 
 
         setupFragment();
@@ -282,10 +275,9 @@ public class MainActivity extends FragmentActivity {
             //soundsManager.configure(stage.config.sounds);
             //soundsManager.playBackgroundSound();
 
-            if(getCurrentFragment() instanceof FragmentMainMenu)
-            {
-                Log.d("aaa","fragment configured");
-                FragmentMainMenu fm = (FragmentMainMenu)getCurrentFragment();
+            if (getCurrentFragment() instanceof FragmentMainMenu) {
+                Log.d("aaa", "fragment configured");
+                FragmentMainMenu fm = (FragmentMainMenu) getCurrentFragment();
                 fm.setColor(stage.config);
                 final int color = Color.parseColor(stage.config.colors.colorBackground);
                 int c = Color.argb(100, Color.red(color), Color.green(color), Color.blue(color));
@@ -293,7 +285,7 @@ public class MainActivity extends FragmentActivity {
                 fm.loadStage(stage);
 
             }
-            Log.d("aaa","stage loaded");
+            Log.d("aaa", "stage loaded");
 
             scoreLayout.config(stage);
 
@@ -363,26 +355,23 @@ public class MainActivity extends FragmentActivity {
     }
 
 
-
-
-
     public void onBackPressed() {
         Log.d("zzz", "on back pressed");
 
-       // mainMenu.clearAnimation();
+        // mainMenu.clearAnimation();
 
         if (surfaceRenderer.onBackPressed()) {
 
-            if(getCurrentFragment()==null){
+            if (getCurrentFragment() == null) {
 
-                Log.d("aaa","current fragment not null");
+                Log.d("aaa", "current fragment not null");
                 setupFragment();
-            //if (mainMenu.getLayout().getParent() == null) {
+                //if (mainMenu.getLayout().getParent() == null) {
                 //if (mainMenu.layoutMenu.getVisibility() == View.GONE) {
                 surfaceRenderer.setRunnig(false);
                 //mainMenu.getAnimationMainMenu().showMenu();
                 gameHolder.removeView(mockView);
-                rootLayout.removeView(activityControls.getLayoutButtons());
+                // rootLayout.removeView(activityControls.getLayoutButtons());
 
                 Log.d("zzz", "mock view added ");
                 mAdView.setVisibility(View.VISIBLE);

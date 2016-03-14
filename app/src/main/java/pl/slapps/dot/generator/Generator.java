@@ -523,7 +523,7 @@ public class Generator {
         } else {
 
             pathBuilderDraw.onTouch(event);
-            //pathBuilderPopup.onTouch(event);
+            pathBuilderPopup.onTouch(event);
         }
 
         return true;
@@ -552,6 +552,8 @@ public class Generator {
         runPreview = true;
         popupFactory.dissmissPath();
         getLayout().showPreviewControlls();
+
+        view.context.getActivityControls().resetLogs();
 
     }
 
