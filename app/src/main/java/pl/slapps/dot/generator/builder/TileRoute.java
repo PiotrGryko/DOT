@@ -52,11 +52,16 @@ public class TileRoute {
     public Generator generator;
 
     private boolean currentTile = false;
+    private boolean currentHeadTile = false;
     public boolean drawCoin = false;
 
     public void setCurrentTile(boolean flag) {
         currentTile = flag;
     }
+    public void setCurrentHeadTile(boolean flag) {
+        currentHeadTile = flag;
+    }
+
     //public SurfaceRenderer generator;
 
 
@@ -348,9 +353,28 @@ public class TileRoute {
         }
     }
 
+    private float scale=1;
+    private boolean isIncreading = false;
+
+    private void updateScale()
+    {
+        if(scale<=0)
+            isIncreading=true;
+        else if(scale>=1)
+                isIncreading=false;
+
+        if(isIncreading)
+            scale+=0.03f;
+        else
+            scale-=0.03f;
+
+        //return scale;
+    }
 
     private float[] mModelMatrix = new float[16];
     private float[] mvpLocalMatrix = new float[16];
+
+
 
     public void drawGL20(float[] mvpMatrix) {
 
@@ -358,7 +382,7 @@ public class TileRoute {
         if (!isInitialized)
             return;
 
-        if (currentTile) {
+        if (currentTile||currentHeadTile) {
             Matrix.setIdentityM(mModelMatrix, 0);
 
 
@@ -368,7 +392,16 @@ public class TileRoute {
             // Draw the triangle facing straight on.
             Matrix.translateM(mModelMatrix, 0, centerX, centerY, 0);
 
-            Matrix.rotateM(mModelMatrix, 0, angleInDegrees, 0.0f, 0.0f, 1.0f);
+            if(currentHeadTile) {
+
+                updateScale();
+                Matrix.scaleM(mModelMatrix, 0,scale,scale,1);
+            }
+            else {
+                Matrix.rotateM(mModelMatrix, 0, angleInDegrees, 0.0f, 0.0f, 1.0f);
+
+
+            }
             Matrix.translateM(mModelMatrix, 0, -centerX, -centerY, 0);
 
             Matrix.multiplyMM(mvpLocalMatrix, 0, generator.view.mViewMatrix, 0, mModelMatrix, 0);

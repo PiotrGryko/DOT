@@ -37,6 +37,8 @@ public class Wall {
 
 
 
+
+
     static final int COORDS_PER_VERTEX = 3;
 
     private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex

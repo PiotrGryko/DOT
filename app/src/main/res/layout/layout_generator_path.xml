@@ -218,7 +218,7 @@
             <pl.slapps.dot.gui.FontedTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="speed ratio: " />
+                android:text="speed: " />
 
             <pl.slapps.dot.generator.widget.NumberPickerTextView
                 android:id="@+id/et_speed_ratio"
@@ -261,6 +261,7 @@
         </LinearLayout>
 
         <ImageView
+            android:visibility="gone"
             android:id="@+id/img_trash"
             android:layout_width="40dp"
             android:layout_height="40dp"
@@ -270,6 +271,7 @@
             android:src="@drawable/trash" />
 
         <CheckBox
+
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="draw coin"

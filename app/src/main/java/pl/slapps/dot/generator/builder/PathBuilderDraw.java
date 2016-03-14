@@ -44,10 +44,13 @@ public class PathBuilderDraw {
 
         public void setCurrentTile(TileRoute tile) {
 
-            if (this.lastTile != null)
+            if (this.lastTile != null) {
                 this.lastTile.setCurrentTile(false);
+                this.lastTile.setCurrentHeadTile(false);
+            }
             this.lastTile = tile;
             this.lastTile.setCurrentTile(true);
+            this.lastTile.setCurrentHeadTile(true);
 
             generator.getLayout().setCurrentTile(lastTile);
         }
