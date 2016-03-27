@@ -71,6 +71,13 @@ public class AmbilWarnaView extends LinearLayout{
 
         viewOldColor.setBackgroundColor(color);
         viewNewColor.setBackgroundColor(color);
+        //viewSatVal.setColor(currentColorHsv);
+        viewSatVal.setHue(getHue());
+        //moveCursor();
+        moveCursor();
+        moveTarget();
+
+
 
 
     }
@@ -94,7 +101,6 @@ public class AmbilWarnaView extends LinearLayout{
         viewAlphaOverlay = view.findViewById(R.id.ambilwarna_overlay);
         viewAlphaCursor = (ImageView) view.findViewById(R.id.ambilwarna_alphaCursor);
         viewAlphaCheckered = (ImageView) view.findViewById(R.id.ambilwarna_alphaCheckered);
-
         { // hide/show alpha
             viewAlphaOverlay.setVisibility(supportsAlpha? View.VISIBLE: View.GONE);
             viewAlphaCursor.setVisibility(supportsAlpha? View.VISIBLE: View.GONE);

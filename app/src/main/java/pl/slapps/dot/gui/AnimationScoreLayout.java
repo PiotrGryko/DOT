@@ -1,6 +1,7 @@
 package pl.slapps.dot.gui;
 
 import android.graphics.Color;
+import android.os.Handler;
 import android.support.v4.view.ViewCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,7 +25,7 @@ import pl.slapps.dot.model.Stage;
 public class AnimationScoreLayout {
 
     private RelativeLayout scoreLayout;
-    private TextView tvScore;
+   // private TextView tvScore;
 
     private TextView tvName;
     private TextView tvDesc;
@@ -34,7 +35,7 @@ public class AnimationScoreLayout {
     private AnimationEntrance headerEntranceAnimation;
     private AnimationShow headerShowAnimation;
 
-    private AnimationEntrance entranceAnimation;
+   // private AnimationEntrance entranceAnimation;
     private AnimationShow showAnimation;
     private AnimationHide hideAnimation;
 
@@ -58,29 +59,32 @@ public class AnimationScoreLayout {
     }
 
 
-    public void config(Stage stage) {
+    public void config(Stage stage, int currentStage) {
 
         Config config = stage.config;
         textColor = config.colors.colorShip;
-        tvName.setText(stage.name);
-        tvDesc.setText(stage.description);
-
+        tvName.setText("#"+currentStage);
+        //tvName.setText(stage.name);
+        //tvDesc.setText(stage.description);
+        tvDesc.setVisibility(View.GONE);
         tvName.setTextColor(Color.parseColor(textColor));
-        tvDesc.setTextColor(Color.parseColor(textColor));
+        //tvDesc.setTextColor(Color.parseColor(textColor));
+
+
 
 
         if (scoreLayout.getVisibility() == View.GONE) {
-            colorStart = config.colors.colorBackground;
+            colorStart = config.colors.colorRoute;
 
-            int c = Color.parseColor(config.colors.colorBackground);
+            int c = Color.parseColor(config.colors.colorRoute);
             scoreLayout.setBackgroundColor(c);
 
-            c = Color.parseColor(config.colors.colorRoute);
-            tvScore.setTextColor(c);
+          //  c = Color.parseColor(config.colors.colorRoute);
+          //  tvScore.setTextColor(c);
 
 
         } else {
-            colorEnd = config.colors.colorBackground;
+            colorEnd = config.colors.colorRoute;
 
             scoreLayout.startAnimation(colorAnimation);
 
@@ -96,7 +100,7 @@ public class AnimationScoreLayout {
         layout = LayoutInflater.from(context).inflate(R.layout.layout_score,null);
 
         scoreLayout = (RelativeLayout) layout.findViewById(R.id.layout_score);
-        tvScore = (TextView) layout.findViewById(R.id.tv_score);
+       // tvScore = (TextView) layout.findViewById(R.id.tv_score);
 
         tvName = (TextView) layout.findViewById(R.id.tv_score_lvl);
         tvDesc = (TextView) layout.findViewById(R.id.tv_score_desc);
@@ -105,7 +109,7 @@ public class AnimationScoreLayout {
         layoutHeader.setVisibility(View.GONE);
 
         showAnimation = new AnimationShow(scoreLayout);
-        entranceAnimation = new AnimationEntrance(tvScore);
+       // entranceAnimation = new AnimationEntrance(tvScore);
 
         headerShowAnimation = new AnimationShow(layoutHeader);
         headerEntranceAnimation = new AnimationEntrance(layoutHeader);
@@ -118,7 +122,11 @@ public class AnimationScoreLayout {
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                context.gameHolder.removeView(layout);
+                new Handler().post(new Runnable() {
+                    public void run() {
+                        context.gameHolder.removeView(layout);
+                    }
+                });
                 renderer.setRunnig(true);
 
             }
@@ -133,9 +141,8 @@ public class AnimationScoreLayout {
         colorAnimation = new Animation() {
             public void applyTransformation(float progress, Transformation f) {
 
-                Log.d("zzz", "estimate colors " + colorStart + "  " + colorEnd);
                 scoreLayout.setBackgroundColor(Color.parseColor(Util.calculateColorsSwitch(colorStart, colorEnd, progress)));
-                ViewCompat.setAlpha(tvScore, 1 - progress);
+              //  ViewCompat.setAlpha(tvScore, 1 - progress);
             }
         };
 
@@ -145,15 +152,16 @@ public class AnimationScoreLayout {
             @Override
             public void onAnimationStart(Animation animation) {
 
+             //   tvScore.setTextColor(Color.parseColor(textColor));
+                showHeaders();
+
             }
 
             @Override
             public void onAnimationEnd(Animation animation) {
                 colorStart = colorEnd;
                 //    hideLayout();
-                tvScore.setVisibility(View.GONE);
-                tvScore.setTextColor(Color.parseColor(textColor));
-                showHeaders();
+               // tvScore.setVisibility(View.GONE);
 /*
 
 */
@@ -202,37 +210,36 @@ public class AnimationScoreLayout {
         hideAnimation.startAnimation(1000);
     }
 
-    public void showScore(final String score, final AnimationShow.OnAnimationListener listener) {
+    public void showScore(final AnimationShow.OnAnimationListener listener) {
 
 
         if(layout.getParent()==null) {
             context.gameHolder.addView(layout);
-            Log.d("aaaa","score layout showed");
         }
-        tvScore.setText(score);
-        ViewCompat.setAlpha(tvScore, 1);
+        //tvScore.setText(score);
+        //ViewCompat.setAlpha(tvScore, 1);
 
 
 
-        entranceAnimation.clearAnimation();
+      //  entranceAnimation.clearAnimation();
         headerEntranceAnimation.clearAnimation();
         hideAnimation.clearAnimation();
         layoutHeader.setVisibility(View.GONE);
-        tvScore.setVisibility(View.VISIBLE);
+       // tvScore.setVisibility(View.VISIBLE);
 
-        //scoreLayout.setVisibility(View.VISIBLE);
-
-        Log.d("zzz", "start animation");
 
         showAnimation.startAnimation(new AnimationShow.OnAnimationListener() {
             @Override
             public void onAnimationEnd() {
-                entranceAnimation.startAnimation(listener);
+                //entranceAnimation.startAnimation(listener);
+                listener.onAnimationEnd();
+
             }
 
             @Override
             public void onAnimationStart() {
-                entranceAnimation.clearAnimation();
+
+            //    entranceAnimation.clearAnimation();
 
                 //scoreLayout.clearAnimation();
                 //scoreLayout.setVisibility(View.VISIBLE);

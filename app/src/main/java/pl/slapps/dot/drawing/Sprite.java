@@ -96,10 +96,7 @@ public class Sprite {
         centerX += x;
         centerY += y;
 
-        quad.bottomLeft.update(x, y);
-        quad.bottomRight.update(x, y);
-        quad.topLeft.update(x, y);
-        quad.topRight.update(x, y);
+        quad.update(x,y);
         quad.initSharedVerticles();
         this.bufferedVertex.position(0);
         this.bufferedVertex.put(quad.vertices);

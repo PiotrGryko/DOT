@@ -18,8 +18,8 @@ public class ActivityControls {
 
     //////////tmp
     private TextView tvMax;
-    private TextView tvMin;
-    private TextView tvCur;
+    //private TextView tvMin;
+    //private TextView tvCur;
 
 
     private LinearLayout layoutButtons;
@@ -45,12 +45,12 @@ public class ActivityControls {
         layoutButtons = (LinearLayout) context.findViewById(R.id.layout_buttons);
 
         tvMax = (TextView) context.findViewById(R.id.tv_max_time);
-        tvMin = (TextView) context.findViewById(R.id.tv_min_time);
-        tvCur = (TextView) context.findViewById(R.id.tv_current_time);
+//        tvMin = (TextView) context.findViewById(R.id.tv_min_time);
+//        tvCur = (TextView) context.findViewById(R.id.tv_current_time);
 
     }
 
-
+/*
     public void setCurrent(final float value) {
         handler.post(new Runnable() {
             @Override
@@ -63,12 +63,12 @@ public class ActivityControls {
             }
         });
     }
-
+*/
 
     public void resetLogs() {
         tvMax.setText(Integer.toString(0));
-        tvCur.setText(Integer.toString(0));
-        tvMin.setText(Integer.toString(0));
+  //      tvCur.setText(Integer.toString(0));
+    //    tvMin.setText(Integer.toString(0));
     }
 
     public void setMax(final long value) {
@@ -91,7 +91,7 @@ public class ActivityControls {
             }
         });
     }
-
+/*
     public void setMin(final long value) {
         handler.post(new Runnable() {
             @Override
@@ -112,4 +112,5 @@ public class ActivityControls {
             }
         });
     }
+    */
 }

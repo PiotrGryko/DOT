@@ -8,11 +8,11 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import pl.slapps.dot.SurfaceRenderer;
 import pl.slapps.dot.drawing.Quad;
 import pl.slapps.dot.drawing.Util;
+import pl.slapps.dot.drawing.Wall;
 import pl.slapps.dot.generator.builder.TileRoute;
 import pl.slapps.dot.generator.builder.TileRouteBackground;
 import pl.slapps.dot.model.Config;
@@ -31,22 +31,68 @@ public class Path {
 
 
     private String TAG = Path.class.getName();
-
     public float[] verticles;
     public short[] indices;
-
-
     private Game game;
     private Config config;
-
     static final int COORDS_PER_VERTEX = 3;
-
-
     float color[] = {0.0f, 0.0f, 0.0f, 1.0f};
+    private ArrayList<Quad> quads; //list of quads ordered from beginning to end
 
-    //private ArrayList<Verticle> verticlesArray;
-    ArrayList<Quad> quads; //list of quads ordered from beginning to end
+    /*
+    public Wall.Type checkCollision(Quad quad,float x, float y) {
 
+
+
+
+        for(int i=0;i<quads.size();i++)
+        {
+            if(quads.get(i).contains(x,y))
+            {
+                Wall.Type result = Quad.checkChollision(quads.get(i), quad);
+                if(result!=null) {
+                    Log.d("hhh","check colision "+result.name());
+                    return result;
+                }
+            }
+
+        }
+
+        return null;
+    }
+
+
+    public boolean detectCollision(Quad quad) {
+
+
+        boolean leftTop = false;
+        boolean rightTop = false;
+        boolean leftBottom = false;
+        boolean rightBottom = false;
+
+        for (int i = 0; i < quads.size(); i++) {
+
+            if (quads.get(i).contains(quad.left, quad.top))
+                leftTop = true;
+            if (quads.get(i).contains(quad.right, quad.top))
+                rightTop = true;
+            if (quads.get(i).contains(quad.left, quad.bottom))
+                leftBottom = true;
+            if (quads.get(i).contains(quad.right, quad.bottom))
+                rightBottom = true;
+
+        }
+
+        if (!leftTop
+                || !leftBottom
+                || !rightBottom
+                || !rightTop) {
+            Log.d("ttt", "collision detected");
+            return true;
+        } else
+            return false;
+    }
+*/
 
     public void onProgressChanged(float value) {
         if (config.settings.switchRouteColors) {
@@ -64,8 +110,6 @@ public class Path {
             finalColor = config.colors.colorSwitchRouteStart;
         color = Util.parseColor(finalColor);
 
-
-        Log.d(TAG, "test path set color ");
     }
 
     public Path(ArrayList<TileRoute> routes, Game game, Config config) {
@@ -78,14 +122,11 @@ public class Path {
             backgrounds.addAll(routes.get(i).getBackgrounds());
         }
 
-        Log.d(TAG, " start " + routes.get(0).getType());
         for (int i = 0; i < backgrounds.size(); i++) {
             data.add(backgrounds.get(i).quad);
         }
 
-        //verticlesArray = new ArrayList<>();
         this.quads = new ArrayList<>();
-
         verticles = data.get(0).vertices;
         indices = data.get(0).indices;
 
@@ -95,9 +136,6 @@ public class Path {
         }
 
         configure(config);
-
-
-        Log.d(TAG, "quads size " + this.quads.size());
 
 
         verticles = new float[this.quads.size() * COORDS_PER_VERTEX * 4];
@@ -139,7 +177,6 @@ public class Path {
 
 
         }
-        Log.d(TAG, "result " + Arrays.toString(verticles) + "  " + Arrays.toString(indices));
 
 
         roadVert = verticles;
@@ -157,8 +194,6 @@ public class Path {
         roadBufferedIndices = bytes.asShortBuffer();
         roadBufferedIndices.put(roadIndices);
         roadBufferedIndices.position(0);
-        //verticles=result.vertices;
-        //indices=result.indices;
 
 
     }
@@ -167,46 +202,33 @@ public class Path {
     private void addQuad(Quad q) {
         for (int i = 0; i < quads.size(); i++) {
             Quad e = quads.get(i);
-            if (e.compareTop(q))
-            //if(q.bottomLeft.equals(e.topLeft) && q.bottomRight.equals(e.topRight))
-            {
+            if (e.compareTop(q)) {
                 q.topLeft.index = e.topLeft.index;
                 q.topRight.index = e.topRight.index;
                 e.topLeft = q.topLeft;
                 e.topRight = q.topRight;
-                Log.d(TAG, "quad connected top");
                 return;
             }
-            if (e.compareRight(q))
-            //if(q.bottomLeft.equals(e.bottomRight) && q.topLeft.equals(e.topRight))
-            {
+            if (e.compareRight(q)) {
                 q.bottomRight.index = e.bottomRight.index;
                 q.topRight.index = e.topRight.index;
                 e.topRight = q.topRight;
                 e.bottomRight = q.bottomRight;
-                Log.d(TAG, "quad connected right ");
                 return;
             }
 
-            //Log.d(TAG,"comparing left");
-            if (e.compareLeft(q))
-            //if(q.bottomRight.equals(e.bottomLeft) && q.topRight.equals(e.topLeft))
-            {
+            if (e.compareLeft(q)) {
                 q.bottomLeft.index = e.bottomLeft.index;
                 q.topLeft.index = e.topLeft.index;
                 e.topLeft = q.topLeft;
                 e.bottomLeft = q.bottomLeft;
-                Log.d(TAG, "quad connected left ");
                 return;
             }
-            if (e.compareBottom(q))
-            //if(q.topLeft.equals(e.bottomLeft) && q.topRight.equals(e.bottomRight))
-            {
+            if (e.compareBottom(q)) {
                 q.bottomRight.index = e.bottomRight.index;
                 q.bottomLeft.index = e.bottomLeft.index;
                 e.bottomRight = q.bottomRight;
                 e.bottomLeft = q.bottomLeft;
-                Log.d(TAG, "quad connected bottom ");
                 return;
             }
 
@@ -214,7 +236,6 @@ public class Path {
 
 
         int startIndex = quads.size() * 4;
-        Log.d(TAG, "quad added ");
         q.bottomRight.index += startIndex;
         q.bottomLeft.index += startIndex;
         q.topRight.index += startIndex;

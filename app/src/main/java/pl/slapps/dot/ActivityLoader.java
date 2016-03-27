@@ -3,6 +3,7 @@ package pl.slapps.dot;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -14,10 +15,12 @@ import org.json.JSONObject;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.net.URLConnection;
@@ -66,14 +69,12 @@ public class ActivityLoader {
                 String name = o.has("originalname") ? o.getString("originalname") : null;
 
                 if (path == null) {
-                    Log.d("aaa", "path null");
                     return null;
                 }
 
                 File f = new File(context.getCacheDir() + "/" + name);
 
                 if (f.exists()) {
-                    Log.d("aaa", "file exist");
                     return null;
                 }
 
@@ -94,7 +95,6 @@ public class ActivityLoader {
                 while ((count = input.read(data)) != -1) {
                     total += count;
                     // publishing the progress....
-                    Log.d("aaa", "progress " + (total * 100 / lenghtOfFile));
                     //publishProgress((int) (total * 100 / lenghtOfFile));
                     output.write(data, 0, count);
                 }
@@ -102,7 +102,6 @@ public class ActivityLoader {
                 output.flush();
                 output.close();
                 input.close();
-                Log.d("aaa", "file saved");
                 listCatche();
             } catch (Exception e) {
                 Log.d("aaa", e.toString());
@@ -120,7 +119,6 @@ public class ActivityLoader {
             public void onResponse(Object response) {
 
 
-                Log.d(TAG, response.toString());
                 JSONObject object = null;
                 try {
                     object = new JSONObject(response.toString());
@@ -183,15 +181,68 @@ public class ActivityLoader {
 
     }
 
+    private void saveTextFile(String text)
+    {
+        try {
+            File myFile = new File(context.getCacheDir(),WORLDS_FILE);
+            myFile.createNewFile();
+            FileOutputStream fOut = new FileOutputStream(myFile);
+            OutputStreamWriter myOutWriter =
+                    new OutputStreamWriter(fOut);
+            myOutWriter.append(text);
+            myOutWriter.close();
+            fOut.close();
+            Toast.makeText(context,
+                    "Done writing SD 'mysdfile.txt'",
+                    Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(context, e.getMessage(),
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
 
-    public void loadStagesFile() {
+    public interface OnStagesLoadingListener
+    {
+        public void onLoaded();
+        public void onFailed();
+    }
+
+    public void loadStagesFile(final OnStagesLoadingListener listener)
+    {
+        DAO.getWorlds(context, new Response.Listener() {
+            @Override
+            public void onResponse(Object response) {
+
+                saveTextFile(response.toString());
+                loadStages();
+                if(listener!=null)
+                    listener.onLoaded();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(context,error.toString(),Toast.LENGTH_LONG).show();
+                boolean stagesLoaded = loadStages();
+                if(listener!=null && stagesLoaded)
+                    listener.onLoaded();
+                else
+                    listener.onFailed();
+            }
+        },true);
+    }
+    private boolean loadStages() {
         StringBuilder returnString = new StringBuilder();
         InputStream fIn = null;
         InputStreamReader isr = null;
         BufferedReader input = null;
         try {
-            fIn = context.getResources().getAssets()
-                    .open(WORLDS_FILE, Context.MODE_WORLD_READABLE);
+            File myFile = new File(context.getCacheDir(),WORLDS_FILE);
+            fIn = new FileInputStream(myFile);
+           // fIn = context.getResources().getAssets()
+            //        .open(WORLDS_FILE, Context.MODE_WORLD_READABLE);
+
+
+
             isr = new InputStreamReader(fIn);
             input = new BufferedReader(isr);
             String line = "";
@@ -214,6 +265,7 @@ public class ActivityLoader {
         }
 
         try {
+
             ArrayList<World> worlds = new ArrayList<>();
             JSONObject jsonData = new JSONObject(returnString.toString());
             JSONObject api = jsonData.has("api") ? jsonData.getJSONObject("api") : new JSONObject();
@@ -230,9 +282,11 @@ public class ActivityLoader {
             }
 
             Log.d(TAG, "stages loaded " + stages.size());
+            return true;
         } catch (JSONException e) {
             e.printStackTrace();
             Log.d(TAG, e.toString());
+            return false;
         }
 
     }

@@ -1,6 +1,7 @@
 package pl.slapps.dot.gui;
 
 import android.graphics.Color;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
@@ -53,11 +54,10 @@ public class AnimationMainMenu {
         Animation colorAnimation = new Animation() {
             public void applyTransformation(float progress, Transformation f) {
 
-                Log.d("zzz", "estimate colors " + colorStart + "  " + colorEnd);
 
                 final int color = Color.parseColor(Util.calculateColorsSwitch(colorStart, colorEnd, progress));
-                int c = Color.argb(100, Color.red(color), Color.green(color), Color.blue(color));
-                menu.getBackground().setBackgroundColor(c);
+                //int c = Color.argb(100, Color.red(color), Color.green(color), Color.blue(color));
+                menu.getBackground().setBackgroundColor(color);
             }
         };
         colorAnimation.setDuration(500);
@@ -84,7 +84,12 @@ public class AnimationMainMenu {
                 btnsHideAnimation.clearAnimation();
                 headerHideAnimation.clearAnimation();
 
-                menu.context.removeCurrentFragment();
+
+                new Handler().post(new Runnable() {
+                    public void run() {
+                        menu.context.removeCurrentFragment();
+                    }
+                });
                 //menu.context.gameHolder.removeView(menu.getLayout());
                 menu.getGame().setRunnig(true);
 

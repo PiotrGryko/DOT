@@ -13,7 +13,7 @@ import pl.slapps.dot.model.Config;
 
 public class Background extends Sprite {
 
-    private String TAG = Background.class.getName();
+    private final static String TAG = Background.class.getName();
 
 
     private Game view;
@@ -24,10 +24,7 @@ public class Background extends Sprite {
      */
 
     static final int COORDS_PER_VERTEX = 3;
-
-
     private Config config;
-
     private boolean switchColors;
 
 
@@ -35,18 +32,10 @@ public class Background extends Sprite {
 
     };
 
-    public void onProgressChanged(float value) {
-        if (config.settings.switchBackgroundColors) {
-            String finalColor = Util.calculateColorsSwitch(config.colors.colorSwitchBackgroundStart, config.colors.colorSwitchBackgroundEnd, value);
-            color = Util.parseColor(finalColor);
-        }
 
-    }
 
     public void configure(Config config) {
-        Log.d(TAG,"configure background");
         this.config=config;
-        Log.d(TAG,config.colors.colorBackground +"  "+config.colors.colorSwitchBackgroundStart);
 
         if (!config.settings.switchBackgroundColors) {
             color = Util.parseColor(config.colors.colorBackground);

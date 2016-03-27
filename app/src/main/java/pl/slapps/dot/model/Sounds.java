@@ -15,6 +15,7 @@ public class Sounds {
     public String soundCrash=SoundsManager.DEFAULT_CRASH;
     public String soundFinish=SoundsManager.DEFAULT_FINISH;
 
+    public boolean overlap;
 
     public JSONObject toJson() {
         JSONObject sounds = new JSONObject();
@@ -23,6 +24,8 @@ public class Sounds {
             sounds.put("press", soundPress);
             sounds.put("crash", soundCrash);
             sounds.put("background", soundBackground);
+            sounds.put("overlap", overlap);
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -42,12 +45,14 @@ public class Sounds {
             String soundPress = sounds.has("press") ? sounds.getString("press") : "";
             String soundCrash = sounds.has("crash") ? sounds.getString("crash") : "";
             String soundBackground = sounds.has("background") ? sounds.getString("background") : "";
+            boolean overlap = sounds.has("overlap") ? sounds.getBoolean("overlap") : false;
 
 
             returnObject.soundBackground = soundBackground;
             returnObject.soundCrash = soundCrash;
             returnObject.soundFinish = soundFinish;
             returnObject.soundPress = soundPress;
+            returnObject.overlap=overlap;
         } catch (JSONException e) {
             e.printStackTrace();
         }

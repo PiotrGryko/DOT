@@ -60,13 +60,11 @@ public class GeneratorLayoutControls {
     }
 
 
-    public View getLayout()
-    {
+    public View getLayout() {
         return layoutControls;
     }
 
-    public void refreshLayout()
-    {
+    public void refreshLayout() {
         getButtonPlay().setVisibility(View.VISIBLE);
 
         /*
@@ -85,11 +83,11 @@ public class GeneratorLayoutControls {
     }
 
     public void initLayout(GeneratorLayout generatorLayout) {
-        this.generatorLayout=generatorLayout;
-        this.generator=generatorLayout.generator;
+        this.generatorLayout = generatorLayout;
+        this.generator = generatorLayout.generator;
 
 
-        layoutControls = LayoutInflater.from(generator.view.context).inflate(R.layout.layout_generator_controls,null);
+        layoutControls = LayoutInflater.from(generator.view.context).inflate(R.layout.layout_generator_controls, null);
 
         btnSettings = (ImageView) layoutControls.findViewById(R.id.btn_settings);
 
@@ -108,10 +106,10 @@ public class GeneratorLayoutControls {
             @Override
             public void onClick(View v) {
                 //GeneratorDialog.showGeneratorMenuDialog(Generator.this);
+
                 generator.view.context.toggleMenu();
             }
         });
-
 
 
         getButtonPlay().setOnClickListener(new View.OnClickListener() {
@@ -133,7 +131,14 @@ public class GeneratorLayoutControls {
             @Override
             public void onClick(View view) {
 
-                generator.getPathPopup().showColours();
+                if (!getButtonColours().isSelected()) {
+                    getButtonColours().setSelected(true);
+                    generator.getPathPopup().showColours();
+
+                } else {
+                    getButtonColours().setSelected(false);
+                    generator.getPathPopup().dissmissColours();
+                }
 
 
             }
@@ -143,8 +148,13 @@ public class GeneratorLayoutControls {
             @Override
             public void onClick(View view) {
 
-                generator.getPathPopup().showLights();
-
+                if (!getButtonLights().isSelected()) {
+                    getButtonLights().setSelected(true);
+                    generator.getPathPopup().showLights();
+                } else {
+                    getButtonLights().setSelected(false);
+                    generator.getPathPopup().dissmissLights();
+                }
 
             }
         });
@@ -153,9 +163,13 @@ public class GeneratorLayoutControls {
         getButtonGrid().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                generator.getPathPopup().showGrid();
-
+                if (!getButtonGrid().isSelected()) {
+                    getButtonGrid().setSelected(true);
+                    generator.getPathPopup().showGrid();
+                } else {
+                    getButtonGrid().setSelected(false);
+                    generator.getPathPopup().dissmissGrod();
+                }
 
             }
         });
@@ -163,10 +177,13 @@ public class GeneratorLayoutControls {
         getButtonSounds().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                generator.getPathPopup().showSounds();
-
-
+                if (!getButtonSounds().isSelected()) {
+                    getButtonSounds().setSelected(true);
+                    generator.getPathPopup().showSounds();
+                } else {
+                    getButtonSounds().setSelected(false);
+                    generator.getPathPopup().dissmissSounds();
+                }
             }
         });
 

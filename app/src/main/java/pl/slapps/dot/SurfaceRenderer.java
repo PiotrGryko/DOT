@@ -40,11 +40,6 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
     public final float[] mModelMatrix = new float[16];
 
 
-    //private String explosionColorStart;
-    ///private String explosionColorEnd;
-
-
-    //public String shipColor = "#000000";
 
 
     private boolean drawGenerator = false;
@@ -156,7 +151,7 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
 
         if (startMonitoring && isRunning) {
             context.getActivityControls().setMax(renderTime);
-            context.getActivityControls().setMin(renderTime);
+            //context.getActivityControls().setMin(renderTime);
             //context.setCurrent(renderTime);
         }
 
@@ -206,15 +201,9 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
         Matrix.setLookAtM(mViewMatrix, 0, eyeX, eyeY, eyeZ, lookX, lookY, lookZ, upX, upY, upZ);
 
 
-        Log.d("zzz", "init game elmenets ");
 
         game.initGameShaders();
         generator.initGeneratorShaders();
-
-        if(!isInitialized) {
-            game.initStage(currentStage);
-            isInitialized = true;
-        }
 
         startMonitoring = true;
 
@@ -276,17 +265,13 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
 
     public void setRunnig(boolean isRunnig) {
         this.isRunning = isRunnig;
-       /// this.isDrawing=isRunnig;
 
         if (!isRunnig) {
             context.getActivityControls().resetLogs();
         }
         if (!isRunnig && drawGenerator) {
             context.drawerContent.removeAllViews();
-
             context.clearStageState();
-
-
         }
 
     }
@@ -308,7 +293,6 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
         generator.reset();
 
         context.drawer.openDrawer(context.drawerContent);
-        //context.drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
     }
 
 
@@ -325,21 +309,16 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
     }
 
 
-    public void moveToNextLvl(final float points) {
-        //resetDot();
-        //maze.clearRoutes();
+    public void moveToNextLvl() {
+
         context.getSoundsManager().playFinishSound();
-        //isRunnig = false;
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                context.moveToNextStage(Integer.toString((int)points)+"%");
-
+                context.moveToNextStage();
             }
         }, 1000);
 
-
-        //  onPause();
 
     }
 

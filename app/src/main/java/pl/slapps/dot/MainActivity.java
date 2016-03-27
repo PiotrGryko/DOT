@@ -1,6 +1,7 @@
 package pl.slapps.dot;
 
-import android.graphics.Color;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -16,6 +17,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.facebook.FacebookSdk;
@@ -23,11 +25,24 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.appinvite.AppInvite;
+import com.google.android.gms.appinvite.AppInviteInvitation;
+import com.google.android.gms.appinvite.AppInviteInvitationResult;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
 
+
+import java.util.ArrayList;
 
 import io.fabric.sdk.android.Fabric;
 
+import pl.slapps.dot.billing.util.IabHelper;
+import pl.slapps.dot.billing.util.IabResult;
+import pl.slapps.dot.billing.util.Purchase;
+import pl.slapps.dot.drawing.Util;
 import pl.slapps.dot.gui.AnimationShow;
+import pl.slapps.dot.gui.fragment.AnimationRandomLayout;
 import pl.slapps.dot.gui.fragment.FragmentMainMenu;
 import pl.slapps.dot.gui.AnimationScoreLayout;
 import pl.slapps.dot.model.Stage;
@@ -63,6 +78,7 @@ public class MainActivity extends FragmentActivity {
 
     //public MainMenu mainMenu;
     public AnimationScoreLayout scoreLayout;
+    public AnimationRandomLayout randomLayout;
 
 
     public DrawerLayout drawer;
@@ -76,6 +92,19 @@ public class MainActivity extends FragmentActivity {
 
     private ActivityLoader activityLoader;
     private ActivityControls activityControls;
+    private GoogleBilling activityBilling;
+    private GoogleInvite activityInvite;
+
+
+    //IInAppBillingService mService;
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        activityBilling.handleActivityResult(requestCode, resultCode, data);
+        activityInvite.onActivityResult(requestCode, resultCode, data);
+        Log.d("RRR", "on activity result ");
+    }
+
 
     //////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -89,6 +118,14 @@ public class MainActivity extends FragmentActivity {
 
     public ActivityControls getActivityControls() {
         return activityControls;
+    }
+
+    public GoogleBilling getActivityBilling() {
+        return activityBilling;
+    }
+
+    public GoogleInvite getActivityInvite() {
+        return activityInvite;
     }
 
     public SoundsManager getSoundsManager() {
@@ -121,27 +158,41 @@ public class MainActivity extends FragmentActivity {
         Fragment f = getCurrentFragment();
         if (f != null) {
             getSupportFragmentManager().beginTransaction().remove(f).commitAllowingStateLoss();
-            Log.d("aaa", "fragment removed");
             if (fragmentContainer.getParent() != null)
                 gameHolder.removeView(fragmentContainer);
 
         }
 
-        Log.d("aaa", "current fragment not removed");
 
     }
 
+    /*
+        @Override
+        public void onDestroy() {
+            super.onDestroy();
+            if (mService != null) {
+                unbindService(mServiceConn);
+            }
+        }
+    */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Fabric.with(this, new Crashlytics());
 
+
+        activityInvite = new GoogleInvite(this);
+
+        activityInvite.receive();
+
+
+        activityBilling = new GoogleBilling(this);
+        activityBilling.setupBilling();
         activityLoader = new ActivityLoader(this);
 
         activityLoader.listCatche();
         activityLoader.loadSounds();
         activityLoader.listRaw();
-        activityLoader.loadStagesFile();
 
 
         android_id = Settings.Secure.getString(getContentResolver(),
@@ -153,10 +204,6 @@ public class MainActivity extends FragmentActivity {
 
 
         soundsManager = new SoundsManager(this);
-
-
-        preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        currentStage = unlockedStage = preferences.getInt("current_stage", 0);
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         this.getWindow().setFlags(
@@ -186,6 +233,8 @@ public class MainActivity extends FragmentActivity {
 
         //mainMenu = new MainMenu(this, surfaceRenderer);
         scoreLayout = new AnimationScoreLayout(surfaceRenderer);
+        randomLayout = new AnimationRandomLayout(surfaceRenderer);
+
         drawer = (DrawerLayout) findViewById(R.id.drawer);
         drawerContent = (LinearLayout) findViewById(R.id.drawer_content);
         drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
@@ -195,15 +244,38 @@ public class MainActivity extends FragmentActivity {
         //mainMenu.init();
         surfaceRenderer.init(this);
         scoreLayout.initLayout(this);
+        randomLayout.initLayout(this);
         //initMainMenu();
 
-        if (currentStage < activityLoader.stages.size())
-            loadStage(activityLoader.stages.get(currentStage));
-        else {
-            currentStage = 0;
-            loadStage(activityLoader.stages.get(currentStage));
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        currentStage = unlockedStage = preferences.getInt("current_stage", 0);
 
-        }
+        activityLoader.loadStagesFile(new ActivityLoader.OnStagesLoadingListener() {
+            @Override
+            public void onLoaded() {
+                if (currentStage < activityLoader.stages.size())
+                    loadStage(activityLoader.stages.get(currentStage), false);
+                else {
+
+                    if (activityLoader.stages.size() == 0) {
+                        Toast.makeText(MainActivity.this, "??", Toast.LENGTH_LONG).show();
+                    } else {
+                        currentStage = 0;
+                        loadStage(activityLoader.stages.get(currentStage), false);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailed() {
+                if (getCurrentFragment() instanceof FragmentMainMenu) {
+                    FragmentMainMenu fm = (FragmentMainMenu) getCurrentFragment();
+
+                    fm.displayError();
+
+                }
+            }
+        });
 
 
         //soundsManager.playBackgroundBirds();
@@ -262,12 +334,14 @@ public class MainActivity extends FragmentActivity {
 
     {
 
+
         surfaceRenderer.loadStageData(activityLoader.stages.get(currentStage));
 
     }
 
-    public void loadStage(final Stage stage) {
+    public void loadStage(final Stage stage, boolean shuffle) {
 
+        this.isRandomStage = shuffle;
         surfaceRenderer.setRunnig(false);
         try {
 
@@ -276,18 +350,15 @@ public class MainActivity extends FragmentActivity {
             //soundsManager.playBackgroundSound();
 
             if (getCurrentFragment() instanceof FragmentMainMenu) {
-                Log.d("aaa", "fragment configured");
                 FragmentMainMenu fm = (FragmentMainMenu) getCurrentFragment();
                 fm.setColor(stage.config);
-                final int color = Color.parseColor(stage.config.colors.colorBackground);
-                int c = Color.argb(100, Color.red(color), Color.green(color), Color.blue(color));
-                //fm.getBackground().setBackgroundColor(c);
-                fm.loadStage(stage);
+
+                fm.loadStage(stage, currentStage);
 
             }
-            Log.d("aaa", "stage loaded");
 
-            scoreLayout.config(stage);
+            scoreLayout.config(stage, currentStage);
+            randomLayout.config(stage);
 
 
             surfaceRenderer.loadStageData(stage);
@@ -306,38 +377,25 @@ public class MainActivity extends FragmentActivity {
             drawer.openDrawer(drawerContent);
     }
 
-    public void moveToNextStage(final String points) {
-
-
-        currentStage++;
-        if (currentStage >= activityLoader.stages.size())
-            currentStage = 0;
-
-
-        int savedStage = preferences.getInt("current_stage", 0);
-        if (savedStage < currentStage) {
-            unlockedStage = currentStage;
-            preferences.edit().putInt("current_stage", unlockedStage).apply();
-        }
-
+    public void showRandom() {
         handler.post(new Runnable() {
             @Override
             public void run() {
-                Log.d("Zzz", "load stage " + currentStage + " " + activityLoader.stages.size());
+                //Log.d("Zzz", "load stage " + currentStage + " " + activityLoader.stages.size());
                 //mainMenu.getAnimationMainMenu().showMe;
 
 
-                scoreLayout.showScore(points, new AnimationShow.OnAnimationListener() {
+                randomLayout.showLayout(new AnimationShow.OnAnimationListener() {
                     @Override
                     public void onAnimationEnd() {
 
 
-                        Log.d("zzz", "move to next stage");
+                        //  Log.d("zzz", "move to next stage");
                         //mainMenu.playStage(false);
 
-                        loadStage(activityLoader.stages.get(currentStage));
+                        //loadStage(activityLoader.stages.get(currentStage));
                         //surfaceRenderer.setRunnig(true);
-                        surfaceRenderer.setDrawing(true);
+                        // surfaceRenderer.setDrawing(true);
 
 
                     }
@@ -347,38 +405,80 @@ public class MainActivity extends FragmentActivity {
 
                     }
                 });
+            }
+        });
+    }
+
+    private boolean isRandomStage;
+
+    public void moveToNextStage() {
+
+        if (isRandomStage) {
+
+            showRandom();
+        } else {
+            currentStage++;
+            if (currentStage >= activityLoader.stages.size())
+                currentStage = 0;
 
 
+            int savedStage = preferences.getInt("current_stage", 0);
+            if (savedStage < currentStage) {
+                unlockedStage = currentStage;
+                preferences.edit().putInt("current_stage", unlockedStage).apply();
             }
 
-        });
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    //mainMenu.getAnimationMainMenu().showMe;
+
+
+                    scoreLayout.showScore(new AnimationShow.OnAnimationListener() {
+                        @Override
+                        public void onAnimationEnd() {
+
+
+                            //mainMenu.playStage(false);
+
+                            loadStage(activityLoader.stages.get(currentStage), false);
+                            //surfaceRenderer.setRunnig(true);
+                            surfaceRenderer.setDrawing(true);
+
+
+                        }
+
+                        @Override
+                        public void onAnimationStart() {
+
+                        }
+                    });
+
+
+                }
+
+            });
+        }
     }
 
 
     public void onBackPressed() {
-        Log.d("zzz", "on back pressed");
 
-        // mainMenu.clearAnimation();
 
-        if (surfaceRenderer.onBackPressed()) {
-
+        if (isRandomStage && randomLayout.getLayout().getParent() == null) {
+            randomLayout.showLayout(null);
+        } else if (surfaceRenderer.onBackPressed()) {
             if (getCurrentFragment() == null) {
-
-                Log.d("aaa", "current fragment not null");
+                randomLayout.hide();
                 setupFragment();
-                //if (mainMenu.getLayout().getParent() == null) {
-                //if (mainMenu.layoutMenu.getVisibility() == View.GONE) {
                 surfaceRenderer.setRunnig(false);
-                //mainMenu.getAnimationMainMenu().showMenu();
                 gameHolder.removeView(mockView);
-                // rootLayout.removeView(activityControls.getLayoutButtons());
-
-                Log.d("zzz", "mock view added ");
                 mAdView.setVisibility(View.VISIBLE);
 
 
                 drawerContent.removeAllViews();
                 drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+                isRandomStage = false;
 
 
             } else {

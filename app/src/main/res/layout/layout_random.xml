@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/layout_menu"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="#96ffffff"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/menu_bkg"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical">
+
+
+            <LinearLayout
+                android:id="@+id/layout_options"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:padding="5dp">
+
+
+
+                    <ImageButton
+                        android:id="@+id/btn_shuffle"
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+                        android:layout_margin="5dp"
+                        android:adjustViewBounds="true"
+                        android:background="@drawable/circle_btn_selector"
+                        android:padding="10dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/shuffle"
+                        android:textColor="#ffffff" />
+
+
+
+
+
+
+
+                </LinearLayout>
+
+
+
+
+                <LinearLayout
+                    android:id="@+id/layout_header"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <pl.slapps.dot.gui.FontedTextView
+                        custom:bold="true"
+                        android:id="@+id/tv_lvl"
+
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:padding="10dp"
+                        android:textColor="#FF6699"
+                        android:textSize="25sp"
+                        android:textStyle="bold" />
+
+                    <pl.slapps.dot.gui.FontedTextView
+                        android:id="@+id/tv_desc"
+
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:padding="10dp"
+                        android:text="Should be easy"
+                        android:textColor="#ffff39eb"
+                        android:textSize="20sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/layout_btns"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+
+
+
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <ImageButton
+
+                            android:id="@+id/btn_fav"
+                            android:layout_width="70dp"
+                            android:layout_height="70dp"
+                            android:layout_margin="5dp"
+                            android:adjustViewBounds="true"
+                            android:background="@drawable/circle_btn_selector"
+                            android:padding="10dp"
+                            android:scaleType="centerInside"
+                            android:src="@drawable/like"
+                            android:textColor="#ffffff" />
+
+
+
+
+
+
+
+
+
+
+                    </LinearLayout>
+
+                    <com.facebook.login.widget.LoginButton
+                        android:id="@+id/login_button"
+                        android:visibility="gone"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginBottom="30dp"
+                        android:layout_marginTop="30dp" />
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</RelativeLayout>

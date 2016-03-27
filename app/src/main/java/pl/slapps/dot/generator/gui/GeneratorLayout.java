@@ -76,6 +76,8 @@ public class GeneratorLayout {
 
     private LinearLayout toggleChooseWorld;
     private LinearLayout toggleSave;
+    private LinearLayout toggleShare;
+
 
 
     private MainActivity context;
@@ -158,6 +160,11 @@ public class GeneratorLayout {
 
     public void loadOnlineMaze() {
 
+        if(currentWorld==null)
+        {
+            Toast.makeText(context,"Choose world first",Toast.LENGTH_LONG).show();
+            return;
+        }
 
         DAO.getStages(context, new Response.Listener() {
             @Override
@@ -193,6 +200,8 @@ public class GeneratorLayout {
 
                                 ArrayList<TileRoute> currentRoutes = generator.getPathBuilderPopup().getPath();
                                 layoutConstruct.refreashLayout(currentRoutes);
+                                if (generator.getFinishRoute() != null)
+                                    generator.getFinishRoute().setCurrentTile(true);
                                 dialogStages.dismiss();
                                 context.drawer.closeDrawer(context.drawerContent);
                             } catch (JSONException e) {
@@ -370,70 +379,76 @@ public class GeneratorLayout {
 
     }
 
+    /*
+        public void showPreviewControlls() {
+            //layoutGridBase.setVisibility(View.GONE);
+            //layoutColorsBase.setVisibility(View.VISIBLE);
+            layoutConfigBase.setVerticalGravity(View.GONE);
+            //layoutRutesBase.setVisibility(View.GONE);
+            //layoutSoundsBase.setVisibility(View.VISIBLE);
+            //layoutLightsBase.setVisibility(View.VISIBLE);
+            layoutEffectsBase.setVisibility(View.VISIBLE);
 
-    public void showPreviewControlls() {
-        //layoutGridBase.setVisibility(View.GONE);
-        //layoutColorsBase.setVisibility(View.VISIBLE);
-        layoutConfigBase.setVerticalGravity(View.GONE);
-        //layoutRutesBase.setVisibility(View.GONE);
-        //layoutSoundsBase.setVisibility(View.VISIBLE);
-        //layoutLightsBase.setVisibility(View.VISIBLE);
-        layoutEffectsBase.setVisibility(View.VISIBLE);
+            //layoutStringsBase.setVisibility(View.GONE);
+            //layoutConfigBase.setVisibility(View.GONE);
+            //layoutConstructBase.setVisibility(View.VISIBLE);
+            toggleSave.setVisibility(View.VISIBLE);
+            toggleShare.setVisibility(View.VISIBLE);
 
-        layoutStringsBase.setVisibility(View.GONE);
-        layoutConfigBase.setVisibility(View.GONE);
-        layoutConstructBase.setVisibility(View.VISIBLE);
-        toggleSave.setVisibility(View.VISIBLE);
-        //layoutPreviewBase.setVisibility(View.VISIBLE);
-        toggleWorld.setVisibility(View.GONE);
-        layoutChooseWorldBase.setVisibility(View.GONE);
-    }
+            //layoutPreviewBase.setVisibility(View.VISIBLE);
+            //toggleWorld.setVisibility(View.GONE);
+            //layoutChooseWorldBase.setVisibility(View.GONE);
+        }
 
-    public void showGeneratorConstrolls() {
-        toggleWorld.setVisibility(View.GONE);
-        layoutChooseWorldBase.setVisibility(View.GONE);
+        public void showGeneratorConstrolls() {
+            //toggleWorld.setVisibility(View.GONE);
+            //layoutChooseWorldBase.setVisibility(View.GONE);
 
-        //layoutGridBase.setVisibility(View.VISIBLE);
-        //layoutColorsBase.setVisibility(View.VISIBLE);
-        //layoutSoundsBase.setVisibility(View.VISIBLE);
-        layoutStringsBase.setVisibility(View.VISIBLE);
-        layoutConfigBase.setVisibility(View.VISIBLE);
-        layoutConstructBase.setVisibility(View.VISIBLE);
-        toggleSave.setVisibility(View.VISIBLE);
-        //layoutPreviewBase.setVisibility(View.VISIBLE);
-        //layoutLightsBase.setVisibility(View.VISIBLE);
-        layoutEffectsBase.setVisibility(View.VISIBLE);
+            //layoutGridBase.setVisibility(View.VISIBLE);
+            //layoutColorsBase.setVisibility(View.VISIBLE);
+            //layoutSoundsBase.setVisibility(View.VISIBLE);
+            layoutStringsBase.setVisibility(View.VISIBLE);
+            layoutConfigBase.setVisibility(View.VISIBLE);
+            //layoutConstructBase.setVisibility(View.VISIBLE);
+            toggleSave.setVisibility(View.VISIBLE);
+            toggleShare.setVisibility(View.VISIBLE);
 
-    }
+            //layoutPreviewBase.setVisibility(View.VISIBLE);
+            //layoutLightsBase.setVisibility(View.VISIBLE);
+            layoutEffectsBase.setVisibility(View.VISIBLE);
 
-    public void showWorldControlls() {
-        toggleWorld.setVisibility(View.VISIBLE);
-        layoutChooseWorldBase.setVisibility(View.VISIBLE);
+        }
 
-        //layoutGridBase.setVisibility(View.GONE);
-        //layoutColorsBase.setVisibility(View.GONE);
-        layoutConfigBase.setVerticalGravity(View.GONE);
-        //layoutRutesBase.setVisibility(View.VISIBLE);
-        //layoutSoundsBase.setVisibility(View.GONE);
-        layoutStringsBase.setVisibility(View.GONE);
-        layoutConfigBase.setVisibility(View.GONE);
-        layoutConstructBase.setVisibility(View.GONE);
-        toggleSave.setVisibility(View.GONE);
-        //layoutPreviewBase.setVisibility(View.GONE);
-        ///layoutLightsBase.setVisibility(View.GONE);
-        layoutEffectsBase.setVisibility(View.GONE);
+        public void showWorldControlls() {
+            toggleWorld.setVisibility(View.VISIBLE);
+            layoutChooseWorldBase.setVisibility(View.VISIBLE);
 
-    }
+            //layoutGridBase.setVisibility(View.GONE);
+            //layoutColorsBase.setVisibility(View.GONE);
+            layoutConfigBase.setVerticalGravity(View.GONE);
+            //layoutRutesBase.setVisibility(View.VISIBLE);
+            //layoutSoundsBase.setVisibility(View.GONE);
+            layoutStringsBase.setVisibility(View.GONE);
+            layoutConfigBase.setVisibility(View.GONE);
+            //layoutConstructBase.setVisibility(View.GONE);
+            toggleSave.setVisibility(View.GONE);
+            toggleShare.setVisibility(View.GONE);
 
+            //layoutPreviewBase.setVisibility(View.GONE);
+            ///layoutLightsBase.setVisibility(View.GONE);
+            layoutEffectsBase.setVisibility(View.GONE);
+
+        }
+    */
     public void loadWorld(World world) {
 
 
         if (world == null) {
-            showWorldControlls();
+            //showWorldControlls();
             return;
         }
 
-        showGeneratorConstrolls();
+       // showGeneratorConstrolls();
         generator.loadWorld(world);
 
         this.tile.setCurrentTile(true);
@@ -498,9 +513,10 @@ public class GeneratorLayout {
         toggleEffects = (LinearLayout) v.findViewById(R.id.toggle_effects);
 
         toggleSave = (LinearLayout) v.findViewById(R.id.toggle_save);
+        toggleShare = (LinearLayout) v.findViewById(R.id.toggle_share);
 
 
-        showWorldControlls();
+        //showWorldControlls();
 
         toggleGridSize.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -671,7 +687,7 @@ public class GeneratorLayout {
                         @Override
                         public void onListBuilded(boolean flag) {
                             toggleChooseWorld.setEnabled(true);
-                            if(!flag)
+                            if (!flag)
                                 toggleChooseWorld.setSelected(false);
                         }
                     });
@@ -689,6 +705,13 @@ public class GeneratorLayout {
             @Override
             public void onClick(View view) {
                 generator.saveMaze();
+            }
+        });
+
+        toggleShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                generator.shareMaze();
             }
         });
 

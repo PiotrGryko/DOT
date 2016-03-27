@@ -10,6 +10,7 @@ buildscript {
 
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
+//apply plugin: 'com.google.gms.google-services'
 
 repositories {
     maven { url 'https://maven.fabric.io/public' }
@@ -21,13 +22,13 @@ repositories {
 
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion "23.0.0"
+    compileSdkVersion 23
+    buildToolsVersion "23.0.2"
 
     defaultConfig {
         applicationId "pl.slapps.dot"
         minSdkVersion 9
-        targetSdkVersion 22
+        targetSdkVersion 23
         versionCode 1
         versionName "1.0"
     }
@@ -41,17 +42,19 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:22.1.1'
+    compile 'com.android.support:appcompat-v7:23.0.0'
     compile 'com.github.yukuku:ambilwarna:2.0.1'
     compile 'com.mcxiaoke.volley:library:1.0.17'
-    compile 'com.google.android.gms:play-services-ads:8.3.0'
-    compile 'com.google.code.gson:gson:2.2.4'
-
+    compile 'com.google.android.gms:play-services-ads:8.4.0'
+    compile 'com.google.android.gms:play-services-appinvite:8.4.0'
+    compile 'com.google.code.gson:gson:2.4'
     compile 'com.facebook.android:facebook-android-sdk:4.5.0'
     compile 'org.apache.commons:commons-lang3:3.0'
     compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
         transitive = true;
     }
+    //compile 'com.google.android.gms:play-services:8.4.0'
+    //compile 'com.google.android.gms:play-services:8.4.0'
 
 
 }

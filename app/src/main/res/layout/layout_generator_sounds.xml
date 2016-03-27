@@ -1,15 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:custom="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <CheckBox
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/cb_overlap"
+        android:text="Overlap"/>
     <LinearLayout
         android:id="@+id/layout_sounds"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="10dp">
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -17,24 +22,32 @@
             android:orientation="vertical">
 
             <pl.slapps.dot.gui.FontedTextView
-                custom:bold="true"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+
+                android:paddingLeft="7dp"
+                android:paddingRight="7dp"
                 android:text="background sound"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                custom:bold="true" />
 
             <LinearLayout
 
+                android:id="@+id/base_background"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/abc_list_selector_holo_light"
+                android:background="@drawable/selector_menu_drawer"
                 android:gravity="center"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:paddingLeft="7dp"
+                android:paddingRight="7dp">
 
-                <ImageView
+                <pl.slapps.dot.generator.widget.PlayButton
                     android:id="@+id/btn_play_background"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
                     android:soundEffectsEnabled="false"
                     android:src="@drawable/play_btn" />
 
@@ -57,25 +70,32 @@
             android:orientation="vertical">
 
             <pl.slapps.dot.gui.FontedTextView
-                custom:bold="true"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:paddingLeft="7dp"
+                android:paddingRight="7dp"
+
                 android:text="press sound"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                custom:bold="true" />
 
             <LinearLayout
 
+                android:id="@+id/base_press"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/abc_list_selector_holo_light"
+                android:background="@drawable/selector_menu_drawer"
                 android:gravity="center"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"                android:paddingLeft="7dp"
+                android:paddingRight="7dp">
 
-                <ImageView
+                <pl.slapps.dot.generator.widget.PlayButton
                     android:id="@+id/btn_play_press"
-                    android:layout_width="20dp"
+                    android:layout_width="25dp"
 
-                    android:layout_height="20dp"
+                    android:layout_height="25dp"
                     android:soundEffectsEnabled="false"
                     android:src="@drawable/play_btn" />
 
@@ -98,25 +118,32 @@
             android:orientation="vertical">
 
             <pl.slapps.dot.gui.FontedTextView
-                custom:bold="true"
+
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:paddingLeft="7dp"
+                android:paddingRight="7dp"
                 android:text="crash sound"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                custom:bold="true" />
 
             <LinearLayout
 
+                android:id="@+id/base_crash"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/abc_list_selector_holo_light"
+                android:background="@drawable/selector_menu_drawer"
                 android:gravity="center"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"                android:paddingLeft="7dp"
+                android:paddingRight="7dp">
 
-                <ImageView
+                <pl.slapps.dot.generator.widget.PlayButton
                     android:id="@+id/btn_play_crash"
-                    android:layout_width="20dp"
+                    android:layout_width="25dp"
 
-                    android:layout_height="20dp"
+                    android:layout_height="25dp"
                     android:soundEffectsEnabled="false"
                     android:src="@drawable/play_btn" />
 
@@ -134,30 +161,40 @@
         </LinearLayout>
 
         <LinearLayout
+
+
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <pl.slapps.dot.gui.FontedTextView
-custom:bold="true"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:paddingLeft="7dp"
+                android:paddingRight="7dp"
                 android:text="finish sound"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                custom:bold="true" />
 
             <LinearLayout
-
+                android:id="@+id/base_finish"
                 android:layout_width="fill_parent"
+
                 android:layout_height="wrap_content"
-                android:background="@drawable/abc_list_selector_holo_light"
+                android:background="@drawable/selector_menu_drawer"
                 android:gravity="center"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:paddingLeft="7dp"
+                android:paddingRight="7dp">
 
-                <ImageView
+                <pl.slapps.dot.generator.widget.PlayButton
+
                     android:id="@+id/btn_play_finish"
-                    android:layout_width="20dp"
+                    android:layout_width="25dp"
 
-                    android:layout_height="20dp"
+                    android:layout_height="25dp"
                     android:soundEffectsEnabled="false"
                     android:src="@drawable/play_btn" />
 

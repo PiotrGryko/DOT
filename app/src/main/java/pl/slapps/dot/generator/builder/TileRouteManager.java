@@ -169,7 +169,7 @@ public class TileRouteManager {
             Route.Direction to = getTo(toRemove, tile);
             if(from==null||to==null)
                 return null;
-            generator.tiles.remove(toRemove);
+            //generator.tiles.remove(toRemove);
             return getRouteFromTile(from, to, toRemove);
         }
         else
@@ -177,7 +177,7 @@ public class TileRouteManager {
             Route.Direction from = getFrom(currentTile, toRemove);
             Route.Direction to = getOposite(from);
             Log.d("xxx","prepared for finish "+from +" "+to);
-            generator.tiles.remove(toRemove);
+            //generator.tiles.remove(toRemove);
             return getRouteFinishFromTile(from, to, toRemove);
 
         }

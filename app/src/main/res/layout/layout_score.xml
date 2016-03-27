@@ -50,16 +50,7 @@
                     android:textSize="20sp" />
             </LinearLayout>
 
-            <pl.slapps.dot.gui.FontedTextView
-                custom:bold="true"
-                android:id="@+id/tv_score"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:gravity="center"
-                android:textSize="40sp"
 
-                android:textStyle="bold" />
 
         </LinearLayout>
 

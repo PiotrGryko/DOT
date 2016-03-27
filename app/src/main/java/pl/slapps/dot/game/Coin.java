@@ -14,7 +14,6 @@ import pl.slapps.dot.model.Config;
  */
 public class Coin extends Sprite {
 
-    private String TAG = Background.class.getName();
 
 
     private Game view;
@@ -54,8 +53,10 @@ public class Coin extends Sprite {
 
         if(flag)
         {
-            view.addExplosion(new Explosion(view, mainSprite.centerX, mainSprite.centerY, System.currentTimeMillis(), mainSprite.spriteSpeed, (int)view.dotSize, config));
-            view.context.getSoundsManager().playCrashSound();
+            view.explodeDot(true);
+            mainSprite.booster=true;
+            //view.addExplosion(new ExplosionManager(view, mainSprite.centerX, mainSprite.centerY, System.currentTimeMillis(), mainSprite.spriteSpeed, (int)view.dotSize, config));
+            //view.context.getSoundsManager().playCrashSound();
         }
 
         return flag;

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:custom="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/base_drag"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/popup_background"
-    android:id="@+id/base_drag"
 
     android:orientation="vertical">
 
@@ -13,30 +13,33 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 
-        android:padding="10dp">
+        >
+
         <ImageView
-            android:layout_centerVertical="true"
             android:id="@+id/btn_close"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"
+            android:background="@drawable/selector_menu_drawer"
+            android:padding="10dp"
             android:scaleType="centerInside"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:src="@drawable/close"/>
+            android:src="@drawable/close" />
+
         <pl.slapps.dot.gui.FontedTextView
-            android:layout_toRightOf="@id/btn_close"
-            android:layout_centerInParent="true"
-            android:layout_width="wrap_content"
-            android:padding="5dp"
-            custom:bold="true"
-            android:layout_height="wrap_content"
-            android:text="DRAG"
             android:id="@+id/tv_drag"
-            android:textColor="#000000" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_toRightOf="@id/btn_close"
+            android:text="DRAG"
+            android:textColor="#000000"
+            custom:bold="true" />
 
     </RelativeLayout>
 
     <LinearLayout
-        android:orientation="vertical"
         android:id="@+id/base_path"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"></LinearLayout>
+        android:layout_height="wrap_content"
+        android:orientation="vertical"></LinearLayout>
 </LinearLayout>

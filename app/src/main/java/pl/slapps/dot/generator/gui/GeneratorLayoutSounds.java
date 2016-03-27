@@ -7,7 +7,10 @@ import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,7 +28,9 @@ import pl.slapps.dot.DAO;
 import pl.slapps.dot.MainActivity;
 import pl.slapps.dot.R;
 import pl.slapps.dot.SoundsManager;
+import pl.slapps.dot.adapter.AdapterSounds;
 import pl.slapps.dot.generator.Generator;
+import pl.slapps.dot.generator.widget.PlayButton;
 
 /**
  * Created by piotr on 14/02/16.
@@ -44,10 +49,18 @@ public class GeneratorLayoutSounds {
     private TextView btnSoundPress;
     private TextView btnSoundCrash;
     private TextView btnSoundFinish;
-    private ImageView btnPlayBackground;
-    private ImageView btnPlayPress;
-    private ImageView btnPlayCrash;
-    private ImageView btnPlayFinish;
+
+    private LinearLayout baseBackground;
+    private LinearLayout basePress;
+    private LinearLayout baseCrash;
+    private LinearLayout baseFinish;
+
+    private PlayButton btnPlayBackground;
+    private PlayButton btnPlayPress;
+    private PlayButton btnPlayCrash;
+    private PlayButton btnPlayFinish;
+
+    private CheckBox cbOverlap;
 
     public View getLayout() {
         return layoutSounds;
@@ -75,9 +88,11 @@ public class GeneratorLayoutSounds {
         //else
         //    btnSoundFinish.setText(SoundsManager.DEFAULT_FINISH);
 
+        cbOverlap.setChecked(generator.getConfig().sounds.overlap);
+
     }
 
-    public void initLayout(GeneratorLayout generatorLayout) {
+    public void initLayout(final GeneratorLayout generatorLayout) {
         this.generatorLayout = generatorLayout;
         this.generator = generatorLayout.generator;
 
@@ -88,12 +103,28 @@ public class GeneratorLayoutSounds {
         btnSoundCrash = (TextView) layoutSounds.findViewById(R.id.btn_choose_crash);
         btnSoundFinish = (TextView) layoutSounds.findViewById(R.id.btn_choose_finish);
 
-        btnPlayBackground = (ImageView) layoutSounds.findViewById(R.id.btn_play_background);
-        btnPlayPress = (ImageView) layoutSounds.findViewById(R.id.btn_play_press);
-        btnPlayCrash = (ImageView) layoutSounds.findViewById(R.id.btn_play_crash);
-        btnPlayFinish = (ImageView) layoutSounds.findViewById(R.id.btn_play_finish);
+        baseBackground = (LinearLayout) layoutSounds.findViewById(R.id.base_background);
+        basePress = (LinearLayout) layoutSounds.findViewById(R.id.base_press);
+        baseCrash = (LinearLayout) layoutSounds.findViewById(R.id.base_crash);
+        baseFinish = (LinearLayout) layoutSounds.findViewById(R.id.base_finish);
+
+        btnPlayBackground = (PlayButton) layoutSounds.findViewById(R.id.btn_play_background);
+        btnPlayPress = (PlayButton) layoutSounds.findViewById(R.id.btn_play_press);
+        btnPlayCrash = (PlayButton) layoutSounds.findViewById(R.id.btn_play_crash);
+        btnPlayFinish = (PlayButton) layoutSounds.findViewById(R.id.btn_play_finish);
+
+        cbOverlap = (CheckBox) layoutSounds.findViewById(R.id.cb_overlap);
+
 
         refreashLayout();
+
+        cbOverlap.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                generator.getConfig().sounds.overlap=b;
+                generator.refreashMaze();
+            }
+        });
 
         btnPlayBackground.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,7 +134,7 @@ public class GeneratorLayoutSounds {
                     return;
                 }
 
-                generator.view.context.getSoundsManager().playRawFile(generator.getConfig().sounds.soundBackground);
+                btnPlayBackground.play(generator.view.context.getSoundsManager().parseSound(generator.getConfig().sounds.soundBackground));
             }
         });
         btnPlayPress.setOnClickListener(new View.OnClickListener() {
@@ -113,7 +144,8 @@ public class GeneratorLayoutSounds {
                     Toast.makeText(generator.view.context, "Select file first", Toast.LENGTH_LONG).show();
                     return;
                 }
-                generator.view.context.getSoundsManager().playRawFile(generator.getConfig().sounds.soundPress);
+                btnPlayPress.play(generator.view.context.getSoundsManager().parseSound(generator.getConfig().sounds.soundPress));
+
 
             }
         });
@@ -124,7 +156,8 @@ public class GeneratorLayoutSounds {
                     Toast.makeText(generator.view.context, "Select file first", Toast.LENGTH_LONG).show();
                     return;
                 }
-                generator.view.context.getSoundsManager().playRawFile(generator.getConfig().sounds.soundCrash);
+                btnPlayCrash.play(generator.view.context.getSoundsManager().parseSound(generator.getConfig().sounds.soundCrash));
+
 
             }
         });
@@ -135,20 +168,21 @@ public class GeneratorLayoutSounds {
                     Toast.makeText(generator.view.context, "Select file first", Toast.LENGTH_LONG).show();
                     return;
                 }
-                generator.view.context.getSoundsManager().playRawFile(generator.getConfig().sounds.soundFinish);
+                btnPlayFinish.play(generator.view.context.getSoundsManager().parseSound(generator.getConfig().sounds.soundFinish));
+
 
             }
         });
 
 
-        btnSoundBackground.setOnClickListener(new View.OnClickListener() {
+        baseBackground.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View vi) {
                 final Dialog dialogChooseSound = new Dialog(generator.view.context);
                 dialogChooseSound.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 final View chooseView = LayoutInflater.from(generator.view.context).inflate(R.layout.dialog_stages, null);
                 ListView lv = (ListView) chooseView.findViewById(R.id.lv);
-                lv.setAdapter(new ArrayAdapter<String>(generator.view.context, android.R.layout.simple_list_item_1, generator.view.context.getActivityLoader().listRaw()));
+                lv.setAdapter(new AdapterSounds(generator.view.context, generator.view.context.getActivityLoader().listRaw()));
 
                 lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
@@ -167,14 +201,14 @@ public class GeneratorLayoutSounds {
             }
         });
 
-        btnSoundPress.setOnClickListener(new View.OnClickListener() {
+        basePress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View vi) {
                 final Dialog dialogChooseSound = new Dialog(generator.view.context);
                 dialogChooseSound.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 View chooseView = LayoutInflater.from(generator.view.context).inflate(R.layout.dialog_stages, null);
                 ListView lv = (ListView) chooseView.findViewById(R.id.lv);
-                lv.setAdapter(new ArrayAdapter<String>(generator.view.context, android.R.layout.simple_list_item_1, generator.view.context.getActivityLoader().listRaw()));
+                lv.setAdapter(new AdapterSounds(generator.view.context, generator.view.context.getActivityLoader().listRaw()));
                 lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -191,14 +225,14 @@ public class GeneratorLayoutSounds {
             }
         });
 
-        btnSoundCrash.setOnClickListener(new View.OnClickListener() {
+        baseCrash.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View vi) {
                 final Dialog dialogChooseSound = new Dialog(generator.view.context);
                 dialogChooseSound.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 View chooseView = LayoutInflater.from(generator.view.context).inflate(R.layout.dialog_stages, null);
                 ListView lv = (ListView) chooseView.findViewById(R.id.lv);
-                lv.setAdapter(new ArrayAdapter<String>(generator.view.context, android.R.layout.simple_list_item_1, generator.view.context.getActivityLoader().listRaw()));
+                lv.setAdapter(new AdapterSounds(generator.view.context, generator.view.context.getActivityLoader().listRaw()));
                 lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -215,14 +249,14 @@ public class GeneratorLayoutSounds {
             }
         });
 
-        btnSoundFinish.setOnClickListener(new View.OnClickListener() {
+        baseFinish.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View vi) {
                 final Dialog dialogChooseSound = new Dialog(generator.view.context);
                 dialogChooseSound.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 View chooseView = LayoutInflater.from(generator.view.context).inflate(R.layout.dialog_stages, null);
                 ListView lv = (ListView) chooseView.findViewById(R.id.lv);
-                lv.setAdapter(new ArrayAdapter<String>(generator.view.context, android.R.layout.simple_list_item_1, generator.view.context.getActivityLoader().listRaw()));
+                lv.setAdapter(new AdapterSounds(generator.view.context, generator.view.context.getActivityLoader().listRaw()));
                 lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {

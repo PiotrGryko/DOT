@@ -3,6 +3,7 @@ package pl.slapps.dot.gui;
 import android.support.v4.view.ViewCompat;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
 
@@ -19,19 +20,13 @@ public class AnimationShow {
 
 
     private View view;
-    private Animation animation;
+    private AlphaAnimation animation;
     private OnAnimationListener listener;
 
 
     public AnimationShow(final View view) {
         this.view = view;
-        animation = new Animation() {
-            @Override
-            protected void applyTransformation(float interpolatedTime, Transformation t) {
-                super.applyTransformation(interpolatedTime, t);
-                ViewCompat.setAlpha(view, interpolatedTime);
-            }
-        };
+        animation = new AlphaAnimation(0f,1f);
         animation.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {

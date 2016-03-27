@@ -22,7 +22,6 @@ public class Util {
             //Log.d(TAG, "color setted " + color);
             returnValue = new float[]{r,g,b,a};
         } catch (Throwable t) {
-            Log.d(TAG, "background color  null " + color);
         }
         return returnValue;
     }

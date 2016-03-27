@@ -21,7 +21,7 @@ import android.view.View;
 public class AmbilWarnaSquare extends View {
     Paint paint;
     Shader luar;
-    final float[] color = {1.f, 1.f, 1.f};
+    private float[] color = {1.f, 1.f, 1.f};
 
     public AmbilWarnaSquare(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -29,6 +29,13 @@ public class AmbilWarnaSquare extends View {
 
     public AmbilWarnaSquare(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+    }
+
+    public void setColor(float[] hsvcolor)
+    {
+
+        color = hsvcolor;
+        invalidate();
     }
 
     @SuppressLint("DrawAllocation")

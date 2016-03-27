@@ -5,116 +5,177 @@
     android:orientation="vertical"
     android:padding="5dp">
 
+    <LinearLayout
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <pl.slapps.dot.generator.widget.NumberPickerTextView
+                android:id="@+id/et_dot_shinning"
+                android:layout_width="wrap_content"
+
+                android:layout_height="wrap_content"></pl.slapps.dot.generator.widget.NumberPickerTextView>
+
+
+            <pl.slapps.dot.gui.FontedTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="dot Light shining" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <pl.slapps.dot.generator.widget.NumberPickerTextView
+                android:id="@+id/et_dot_distance"
+                android:layout_width="wrap_content"
+
+                android:layout_height="wrap_content"></pl.slapps.dot.generator.widget.NumberPickerTextView>
+
+
+            <pl.slapps.dot.gui.FontedTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="dot Light distance" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <pl.slapps.dot.generator.widget.NumberPickerTextView
+                android:id="@+id/et_explosion_one_shinning"
+                android:layout_width="wrap_content"
+
+                android:layout_height="wrap_content"></pl.slapps.dot.generator.widget.NumberPickerTextView>
+
+
+            <pl.slapps.dot.gui.FontedTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="explosion one light shining" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <pl.slapps.dot.generator.widget.NumberPickerTextView
+                android:id="@+id/et_explosion_one_distance"
+                android:layout_width="wrap_content"
+
+                android:layout_height="wrap_content"></pl.slapps.dot.generator.widget.NumberPickerTextView>
+
+
+            <pl.slapps.dot.gui.FontedTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="explosion one light distance" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <pl.slapps.dot.generator.widget.NumberPickerTextView
+                android:id="@+id/et_explosion_two_shinning"
+                android:layout_width="wrap_content"
+
+                android:layout_height="wrap_content"></pl.slapps.dot.generator.widget.NumberPickerTextView>
+
+
+            <pl.slapps.dot.gui.FontedTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="explosion two light shining" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <pl.slapps.dot.generator.widget.NumberPickerTextView
+                android:id="@+id/et_explosion_two_distance"
+                android:layout_width="wrap_content"
+
+                android:layout_height="wrap_content"></pl.slapps.dot.generator.widget.NumberPickerTextView>
+
+
+            <pl.slapps.dot.gui.FontedTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="explosion two light distance" />
+        </LinearLayout>
+
+
+    </LinearLayout>
 
     <LinearLayout
-        android:layout_width="fill_parent"
+        android:padding="5dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <pl.slapps.dot.generator.widget.NumberPickerTextView
-            android:id="@+id/et_dot_shinning"
-            android:layout_width="wrap_content"
-
-            android:layout_height="wrap_content"></pl.slapps.dot.generator.widget.NumberPickerTextView>
-
+        android:orientation="vertical">
 
         <pl.slapps.dot.gui.FontedTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="dot Light shining" />
-    </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        <SeekBar
+            android:id="@+id/sb_dot_shining"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content" />
 
-        <pl.slapps.dot.generator.widget.NumberPickerTextView
-            android:id="@+id/et_dot_distance"
-            android:layout_width="wrap_content"
 
-            android:layout_height="wrap_content"></pl.slapps.dot.generator.widget.NumberPickerTextView>
 
 
         <pl.slapps.dot.gui.FontedTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="dot Light distance" />
-    </LinearLayout>
 
+        <SeekBar
+            android:id="@+id/sb_dot_distance"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content" />
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <pl.slapps.dot.generator.widget.NumberPickerTextView
-            android:id="@+id/et_explosion_one_shinning"
-            android:layout_width="wrap_content"
-
-            android:layout_height="wrap_content"></pl.slapps.dot.generator.widget.NumberPickerTextView>
 
 
         <pl.slapps.dot.gui.FontedTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="explosion one light shining" />
-    </LinearLayout>
+            android:text="explosion light shining" />
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        <SeekBar
+            android:id="@+id/sb_explosion_start_shinning"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content" />
 
-        <pl.slapps.dot.generator.widget.NumberPickerTextView
-            android:id="@+id/et_explosion_one_distance"
-            android:layout_width="wrap_content"
-
-            android:layout_height="wrap_content"></pl.slapps.dot.generator.widget.NumberPickerTextView>
 
 
         <pl.slapps.dot.gui.FontedTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="explosion one light distance" />
+            android:text="explosion light distance" />
+
+        <SeekBar
+            android:id="@+id/sb_explosion_start_distance"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content" />
+
     </LinearLayout>
-
-
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <pl.slapps.dot.generator.widget.NumberPickerTextView
-            android:id="@+id/et_explosion_two_shinning"
-            android:layout_width="wrap_content"
-
-            android:layout_height="wrap_content"></pl.slapps.dot.generator.widget.NumberPickerTextView>
-
-
-        <pl.slapps.dot.gui.FontedTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="explosion two light shining" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <pl.slapps.dot.generator.widget.NumberPickerTextView
-            android:id="@+id/et_explosion_two_distance"
-            android:layout_width="wrap_content"
-
-            android:layout_height="wrap_content"></pl.slapps.dot.generator.widget.NumberPickerTextView>
-
-
-        <pl.slapps.dot.gui.FontedTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="explosion two light distance" />
-    </LinearLayout>
-
-
 </LinearLayout>

@@ -1,0 +1,52 @@
+{
+  "project_info": {
+    "project_id": "dot1-d27f5",
+    "project_number": "590785306030",
+    "name": "DOT1"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:590785306030:android:417adcedfbd4a974",
+        "client_id": "android:pl.slapps.dot",
+        "client_type": 1,
+        "android_client_info": {
+          "package_name": "pl.slapps.dot",
+          "certificate_hash": []
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "590785306030-b573artk5hq9ont3bjbhfpr1r8dburru.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "pl.slapps.dot",
+            "certificate_hash": "FC6F3638F25A770428E69542ADD8617F1E7C5046"
+          }
+        }
+      ],
+      "api_key": [],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "cloud_messaging_service": {
+          "status": 1,
+          "apns_config": []
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": []
+        },
+        "google_signin_service": {
+          "status": 1
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "client_info": [],
+  "ARTIFACT_VERSION": "1"
+}

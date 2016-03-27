@@ -12,10 +12,12 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import pl.slapps.dot.R;
+import pl.slapps.dot.adapter.AdapterSounds;
 import pl.slapps.dot.generator.Generator;
 import pl.slapps.dot.generator.builder.TileRoute;
 import pl.slapps.dot.generator.builder.TileRouteFinish;
@@ -68,6 +70,8 @@ public class GeneratorLayoutPath {
     private ImageView btnPlay;
     private ImageView imgTrash;
     private CheckBox drawCoin;
+
+    private SeekBar speedSeekbar;
 
 
     public View getLayout() {
@@ -963,6 +967,9 @@ public class GeneratorLayoutPath {
         if (generatorLayout.tile.sound != null && !generatorLayout.tile.sound.equals(""))
             btnSound.setText(generatorLayout.tile.sound);
 
+
+        speedSeekbar.setProgress((int)(100*generatorLayout.tile.speedRatio));
+
         drawCoin.setChecked(generatorLayout.tile.drawCoin);
 
 
@@ -1024,6 +1031,9 @@ public class GeneratorLayoutPath {
         btnSound = (TextView) layoutDetails.findViewById(R.id.btn_choose_sound);
         btnPlay = (ImageView) layoutDetails.findViewById(R.id.btn_play_sound);
         drawCoin = (CheckBox)layoutDetails.findViewById(R.id.draw_coin);
+
+        speedSeekbar = (SeekBar)layoutDetails.findViewById(R.id.sb);
+
 
         tvBottomLeft = (ImageView) layoutRoutes.findViewById(R.id.tv_bottomleft);
         tvBottomRight = (ImageView) layoutRoutes.findViewById(R.id.tv_bottomright);
@@ -1283,8 +1293,8 @@ public class GeneratorLayoutPath {
         drawCoin.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                generatorLayout.tile.drawCoin=b;
-                Toast.makeText(generator.view.context,"draw coin "+b,Toast.LENGTH_LONG).show();
+                generatorLayout.tile.drawCoin = b;
+                Toast.makeText(generator.view.context, "draw coin " + b, Toast.LENGTH_LONG).show();
             }
         });
 
@@ -1296,7 +1306,7 @@ public class GeneratorLayoutPath {
                 dialogChooseSound.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 final View chooseView = LayoutInflater.from(generator.view.context).inflate(R.layout.dialog_stages, null);
                 ListView lv = (ListView) chooseView.findViewById(R.id.lv);
-                lv.setAdapter(new ArrayAdapter<String>(generator.view.context, android.R.layout.simple_list_item_1, generator.view.context.getActivityLoader().listRaw()));
+                lv.setAdapter(new AdapterSounds(generator.view.context, generator.view.context.getActivityLoader().listRaw()));
 
                 lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
@@ -1320,6 +1330,28 @@ public class GeneratorLayoutPath {
                 generatorLayout.tile.speedRatio = value;
                 if (generator.view.getGame().getPreview())
                     generator.view.getGame().configRoute(generatorLayout.tile);
+
+            }
+        });
+        speedSeekbar.setMax(250);
+        speedSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                float value = ((float)i/100.0f);
+                generatorLayout.tile.speedRatio = value;
+                if (generator.view.getGame().getPreview())
+                    generator.view.getGame().configRoute(generatorLayout.tile);
+
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
 
             }
         });

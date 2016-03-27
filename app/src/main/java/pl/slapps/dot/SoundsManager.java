@@ -6,15 +6,13 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.util.Log;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import pl.slapps.dot.model.Sounds;
 
 /**
  * Created by piotr on 17.11.15.
  */
 public class SoundsManager {
+
 
     private String TAG = SoundsManager.class.getName();
 
@@ -36,25 +34,35 @@ public class SoundsManager {
 
     private String key = "cache/";
 
+    private Sounds sounds;
 
-    public void stopMusic()
-    {
+    public static AsyncPlayer getPlayer(String tag) {
+        return new AsyncPlayer(tag);
+    }
+
+    public void stopMusic() {
         asyncPlayer.stop();
         asyncPlayerBackground.stop();
         asyncPlayerCrash.stop();
         asyncPlayerPress.stop();
     }
 
-    public void configure(Sounds sounds) {
-        Log.d(TAG, "configure : " + sounds.toString());
+    public Uri parseSound(String filename) {
+        if (!filename.contains(key))
+            return Uri.parse("android.resource://" + context.getPackageName() + "/raw/" + filename);
+        else
+            return Uri.parse(filename);
+    }
 
+    public void configure(Sounds sounds) {
+        this.sounds = sounds;
 
         if (!sounds.soundBackground.equals(""))
 
             if (sounds.soundBackground.contains(key))
                 backgroundSound = Uri.parse(sounds.soundBackground);
             else
-                backgroundSound = Uri.parse("android.resource://" + context.getPackageName() + "/raw/" + sounds.soundBackground);
+                backgroundSound = parseSound(sounds.soundBackground);
         else
             backgroundSound = null;
 
@@ -63,32 +71,33 @@ public class SoundsManager {
             if (sounds.soundPress.contains(key))
                 moveSound = Uri.parse(sounds.soundPress);
             else
-                moveSound = Uri.parse("android.resource://" + context.getPackageName() + "/raw/" + sounds.soundPress);
+                moveSound = parseSound(sounds.soundPress);
         } else
-            moveSound = Uri.parse("android.resource://" + context.getPackageName() + "/raw/" + DEFAULT_PRESS);
+            moveSound = parseSound(DEFAULT_PRESS);
 
         if (!sounds.soundCrash.equals("")) {
             if (sounds.soundCrash.contains(key))
                 crashSound = Uri.parse(sounds.soundCrash);
             else
-                crashSound = Uri.parse("android.resource://" + context.getPackageName() + "/raw/" + sounds.soundCrash);
+                crashSound = parseSound(sounds.soundCrash);
         } else
-            crashSound = Uri.parse("android.resource://" + context.getPackageName() + "/raw/" + DEFAULT_CRASH);
+            crashSound = parseSound(DEFAULT_CRASH);
 
         if (!sounds.soundFinish.equals("")) {
             if (sounds.soundFinish.contains(key))
                 soundFinish = Uri.parse(sounds.soundFinish);
             else
-                soundFinish = Uri.parse("android.resource://" + context.getPackageName() + "/raw/" + sounds.soundFinish);
+                soundFinish = parseSound(sounds.soundFinish);
 
         } else
-            soundFinish = Uri.parse("android.resource://" + context.getPackageName() + "/raw/" + DEFAULT_FINISH);
+            soundFinish = parseSound(DEFAULT_FINISH);
 
 
     }
 
     public SoundsManager(Context context) {
         this.context = context;
+        this.sounds = new Sounds();
         moveSound = Uri.parse("android.resource://" + context.getPackageName() + "/raw/click2");
         crashSound = Uri.parse("android.resource://" + context.getPackageName() + "/raw/spacebib");
         soundFinish = Uri.parse("android.resource://" + context.getPackageName() + "/raw/finish");
@@ -105,28 +114,33 @@ public class SoundsManager {
         asyncPlayerBackground.stop();
     }
 
+    private void playOverlapped(Uri uri) {
+        getPlayer(uri.toString()).play(context, uri, false, AudioManager.STREAM_MUSIC);
+    }
+
     public void playFinishSound() {
         asyncPlayer.play(context, soundFinish, false, AudioManager.STREAM_MUSIC);
         //  mediaPlayerMove.start();
     }
 
     public void playMoveSound() {
+        if (!sounds.overlap)
             asyncPlayerPress.play(context, moveSound, false, AudioManager.STREAM_MUSIC);
-            Log.d(TAG, "play move sound " + moveSound.toString());
-            //  mediaPlayerMove.start();
+        else
+            playOverlapped(moveSound);
+        //  mediaPlayerMove.start();
 
     }
 
     public void playCrashSound() {
-        asyncPlayerCrash.play(context, crashSound, false, AudioManager.STREAM_MUSIC);
+        if (!sounds.overlap)
+
+            asyncPlayerCrash.play(context, crashSound, false, AudioManager.STREAM_MUSIC);
+        else
+            playOverlapped(crashSound);
 
         //  mediaPlayerCrash.start();
     }
-
-    public AsyncPlayer getAsyncPlayer() {
-        return asyncPlayer;
-    }
-
 
 
     public void playBackgroundSound() {
@@ -141,18 +155,11 @@ public class SoundsManager {
     }
 
     public void playRawFile(String filename) {
-
-        if (!filename.contains(key)) {
-            Uri custom = Uri.parse("android.resource://" + context.getPackageName() + "/raw/" + filename);
+        Uri custom = parseSound(filename);
+        if (!sounds.overlap)
             asyncPlayer.play(context, custom, false, AudioManager.STREAM_MUSIC);
-            Log.d(TAG, "play raw file " + custom.toString());
-
-        } else {
-            Uri custom = Uri.parse(filename);
-            asyncPlayer.play(context, custom, false, AudioManager.STREAM_MUSIC);
-            Log.d(TAG, "play raw file " + custom.toString());
-
-        }
+        else
+            playOverlapped(custom);
 
     }
 

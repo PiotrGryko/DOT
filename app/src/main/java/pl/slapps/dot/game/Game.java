@@ -1,10 +1,8 @@
 package pl.slapps.dot.game;
 
 import android.opengl.GLES20;
-import android.util.Log;
-import android.view.MotionEvent;
 
-import java.util.ArrayList;
+import android.view.MotionEvent;
 
 import pl.slapps.dot.MainActivity;
 import pl.slapps.dot.SurfaceRenderer;
@@ -17,8 +15,6 @@ import pl.slapps.dot.generator.builder.TileRoute;
  */
 public class Game {
 
-
-    private String TAG = Game.class.getName();
 
     public Game(MainActivity context, SurfaceRenderer gameView) {
         this.context = context;
@@ -34,11 +30,11 @@ public class Game {
 
     private MainSprite mainSprite;
     private Background background;
-    private Maze maze;
+    public Maze maze;
 
-    private ArrayList<Explosion> explosions = new ArrayList<Explosion>();
-    private Explosion currentExplosion;
-    private Stage currentStage;
+    private ExplosionManager explosionManager;
+
+    public Stage currentStage;
 
     public float dotSize;
 
@@ -49,27 +45,26 @@ public class Game {
     public int mDotLightColorHandle;
 
 
-    public int mExplosionLightOnePosHandle;
-    public int mExplosionLightOneShinningHandle;
-    public int mExplosionLightOneDistanceHandle;
-    public int mExplosionLightOneColorHandle;
 
 
-    public int mExplosionLightTwoPosHandle;
-    public int mExplosionLightTwoShinningHandle;
-    public int mExplosionLightTwoDistanceHandle;
-    public int mExplosionLightTwoColorHandle;
+
 
 
     public int mPositionHandle;
     public int mColorHandle;
     public int mMVPMatrixHandle;
 
+    public int mPointColorHandle;
+    public int mPointPositionHandle;
+    public int mPointSizeHandle;
+    public int mPointMVPMatrixHandle;
+
+
     public int mProgram;
+    public int mPointProgram;
 
 
     private boolean isPreview = false;
-    private float currentProgress = 0;
 
     public void setPreview(boolean preview) {
         this.isPreview = preview;
@@ -79,8 +74,32 @@ public class Game {
         return isPreview;
     }
 
+    // Define a simple shader program for our point.
 
-    final String vertexShaderCode =
+
+    final String pointVertexShader =
+            "uniform mat4 uMVPMatrix;      "
+                    + "attribute vec4 vPosition;     "
+                    + "attribute float vSize;     "
+                    + "void main()                    "
+                    + "{                              "
+
+                    + "   gl_Position = uMVPMatrix   "
+                    + "               * vPosition;   "
+                    + "   gl_PointSize = vSize;         "
+                    + "}                              ";
+
+    final String pointFragmentShader =
+            "precision mediump float;       " +
+                    "uniform vec4 vColor;          // This is the color from the vertex shader interpolated across the\n"
+
+                    + "void main()                    "
+                    + "{                              "
+                    + "   gl_FragColor = vColor;      "
+                    + "}                              ";
+
+
+    final static String vertexShaderCode =
             "uniform mat4 uMVPMatrix;      " +
                     // A constant representing the combined model/generator/projection matrix
                     "attribute vec4 vPosition;     " +
@@ -105,7 +124,7 @@ public class Game {
                     "}";
 
 
-    public final String fragmentShaderCode =
+    final static String fragmentShaderCode =
             "struct LightSource" +
                     "{" +
                     "vec3 u_LightPos;" +
@@ -114,7 +133,7 @@ public class Game {
                     "vec4 lightColor;" +
                     "};" +
 
-                    "uniform LightSource lights[3];" +
+                    "uniform LightSource lights[5];" +
 
                     "precision mediump float;       // Set the default precision to medium. We don't need as high of a\n" +
                     "                               // precision in the fragment shader.\n" +
@@ -129,19 +148,27 @@ public class Game {
 
 
                     "   float dotDistance = length(lights[0].u_LightPos - v_Position);\n" +
-                    "   float dotDiffuse =  lights[0].lightShinning * (1.0 / (1.0 + (0.00007 * dotDistance * dotDistance* lights[0].lightDistance)));\n" +
+                    "   float dotDiffuse =  lights[0].lightShinning * (1.0 / (1.0 + 0.00007 *( dotDistance * dotDistance* lights[0].lightDistance)));\n" +
                     "   vec4 dotResult = dotDiffuse * lights[0].lightColor;" +
 
                     "   float explosionOneDistance = length(lights[1].u_LightPos - v_Position);\n" +
-                    "   float explosionOneDiffuse =  lights[1].lightShinning * (1.0 / (1.0 + (0.00007 * explosionOneDistance * explosionOneDistance* lights[1].lightDistance)));\n" +
+                    "   float explosionOneDiffuse =  lights[1].lightShinning * (1.0 / (1.0 + 0.00007 *( explosionOneDistance * explosionOneDistance* lights[1].lightDistance)));\n" +
                     "   vec4 explosionOneResult = explosionOneDiffuse * lights[1].lightColor;" +
 
                     "   float explosionTwoDistance = length(lights[2].u_LightPos - v_Position);\n" +
-                    "   float explosionTwoDiffuse =  lights[2].lightShinning * (1.0 / (1.0 + (0.00007 * explosionTwoDistance * explosionTwoDistance* lights[2].lightDistance)));\n" +
+                    "   float explosionTwoDiffuse =  lights[2].lightShinning * (1.0 / (1.0 + 0.00007 *( explosionTwoDistance * explosionTwoDistance* lights[2].lightDistance)));\n" +
                     "   vec4 explosionTwoResult = explosionTwoDiffuse * lights[2].lightColor;" +
 
+                    "   float explosionThreeDistance = length(lights[3].u_LightPos - v_Position);\n" +
+                    "   float explosionThreeDiffuse =  lights[3].lightShinning * (1.0 / (1.0 + 0.00007 *( explosionThreeDistance * explosionThreeDistance* lights[3].lightDistance)));\n" +
+                    "   vec4 explosionThreeResult = explosionThreeDiffuse * lights[3].lightColor;" +
+
+                    "   float explosionFourDistance = length(lights[4].u_LightPos - v_Position);\n" +
+                    "   float explosionFourDiffuse =  lights[4].lightShinning * (1.0 / (1.0 + 0.00007 *( explosionFourDistance * explosionFourDistance* lights[4].lightDistance)));\n" +
+                    "   vec4 explosionFourResult = explosionFourDiffuse * lights[4].lightColor;" +
+
                     "    // Multiply the color by the diffuse illumination level to get final output color.\n" +
-                    "    gl_FragColor = vColor *dotDiffuse +explosionOneResult + explosionTwoResult;" +
+                    "    gl_FragColor = vColor *dotDiffuse +explosionOneResult + explosionTwoResult +explosionThreeResult + explosionFourResult;" +
                     "}";
 
 
@@ -165,21 +192,30 @@ public class Game {
         mDotLightColorHandle = GLES20.glGetUniformLocation(mProgram, "lights[0].lightColor");
 
 
-        mExplosionLightOnePosHandle = GLES20.glGetUniformLocation(mProgram, "lights[1].u_LightPos");
-        mExplosionLightOneDistanceHandle = GLES20.glGetUniformLocation(mProgram, "lights[1].lightDistance");
-        mExplosionLightOneShinningHandle = GLES20.glGetUniformLocation(mProgram, "lights[1].lightShinning");
-        mExplosionLightOneColorHandle = GLES20.glGetUniformLocation(mProgram, "lights[1].lightColor");
 
 
-        mExplosionLightTwoPosHandle = GLES20.glGetUniformLocation(mProgram, "lights[2].u_LightPos");
-        mExplosionLightTwoDistanceHandle = GLES20.glGetUniformLocation(mProgram, "lights[2].lightDistance");
-        mExplosionLightTwoShinningHandle = GLES20.glGetUniformLocation(mProgram, "lights[2].lightShinning");
-        mExplosionLightTwoColorHandle = GLES20.glGetUniformLocation(mProgram, "lights[2].lightColor");
+
 
 
         mPositionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
         mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");
         mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
+
+
+        int vertexPointShader = SurfaceRenderer.loadShader(
+                GLES20.GL_VERTEX_SHADER,
+                pointVertexShader);
+        int fragmentPointShader = SurfaceRenderer.loadShader(
+                GLES20.GL_FRAGMENT_SHADER,
+                pointFragmentShader);
+
+        mPointProgram = gameView.createAndLinkProgram(vertexPointShader, fragmentPointShader,
+                new String[]{"vPosition"});
+
+        mPointSizeHandle = GLES20.glGetAttribLocation(mPointProgram, "vSize");
+        mPointPositionHandle = GLES20.glGetAttribLocation(mPointProgram, "vPosition");
+        mPointMVPMatrixHandle = GLES20.glGetUniformLocation(mPointProgram, "uMVPMatrix");
+        mPointColorHandle = GLES20.glGetUniformLocation(mPointProgram, "vColor");
 
 
     }
@@ -193,29 +229,21 @@ public class Game {
 
         currentStage = stage;
         background = null;
-        Explosion.initBuffers();
+       // ExplosionManager.initBuffers();
         background = new Background(this, stage.config);
 
         maze = null;
         maze = new Maze(this, stage);
 
+        if (maze.width > maze.height)
+            dotSize = maze.height * 3 / 10;
+        else
+            dotSize = maze.width * 3 / 10;
+
+        explosionManager = new ExplosionManager(this, dotSize, stage.config);
+
         resetDot();
 
-    }
-
-
-    public void onGameProgress(float value) {
-
-        if (currentProgress != value) {
-            currentProgress = value;
-            context.getActivityControls().setCurrent(value * 100);
-            if (background != null)
-                background.onProgressChanged(value);
-            if (maze != null)
-                maze.onProgressChanged(value);
-            if (mainSprite != null)
-                mainSprite.onProgressChanged(value);
-        }
     }
 
 
@@ -223,6 +251,7 @@ public class Game {
 
 
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
+
         GLES20.glUseProgram(mProgram);
 
 
@@ -233,16 +262,13 @@ public class Game {
         if (maze != null)
             maze.drawGL20(mMVPMatrix);
 
+
         if (mainSprite != null)
             mainSprite.drawGl2(mMVPMatrix);
 
-        for (int i = 0; i < explosions.size(); i++) {
-            explosions.get(i).drawGl2(mMVPMatrix);
-        }
-        //if (currentExplosion != null)
-        //   toggleColors(currentExplosion.getProgress());
 
-
+        if (explosionManager != null)
+            explosionManager.drawGl2(mMVPMatrix);
         update();
 
 
@@ -328,15 +354,6 @@ public class Game {
     }
 
 
-    public Maze getMaze() {
-        return maze;
-    }
-
-
-    public Stage getCurrentStage() {
-        return currentStage;
-    }
-
     public void configRoute(TileRoute route) {
         if (maze != null)
             maze.configRoute(route);
@@ -350,47 +367,21 @@ public class Game {
             mainSprite.configure(currentStage.config);
         if (maze != null)
             maze.configure(currentStage.config);
+        if(explosionManager !=null)
+        {
+            explosionManager.configure(currentStage.config);
+        }
 
         context.getSoundsManager().configure(currentStage.config.sounds);
-    }
-
-    public void addExplosion(Explosion e) {
-        //if(explosions.size()==0)
-        //    toggleColors();
-        explosions.add(e);
-        currentExplosion = e;
-    }
-
-    public void removeExplosion(Explosion e) {
-        explosions.remove(e);
-        if (e == currentExplosion){
-
-            currentExplosion = null;}
-        //if(explosions.size()==0)
-        //    toggleColors();
-        // Log.d(TAG, Integer.toString(explosions.size()));
     }
 
 
     private void update() {
         if (mainSprite != null)
             mainSprite.update();
-        for (int i = 0; i < explosions.size(); i++) {
-            explosions.get(i).update(System.currentTimeMillis());
-        }
 
-    }
-
-
-    public void toggleColors(float progress) {
-
-        //background.setColor(maze.getPath().backgroundColor);
-        //maze.getPath().setColor(backgroundColor);
-
-        Log.d(TAG, "toggle colors " + progress);
-
-        // background.setColor(estimateColors(currentStage.colorRoute, currentStage.colorBackground, progress));
-        // maze.getPath().setColor(estimateColors(currentStage.colorRoute, currentStage.colorBackground, 1 - progress));
+        if (explosionManager != null)
+            explosionManager.update(System.currentTimeMillis());
 
     }
 
@@ -400,7 +391,6 @@ public class Game {
         if (maze != null) {
             TileRoute r = maze.getCurrentRouteObject(mainSprite.centerX, mainSprite.centerY);
 
-            Log.d(TAG, "start dot " + r);
 
             if (r != null) {
                 Route.Movement movement = r.getDirection();
@@ -419,34 +409,14 @@ public class Game {
 
     public void resetDot() {
 
-        if (maze.width > maze.height)
-            dotSize = maze.height * 3 / 10;
-        else
-            dotSize = maze.width * 3 / 10;
+
         mainSprite = null;
-        float tile_width = gameView.screenWidth / maze.horizontalSize;
         TileRoute startRoute = maze.getStartRoute();
         float startX = startRoute.topX + startRoute.width / 2;
         float startY = startRoute.topY + startRoute.height / 2;
         mainSprite = new MainSprite(this, startX, startY,
                 (int) dotSize, (int) dotSize, currentStage.config);
 
-        mainSprite.setOnProgressListener(new MainSprite.OnProgressListener() {
-            @Override
-            public void onProgressChanged(float value) {
-                onGameProgress(value);
-            }
-        });
-
-        switch (startRoute.from) {
-            case LEFT:
-            case RIGHT:
-                mainSprite.setInitialProgress(startRoute.width / 2);
-                break;
-            case TOP:
-            case BOTTOM:
-                mainSprite.setInitialProgress(startRoute.height / 2);
-        }
 
         maze.initPoints();
         stopDot();
@@ -454,60 +424,35 @@ public class Game {
 
     public void destroyDot() {
         mainSprite = null;
-       /*
-        TileRoute startRoute = maze.getStartRoute();
-        float startX = startRoute.topX + startRoute.width / 2;
-        float startY = startRoute.topY + startRoute.height / 2;
-        mainSprite = new MainSprite(this, startX, startY,
-                0, 0, currentStage.config);
-        mainSprite.setOnProgressListener(new MainSprite.OnProgressListener() {
-            @Override
-            public void onProgressChanged(float value) {
-                onGameProgress(value);
-            }
-        });
-        stopDot();
-    */
+
     }
 
-    public Explosion explodeDot(boolean sound) {
-        Explosion e = new Explosion(this, mainSprite.centerX, mainSprite.centerY, System.currentTimeMillis(), mainSprite.spriteSpeed, (int) dotSize, currentStage.config);
+    public ExplosionManager explodeDot(boolean sound) {
+        explosionManager.explode(mainSprite.centerX, mainSprite.centerY, mainSprite.spriteSpeed);
 
-        //generator.resetDot();
-        addExplosion(e);
         if (sound)
             context.getSoundsManager().playCrashSound();
-        return e;
+        return null;
     }
+
+
 
     public void crashDot(boolean sound) {
 
 
-        Explosion e = explodeDot(sound);
+        explodeDot(sound);
 
+        mainSprite = new MainSprite(this, mainSprite.centerX, mainSprite.centerY,
+                (int) dotSize / 2, (int) dotSize / 2, currentStage.config);
 
-        dotSize = e.size;
-
-        mainSprite = null;
-
-        mainSprite = new MainSprite(this, e.x, e.y,
-                (int) dotSize, (int) dotSize, currentStage.config);
-        mainSprite.setOnProgressListener(new MainSprite.OnProgressListener() {
-            @Override
-            public void onProgressChanged(float value) {
-                onGameProgress(value);
-            }
-        });
         mainSprite.setPrepareToDie(true);
 
         TileRoute current = maze.getCurrentRouteObject(mainSprite.centerX, mainSprite.centerY);
 
         if (current != null)
-
             setDotMovement(current.getDirection());
 
 
-        //  stopDot();
     }
 
 

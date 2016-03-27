@@ -142,6 +142,18 @@ public class DAO {
         queue.add(stringRequest);
     }
 
+    public static void getStage(Context context, Response.Listener listener, Response.ErrorListener errorListener, String stageId) {
+        RequestQueue queue = Volley.newRequestQueue(context);
+
+
+        String request = url + "stage?_id="+stageId;
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, request,
+                listener, errorListener);
+// Add the request to the RequestQueue.
+        queue.add(stringRequest);
+    }
+
     public static void getStages(Context context, Response.Listener listener, Response.ErrorListener errorListener, String worldId) {
         RequestQueue queue = Volley.newRequestQueue(context);
 

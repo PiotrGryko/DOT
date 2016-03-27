@@ -2,6 +2,7 @@ package pl.slapps.dot.gui;
 
 import android.support.v4.view.ViewCompat;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
 
@@ -10,10 +11,14 @@ import android.view.animation.Transformation;
  */
 public  class AnimationHide {
     private View view;
-    private Animation animation;
+    private AlphaAnimation animation;
 
     public AnimationHide(final View view, Animation.AnimationListener listener) {
         this.view = view;
+        animation = new AlphaAnimation(1f,0f);
+        animation.setFillAfter(true);
+
+       /*
         animation = new Animation() {
             @Override
             protected void applyTransformation(float interpolatedTime, Transformation t) {
@@ -21,7 +26,7 @@ public  class AnimationHide {
                 ViewCompat.setAlpha(view, 1 - interpolatedTime);
             }
         };
-
+*/
         if (listener != null)
             animation.setAnimationListener(listener);
         else {

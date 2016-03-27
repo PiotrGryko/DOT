@@ -17,44 +17,6 @@
             android:animateLayoutChanges="true"
             android:orientation="vertical">
 
-            <LinearLayout
-                android:id="@+id/layout_world_base"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:animateLayoutChanges="true"
-                android:orientation="vertical">
-
-                <LinearLayout
-                    android:id="@+id/toggle_world"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/selector_menu_drawer"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:padding="5dp">
-
-                    <ImageView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_margin="5dp"
-                        android:background="@drawable/circle_btn_selector"
-                        android:duplicateParentState="true"
-                        android:padding="5dp"
-                        android:src="@drawable/world" />
-
-                    <pl.slapps.dot.gui.FontedTextView
-                        android:layout_width="fill_parent"
-                        custom:bold="true"
-                        android:layout_height="wrap_content"
-                        android:text="@string/generator_create_world" />
-                </LinearLayout>
-
-
-                <View
-                    android:layout_width="fill_parent"
-                    android:layout_height="1dp"
-                    android:background="#ffcbcbcb" />
-            </LinearLayout>
 
 
             <LinearLayout
@@ -143,51 +105,10 @@
             </LinearLayout>
 
 
-            <LinearLayout
-                android:id="@+id/layout_config_base"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:animateLayoutChanges="true"
-                android:orientation="vertical">
-
-
-                <LinearLayout
-                    android:id="@+id/toggle_config"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/selector_menu_drawer"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:padding="5dp">
-
-                    <ImageView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_margin="5dp"
-                        android:background="@drawable/circle_btn_selector"
-                        android:duplicateParentState="true"
-                        android:padding="5dp"
-                        android:src="@drawable/cogs" />
-
-                    <pl.slapps.dot.gui.FontedTextView
-                        android:layout_width="fill_parent"
-                        custom:bold="true"
-
-                        android:layout_height="wrap_content"
-                        android:text="@string/generator_config" />
-                </LinearLayout>
-
-
-
-                <View
-                    android:layout_width="fill_parent"
-                    android:layout_height="1dp"
-                    android:background="#ffcbcbcb" />
-
-            </LinearLayout>
 
 
             <LinearLayout
+                android:visibility="gone"
                 android:id="@+id/layout_construct_base"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -277,6 +198,44 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:visibility="gone"
+                android:id="@+id/layout_effects_base"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:animateLayoutChanges="true"
+                android:orientation="vertical">
+
+
+                <LinearLayout
+                    android:id="@+id/toggle_effects"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/selector_menu_drawer"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="5dp">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_margin="5dp"
+                        android:background="@drawable/circle_btn_selector"
+                        android:duplicateParentState="true"
+                        android:padding="5dp"
+                        android:src="@drawable/effects" />
+
+                    <pl.slapps.dot.gui.FontedTextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        custom:bold="true"
+
+                        android:text="@string/generator_effects" />
+                </LinearLayout>
+
+
+
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/layout_strings_base"
@@ -313,55 +272,9 @@
                 </LinearLayout>
 
 
-                <View
-                    android:layout_width="fill_parent"
-                    android:layout_height="1dp"
-                    android:background="#ffcbcbcb" />
             </LinearLayout>
 
 
-            <LinearLayout
-                android:id="@+id/layout_choose_world_base"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:animateLayoutChanges="true"
-                android:orientation="vertical">
-
-
-                <LinearLayout
-                    android:id="@+id/toggle_choose_world"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/selector_menu_drawer"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:padding="5dp">
-
-                    <ImageView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_margin="5dp"
-                        android:background="@drawable/circle_btn_selector"
-                        android:duplicateParentState="true"
-                        android:padding="5dp"
-                        android:src="@drawable/world" />
-
-                    <pl.slapps.dot.gui.FontedTextView
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        custom:bold="true"
-
-                        android:text="@string/generator_choose_world" />
-                </LinearLayout>
-
-
-
-
-                <View
-                    android:layout_width="fill_parent"
-                    android:layout_height="1dp"
-                    android:background="#ffcbcbcb" />
-            </LinearLayout>
 
             <LinearLayout
                 android:visibility="gone"
@@ -451,55 +364,15 @@
                     android:background="#ffcbcbcb" />
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/layout_effects_base"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:animateLayoutChanges="true"
-                android:orientation="vertical">
 
 
-                <LinearLayout
-                    android:id="@+id/toggle_effects"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/selector_menu_drawer"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:padding="5dp">
-
-                    <ImageView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_margin="5dp"
-                        android:background="@drawable/circle_btn_selector"
-                        android:duplicateParentState="true"
-                        android:padding="5dp"
-                        android:src="@drawable/effects" />
-
-                    <pl.slapps.dot.gui.FontedTextView
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        custom:bold="true"
-
-                        android:text="@string/generator_effects" />
-                </LinearLayout>
-
-
-
-
-                <View
-                    android:layout_width="fill_parent"
-                    android:layout_height="1dp"
-                    android:background="#ffcbcbcb" />
-            </LinearLayout>
 
 
 
 
 
             <LinearLayout
-                android:id="@+id/toggle_save"
+                android:id="@+id/toggle_share"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/selector_menu_drawer"
@@ -514,19 +387,182 @@
                     android:background="@drawable/circle_btn_selector"
                     android:duplicateParentState="true"
                     android:padding="5dp"
-                    android:src="@drawable/floppydisc" />
+                    android:src="@drawable/share" />
 
                 <pl.slapps.dot.gui.FontedTextView
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     custom:bold="true"
 
-                    android:text="@string/generator_save" />
+                    android:text="Share" />
 
                 <View
                     android:layout_width="fill_parent"
                     android:layout_height="1dp"
                     android:background="#ffcbcbcb" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="DEV OPTIONS"/>
+
+            <LinearLayout
+                android:id="@+id/layout_world_base"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:animateLayoutChanges="true"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/toggle_world"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/selector_menu_drawer"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="5dp">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_margin="5dp"
+                        android:background="@drawable/circle_btn_selector"
+                        android:duplicateParentState="true"
+                        android:padding="5dp"
+                        android:src="@drawable/world" />
+
+                    <pl.slapps.dot.gui.FontedTextView
+                        android:layout_width="fill_parent"
+                        custom:bold="true"
+                        android:layout_height="wrap_content"
+                        android:text="@string/generator_create_world" />
+                </LinearLayout>
+
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dp"
+                    android:background="#ffcbcbcb" />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/layout_config_base"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:animateLayoutChanges="true"
+                android:orientation="vertical">
+
+
+                <LinearLayout
+                    android:id="@+id/toggle_config"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/selector_menu_drawer"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="5dp">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_margin="5dp"
+                        android:background="@drawable/circle_btn_selector"
+                        android:duplicateParentState="true"
+                        android:padding="5dp"
+                        android:src="@drawable/cogs" />
+
+                    <pl.slapps.dot.gui.FontedTextView
+                        android:layout_width="fill_parent"
+                        custom:bold="true"
+
+                        android:layout_height="wrap_content"
+                        android:text="@string/generator_config" />
+                </LinearLayout>
+
+
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dp"
+                    android:background="#ffcbcbcb" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_choose_world_base"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:animateLayoutChanges="true"
+                android:orientation="vertical">
+
+
+                <LinearLayout
+                    android:id="@+id/toggle_choose_world"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/selector_menu_drawer"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="5dp">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_margin="5dp"
+                        android:background="@drawable/circle_btn_selector"
+                        android:duplicateParentState="true"
+                        android:padding="5dp"
+                        android:src="@drawable/world" />
+
+                    <pl.slapps.dot.gui.FontedTextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        custom:bold="true"
+
+                        android:text="@string/generator_choose_world" />
+                </LinearLayout>
+
+
+
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dp"
+                    android:background="#ffcbcbcb" />
+
+
+                <LinearLayout
+                    android:id="@+id/toggle_save"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/selector_menu_drawer"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="5dp">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_margin="5dp"
+                        android:background="@drawable/circle_btn_selector"
+                        android:duplicateParentState="true"
+                        android:padding="5dp"
+                        android:src="@drawable/floppydisc" />
+
+                    <pl.slapps.dot.gui.FontedTextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        custom:bold="true"
+
+                        android:text="@string/generator_save" />
+
+                    <View
+                        android:layout_width="fill_parent"
+                        android:layout_height="1dp"
+                        android:background="#ffcbcbcb" />
+                </LinearLayout>
+
             </LinearLayout>
 
 

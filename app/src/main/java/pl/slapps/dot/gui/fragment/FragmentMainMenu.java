@@ -15,6 +15,7 @@ import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.android.volley.Response;
@@ -79,7 +80,7 @@ public class FragmentMainMenu extends Fragment {
     private LinearLayout layoutBtns;
     private LinearLayout layoutHeader;
     //private TextView tvHeader;
-    private LinearLayout menuBkg;
+    //private LinearLayout menuBkg;
 
 
     private ImageButton btnPlay;
@@ -88,6 +89,13 @@ public class FragmentMainMenu extends Fragment {
     private ImageButton btnStages;
     private ImageButton btnOnline;
     private ImageButton btnShuffle;
+
+    private LinearLayout layoutPurchase;
+    private ImageButton btnSkipStage;
+    private ImageButton btnDisableAds;
+
+
+    private ProgressBar bar;
 
     private String currentColor = null;
 
@@ -106,12 +114,13 @@ public class FragmentMainMenu extends Fragment {
     }
 
 
+
     public ImageView getStartButton() {
         return btnPlay;
     }
 
     public LinearLayout getBackground() {
-        return menuBkg;
+        return layoutMenu;
     }
 
     public View getLayout() {
@@ -132,13 +141,14 @@ public class FragmentMainMenu extends Fragment {
         if (currentColor == null) {
 
 
-            final int color = Color.parseColor(colorString);
-            int c = Color.argb(100, Color.red(color), Color.green(color), Color.blue(color));
+//            final int color = Color.parseColor(colorString);
+//            int c = Color.argb(100, Color.red(color), Color.green(color), Color.blue(color));
 
             currentColor = colorString;
 
+            animationMainMenu.setColor("#ffffff", colorString);
 
-            getBackground().setBackgroundColor(c);
+            //getBackground().setBackgroundColor(c);
         } else {
 
             animationMainMenu.setColor(currentColor, colorString);
@@ -176,8 +186,14 @@ public class FragmentMainMenu extends Fragment {
 
 
 
+    public void displayError() {
 
-    public void loadStage(Stage stage) {
+        bar.setVisibility(View.GONE);
+        tvName.setText("No internet connection");
+
+    }
+
+    public void loadStage(Stage stage, int currentStage) {
 
         final int color = Color.parseColor(stage.config.colors.colorShip);
 
@@ -185,10 +201,19 @@ public class FragmentMainMenu extends Fragment {
         //layoutMenu.clearAnimation();
         tvName.setTextColor(color);
         tvDesc.setTextColor(color);
-        tvName.setText(stage.name);
-        tvDesc.setText(stage.description);
-        //layoutMenu.setVisibility(View.VISIBLE);
 
+        btnPlay.setColorFilter(color);
+        btnGenerate.setColorFilter(color);
+
+        //tvName.setText(stage.name);
+        //tvDesc.setText(stage.description);
+        tvName.setText("#"+currentStage);
+        //layoutMenu.setVisibility(View.VISIBLE);
+        bar.setVisibility(View.GONE);
+        //layoutHeader.setVisibility(View.VISIBLE);
+        btnPlay.setVisibility(View.VISIBLE);
+        layoutPurchase.setVisibility(View.VISIBLE);
+        btnGenerate.setVisibility(View.VISIBLE);
 
     }
 
@@ -225,19 +250,21 @@ public class FragmentMainMenu extends Fragment {
     }
 
 
-    public View init() {
+    private View init() {
 
         animationMainMenu = new AnimationMainMenu(this);
 
         layout = LayoutInflater.from(context).inflate(R.layout.fragment_main_menu, null);
-
+        bar = (ProgressBar)layout.findViewById(R.id.bar);
         layoutMenu = (LinearLayout) layout.findViewById(R.id.layout_menu);
         layoutBtns = (LinearLayout) layout.findViewById(R.id.layout_btns);
         layoutHeader = (LinearLayout) layout.findViewById(R.id.layout_header);
         //tvHeader = (TextView) layout.findViewById(R.id.tv_header);
 
-        menuBkg = (LinearLayout) layout.findViewById(R.id.menu_bkg);
 
+        layoutPurchase=(LinearLayout)layout.findViewById(R.id.layout_purchase);
+        btnSkipStage=(ImageButton)layout.findViewById(R.id.skip_stage);
+        btnDisableAds =(ImageButton)layout.findViewById(R.id.disable_ads);
 
         tvName = (TextView) layout.findViewById(R.id.tv_lvl);
         tvDesc = (TextView) layout.findViewById(R.id.tv_desc);
@@ -249,16 +276,30 @@ public class FragmentMainMenu extends Fragment {
         btnOnline = (ImageButton) layout.findViewById(R.id.btn_online);
         btnShuffle = (ImageButton) layout.findViewById(R.id.btn_shuffle);
 
-        LoginButton loginButton = (LoginButton) layout.findViewById(R.id.login_button);
+        btnSkipStage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((MainActivity)FragmentMainMenu.this.getActivity()).getActivityBilling().buyGap();
+            }
+        });
+
+        btnDisableAds.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((MainActivity) FragmentMainMenu.this.getActivity()).getActivityBilling().disableAds();
+            }
+        });
+
+        //LoginButton loginButton = (LoginButton) layout.findViewById(R.id.login_button);
 
         //context.gameHolder.addView(layout);
 
         animationMainMenu.init();
-        loginButton.setReadPermissions("user_friends");
+        //loginButton.setReadPermissions("user_friends");
         // If using in a fragment
         //loginButton.setFragment(this);
         // Other app specific specialization
-
+/*
         // Callback registration
         CallbackManager callbackManager = CallbackManager.Factory.create();
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
@@ -281,7 +322,7 @@ public class FragmentMainMenu extends Fragment {
                 Log.d(TAG, "on error");
             }
         });
-
+*/
 
         btnPlay.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -379,7 +420,7 @@ public class FragmentMainMenu extends Fragment {
                                 @Override
                                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-                                    context.loadStage(world.stages.get(i));
+                                    context.loadStage(world.stages.get(i),false);
                                     stagesDialog.dismiss();
                                     worldsDialog.dismiss();
                                 }
@@ -460,7 +501,7 @@ public class FragmentMainMenu extends Fragment {
                                         @Override
                                         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-                                            context.loadStage(world.stages.get(i));
+                                            context.loadStage(world.stages.get(i),false);
                                             stagesDialog.dismiss();
                                             worldsDialog.dismiss();
                                         }
@@ -503,7 +544,7 @@ public class FragmentMainMenu extends Fragment {
                             object = object.has("api") ? object.getJSONObject("api") : object;
                             object = object.has("doc") ? object.getJSONObject("doc") : object;
 
-                            context.loadStage(Stage.valueOf(object));
+                            context.loadStage(Stage.valueOf(object),true);
 
                             context.mAdView.setVisibility(View.GONE);
                             animationMainMenu.hideMenu();
@@ -524,7 +565,8 @@ public class FragmentMainMenu extends Fragment {
 
             }
         });
-        context.loadStage(context.getCurrentStage());
+        if(context.getCurrentStage()!=null)
+        context.loadStage(context.getCurrentStage(),false);
 
 
 

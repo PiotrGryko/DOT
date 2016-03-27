@@ -44,15 +44,16 @@ public class PopupLayoutFactory {
         public float getmCurrentY() {
             return mCurrentY;
         }
-        public View getDrag()
-        {
+
+        public View getDrag() {
             return drag;
         }
 
-        public PopupLayout(View layout, boolean closable, String title) {
+
+        public PopupLayout(View layout, boolean closable, String title, final View.OnClickListener listener) {
             this.layout = layout;
 
-            View v = LayoutInflater.from(generator.view.context).inflate(R.layout.dialog_popup, null);
+            final View v = LayoutInflater.from(generator.view.context).inflate(R.layout.dialog_popup, null);
 
             drag = v.findViewById(R.id.base_drag);
             View close = v.findViewById(R.id.btn_close);
@@ -62,6 +63,9 @@ public class PopupLayoutFactory {
                 @Override
                 public void onClick(View view) {
                     popup.dismiss();
+                    if (listener != null)
+                        listener.onClick(view);
+
                 }
             });
 
@@ -84,6 +88,10 @@ public class PopupLayoutFactory {
 
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
+
+                    if (generator.view.context.drawer.isDrawerOpen(generator.view.context.drawerContent))
+                        return true;
+
                     int action = event.getAction();
                     if (action == MotionEvent.ACTION_DOWN) {
                         mDx = mCurrentX - event.getRawX();
@@ -111,8 +119,6 @@ public class PopupLayoutFactory {
         }
 
 
-
-
         public void animateToTop(float progress) {
 
 
@@ -124,32 +130,33 @@ public class PopupLayoutFactory {
 
 
         }
+
         public void dismissAndReopen() {
-            if (popup.isShowing())
-            {
-                reopen=true;
-                popup.dismiss();}
+            if (popup.isShowing()) {
+                reopen = true;
+                popup.dismiss();
+            }
         }
 
         public void dissmiss() {
             if (popup.isShowing())
                 popup.dismiss();
         }
-        public boolean isShowing()
-        {
-            if(!popup.isShowing()&&reopen)
-            {
+
+        public boolean isShowing() {
+            if (!popup.isShowing() && reopen) {
                 reopen();
                 return true;
             }
-            return  popup.isShowing();
+            return popup.isShowing();
         }
+
         public void reopen() {
 
 
             if (!popup.isShowing() && reopen) {
 
-                show(mCurrentX,mCurrentY);
+                show(mCurrentX, mCurrentY);
             }
 
         }
@@ -163,7 +170,7 @@ public class PopupLayoutFactory {
 
 
             if (!popup.isShowing()) {
-                reopen=false;
+                reopen = false;
                 this.mCurrentX = mCurrentX;
                 this.mCurrentY = mCurrentY;
 
@@ -204,26 +211,35 @@ public class PopupLayoutFactory {
 
     }
 
-    public GeneratorLayoutControls getLayoutControls()
-    {
+    public GeneratorLayoutControls getLayoutControls() {
         return layoutControls;
     }
 
 
-    public PopupLayoutFactory(Generator generator) {
+    public PopupLayoutFactory(final Generator generator) {
         this.generator = generator;
         layoutPath = new GeneratorLayoutPath();
         layoutPath.initLayout(generator.getLayout());
         layoutPath.refreashLayout();
 
-        popupPath = new PopupLayout(layoutPath.getLayout(), true, "Path");
+        popupPath = new PopupLayout(layoutPath.getLayout(), true, "Path", new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                generator.getLayout().tile.setCurrentTile(false);
+            }
+        });
 
 
         layoutColors = new GeneratorLayoutColors();
         layoutColors.initLayout(generator.getLayout());
         layoutColors.refreashLayout();
 
-        popupColors = new PopupLayout(layoutColors.getLayout(), true, "Colours");
+        popupColors = new PopupLayout(layoutColors.getLayout(), true, "Colours", new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                layoutControls.getButtonColours().setSelected(false);
+            }
+        });
 
         /// initView(path, layoutPath.getLayout(), popupPath);
         layoutLights = new GeneratorLayoutLights();
@@ -231,7 +247,12 @@ public class PopupLayoutFactory {
         layoutLights.refreashLayout();
 
 
-        popupLights = new PopupLayout(layoutLights.getLayout(), true, "Lights");
+        popupLights = new PopupLayout(layoutLights.getLayout(), true, "Lights", new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                layoutControls.getButtonLights().setSelected(false);
+            }
+        });
 
 
         layoutSounds = new GeneratorLayoutSounds();
@@ -239,21 +260,31 @@ public class PopupLayoutFactory {
         layoutSounds.refreashLayout();
 
 
-        popupSounds = new PopupLayout(layoutSounds.getLayout(), true, "Sounds");
+        popupSounds = new PopupLayout(layoutSounds.getLayout(), true, "Sounds",  new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                layoutControls.getButtonSounds().setSelected(false);
+            }
+        });
 
         layoutGrid = new GeneratorLayoutGrid();
         layoutGrid.initLayout(generator.getLayout());
         layoutGrid.refreashLayout();
 
 
-        popupGrid = new PopupLayout(layoutGrid.getLayout(), true, "Grid");
+        popupGrid = new PopupLayout(layoutGrid.getLayout(), true, "Grid",  new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                layoutControls.getButtonGrid().setSelected(false);
+            }
+        });
 
 
         layoutControls = new GeneratorLayoutControls();
         layoutControls.initLayout(generator.getLayout());
         //layoutControls.refreashLayout();
 
-        popupControls = new PopupLayout(layoutControls.getLayout(), false, "");
+        popupControls = new PopupLayout(layoutControls.getLayout(), false, "", null);
         popupControls.getDrag().setBackgroundDrawable(null);
 
         generator.view.context.drawer.setDrawerListener(new DrawerLayout.DrawerListener() {
@@ -270,12 +301,16 @@ public class PopupLayoutFactory {
             public void onDrawerOpened(View drawerView) {
                 //  pathPopup.dissmissPath();
                 hideOrShowPopoups();
+                layoutControls.getButtonSettings().setSelected(true);
+
             }
 
             @Override
             public void onDrawerClosed(View drawerView) {
 
                 hideOrShowPopoups();
+                layoutControls.getButtonSettings().setSelected(false);
+
             }
 
             @Override
@@ -286,8 +321,7 @@ public class PopupLayoutFactory {
 
     }
 
-    public void alphaAnimatePopups(float slideOffset)
-    {
+    public void alphaAnimatePopups(float slideOffset) {
         onSlide(slideOffset, popupPath);
         onSlide(slideOffset, popupColors);
         onSlide(slideOffset, popupLights);
@@ -295,8 +329,8 @@ public class PopupLayoutFactory {
         onSlide(slideOffset, popupSounds);
 
     }
-    public void hideOrShowPopoups()
-    {
+
+    public void hideOrShowPopoups() {
         setDrawerState(popupPath);
         setDrawerState(popupColors);
         setDrawerState(popupLights);

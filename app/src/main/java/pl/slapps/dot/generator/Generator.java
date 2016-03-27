@@ -9,6 +9,7 @@ import android.widget.Toast;
 import com.android.volley.Response;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -306,7 +307,17 @@ public class Generator {
 
 
 
+    public TileRoute getFinishRoute() {
+        for (int i = 0; i < tiles.size(); i++) {
+            TileRoute t = tiles.get(i);
+            if (t.getType() == Route.Type.FINISH) {
+                return t;
 
+            }
+
+        }
+        return null;
+    }
     public TileRoute getStartRoute() {
         for (int i = 0; i < tiles.size(); i++) {
             TileRoute t = tiles.get(i);
@@ -325,7 +336,7 @@ public class Generator {
         configure(config);
 
         if (runPreview) {
-            view.getGame().getCurrentStage().config = config;
+            view.getGame().currentStage.config = config;
             view.getGame().configure();
         } else {
 
@@ -406,31 +417,48 @@ public class Generator {
         return output;
     }
 
+    public void shareMaze()
+    {
+        if(_id==null || _id.trim().equals("")) {
+            DAO.addStage(view.context, dumpMaze(), new Response.Listener() {
+                @Override
+                public void onResponse(Object response) {
+                    Log.d(TAG, response.toString());
+
+                    JSONObject object = null;
+                    try {
+                        object = new JSONObject(response.toString());
+
+                        object = object.has("api") ? object.getJSONObject("api") : object;
+                        object = object.has("doc") ? object.getJSONObject("doc") : object;
+                        String id = object.has("_id") ? object.getString("_id") : "";
+                        view.context.getActivityInvite().invite(id);
+                        Toast.makeText(view.context, "Stage shared!", Toast.LENGTH_LONG).show();
+                        _id = id;
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }, _id);
+        }
+        else
+        {
+            view.context.getActivityInvite().invite(_id);
+
+        }
+    }
     public void saveMaze() {
 
 
-        //Stages.stages.add(output.toString());
 
-            /*
-
-            World currentWorld = layout.getCurrentWorld();
-            ArrayList<Stage> stages = currentWorld.stages;
-            if (stages == null)
-                stages = new ArrayList<>();
-
-
-            stages.add(Stage.valueOf(output));
-            currentWorld.stages=stages;
-            //layout.addWorld(currentWorld);
-            layout.updateWorld();
-
-            Toast.makeText(generator.context, "Stage saved!", Toast.LENGTH_LONG).show();
-*/
 
         DAO.addStage(view.context, dumpMaze(), new Response.Listener() {
             @Override
             public void onResponse(Object response) {
                 Log.d(TAG, response.toString());
+
+
                 Toast.makeText(view.context, "Stage saved!", Toast.LENGTH_LONG).show();
             }
         }, _id);
@@ -515,8 +543,8 @@ public class Generator {
 
     public boolean onTouch(MotionEvent event) {
 
-        if (getLayout().getCurrentWorld() == null)
-            return true;
+      //  if (getLayout().getCurrentWorld() == null)
+      //      return true;
 
         if (runPreview) {
             view.getGame().onTouchEvent(event);
@@ -546,12 +574,14 @@ public class Generator {
 
 
     public void startPreview() {
+        if(getStartRoute() == null)
+            return;
         view.getGame().setPreview(true);
         view.getGame().initStage(Stage.valueOf(dumpMaze()));
         //view.context.drawer.closeDrawer(view.context.drawerContent);
         runPreview = true;
         popupFactory.dissmissPath();
-        getLayout().showPreviewControlls();
+        //getLayout().showPreviewControlls();
 
         view.context.getActivityControls().resetLogs();
 
@@ -562,7 +592,7 @@ public class Generator {
         view.getGame().setPreview(false);
         runPreview = false;
         refreashMaze();
-        getLayout().showGeneratorConstrolls();
+      //  getLayout().showGeneratorConstrolls();
 
 
     }

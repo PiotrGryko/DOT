@@ -30,6 +30,7 @@ public class Settings {
     public float dotLightDistanceStart=0.3f;
     public float dotLightDistanceEnd=0.8f;
 
+    public boolean disableBackground =false;
 
 
 

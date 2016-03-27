@@ -10,8 +10,10 @@ import java.util.Random;
 
 import pl.slapps.dot.R;
 import pl.slapps.dot.SurfaceRenderer;
+import pl.slapps.dot.drawing.Quad;
 import pl.slapps.dot.drawing.Sprite;
 import pl.slapps.dot.drawing.Util;
+import pl.slapps.dot.drawing.Wall;
 import pl.slapps.dot.generator.builder.TileRoute;
 import pl.slapps.dot.generator.builder.TileRouteFinish;
 import pl.slapps.dot.generator.widget.RouteScoreCounter;
@@ -22,51 +24,23 @@ import pl.slapps.dot.model.Route;
 public class MainSprite extends Sprite {
 
 
-    public interface OnProgressListener {
-        public void onProgressChanged(float value);
-    }
-
-
-    private OnProgressListener listener;
-
-    public void setOnProgressListener(OnProgressListener listener) {
-        this.listener = listener;
-    }
-
-
     private String TAG = MainSprite.class.getName();
     private Maze fence;
-
-
     private Config config;
-
-
     public boolean prepareToDie;
 
     private Game game;
-
     public TileRoute lastChangeRoute;
     public TileRoute currentTile;
-    private RouteScoreCounter scoreCounter;
-
-    private float movingProgres = 0;
-    private float totalScore =0;
-
     private float lightDistance;
     private float lightShinning;
-
-
     public float spriteSpeed = 0;
-    private FloatBuffer lPos = ByteBuffer.allocateDirect(4 * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
+
+    public boolean booster = false;
 
 
     static final int COORDS_PER_VERTEX = 3;
-
-
-    private int mPositionHandle;
-    private int mColorHandle;
     private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
-    private int mMVPMatrixHandle;
 
 
     float color[] = {0.0f, 0.0f, 0.0f, 1.0f};
@@ -76,10 +50,6 @@ public class MainSprite extends Sprite {
         this.prepareToDie = prepareToDie;
     }
 
-
-    public void setInitialProgress(float value) {
-        movingProgres += value;
-    }
 
     public boolean isMoving() {
         if (x != 0 || y != 0) {
@@ -93,7 +63,7 @@ public class MainSprite extends Sprite {
 
         super(centerX, centerY, width, height, true);
         this.game = view;
-        fence = view.getMaze();
+        fence = view.maze;
 
         spriteSpeed = view.context.getResources().getDimension(R.dimen.speed);
 
@@ -102,18 +72,6 @@ public class MainSprite extends Sprite {
 
     }
 
-    public void onProgressChanged(float value) {
-        if (config.settings.switchDotLightDistance) {
-
-            lightDistance = config.settings.dotLightDistanceStart + (config.settings.dotLightDistanceEnd - config.settings.dotLightDistanceStart) * value;
-        }
-
-        if (config.settings.switchDotColor) {
-            String finalColor = Util.calculateColorsSwitch(config.colors.colorSwitchDotStart, config.colors.colorSwitchDotEnd, value);
-            color = Util.parseColor(finalColor);
-        }
-
-    }
 
     public void configure(Config config) {
         this.config = config;
@@ -125,13 +83,11 @@ public class MainSprite extends Sprite {
 
         }
 
-        Log.d(TAG,"configure dot");
 
         if (!config.settings.switchDotLightDistance)
             lightDistance = config.settings.dotLightDistance;
         else
             lightDistance = config.settings.dotLightDistanceStart;
-
 
 
         lightShinning = config.settings.dotLightShinning;
@@ -142,84 +98,53 @@ public class MainSprite extends Sprite {
     public void update() {
         super.update();
 
-        //if(moveX!=0 || moveY!=0)
 
-        movingProgres += Math.abs(this.x) + Math.abs(this.y);
-        if (movingProgres != 0 && movingProgres < fence.getMazeLength()) {
-            if (listener != null) {
-                listener.onProgressChanged(movingProgres / fence.getMazeLength());
-
-
-            }
-            //Log.d("aaa", "moving progress " + movingProgres);
-        }
-        //fence.setMove(-x, -y);
-        //background.setMove(-x, -y);
-
-        this.bufferedVertex.position(0);
-        this.bufferedVertex.put(this.quad.vertices);
-        this.bufferedVertex.position(0);
-
-
-        lPos.position(0);
-        lPos.put(new float[]{this.getCenterX(), this.getCenterY(), 100.0f, 1.0f});
-        lPos.position(0);
-
-
-        TileRoute collision = fence.checkRouteCollision(centerX, centerY, width / 2);
+        //TileRoute collision = fence.checkRouteCollision(centerX, centerY, width / 2);
         TileRoute tmpCurrent = fence.getCurrentRouteObject(centerX, centerY);
+        Wall.Type collision = tmpCurrent.checkCollision(centerX, centerY, width / 2);
 
         fence.checkCoinCollision(this);
 
 
-        if (tmpCurrent != null && currentTile != tmpCurrent) {
-
-            if (scoreCounter != null) {
-                scoreCounter.setExitCoords(centerX, centerY);
-                totalScore += scoreCounter.estimateScore();
-                Log.d("aaa", "calculate score " + totalScore);
-            }
-
-            if (scoreCounter == null)
-                scoreCounter = new RouteScoreCounter(tmpCurrent);
-            else
-                scoreCounter.setRoute(tmpCurrent);
-
-            scoreCounter.setEnterCoords(centerX, centerY);
-
-            if (tmpCurrent.getType() == Route.Type.FINISH) {
-                scoreCounter.setExitCoords(centerX, centerY);
-                totalScore += scoreCounter.estimateScore();
-
-                Log.d("aaa", "calculate score " + totalScore);
-            }
-
+        if (currentTile != tmpCurrent) {
 
             currentTile = tmpCurrent;
 
+            float speedRatio = 1;
+            if (booster) {
+                if (tmpCurrent.type == Route.Type.FINISH || tmpCurrent.type == Route.Type.START) {
+
+                    speedRatio=1;
+                } else if (tmpCurrent.getDirection() == Route.Movement.LEFTRIGHT || tmpCurrent.getDirection() == Route.Movement.TOPBOTTOM) {
+                    speedRatio=2.5f;
+                } else {
+                    speedRatio=0.5f;
+                }
+            } else {
+
+                speedRatio = (float) currentTile.speedRatio;
+            }
 
             if (x > 0)
-                x = spriteSpeed * (float) currentTile.speedRatio;
-
+                x = spriteSpeed * speedRatio;
             if (x < 0)
-                x = -spriteSpeed * (float) currentTile.speedRatio;
-
+                x = -spriteSpeed * speedRatio;
             if (y > 0)
-                y = spriteSpeed * (float) currentTile.speedRatio;
+                y = spriteSpeed * speedRatio;
             if (y < 0)
-                y = -spriteSpeed * (float) currentTile.speedRatio;
+                y = -spriteSpeed * speedRatio;
 
 
         }
 
         if (collision != null) {
-            if (collision instanceof TileRouteFinish && currentTile.getType() == Route.Type.FINISH) {
+            if (currentTile.getType() == Route.Type.FINISH) {
                 game.explodeDot(false);
                 game.destroyDot();
                 if (game.getPreview())
                     game.resetDot();
                 else
-                    game.gameView.moveToNextLvl((totalScore/fence.routes.size())*100);
+                    game.gameView.moveToNextLvl();
                 //    game.resetDot();
 
             } else if (!prepareToDie) {
@@ -228,7 +153,7 @@ public class MainSprite extends Sprite {
             } else {
                 game.explodeDot(true);
 
-                if(new Random().nextFloat()>0.9f)
+                if (new Random().nextFloat() > 0.99f)
                     game.context.showAdv();
 
                 game.resetDot();
@@ -239,37 +164,34 @@ public class MainSprite extends Sprite {
 
     }
 
+
     public void drawGl2(float[] mvpMatrix) {
 
-
-        // Add program to OpenGL environment
-        GLES20.glUseProgram(game.mProgram);
-
         // get handle to vertex shader's vPosition member
-        mPositionHandle = GLES20.glGetAttribLocation(game.mProgram, "vPosition");
+        //mPositionHandle = GLES20.glGetAttribLocation(game.mProgram, "vPosition");
 
         // Enable a handle to the triangle vertices
-        GLES20.glEnableVertexAttribArray(mPositionHandle);
+        GLES20.glEnableVertexAttribArray(game.mPositionHandle);
 
         // Prepare the triangle coordinate data
         GLES20.glVertexAttribPointer(
-                mPositionHandle, COORDS_PER_VERTEX,
+                game.mPositionHandle, COORDS_PER_VERTEX,
                 GLES20.GL_FLOAT, false,
                 vertexStride, bufferedVertex);
 
 
-        mColorHandle = GLES20.glGetUniformLocation(game.mProgram, "vColor");
+        // mColorHandle = GLES20.glGetUniformLocation(game.mProgram, "vColor");
         // Pass in the color information
         // Set color for drawing the triangle
-        GLES20.glUniform4fv(mColorHandle, 1, color, 0);
+        GLES20.glUniform4fv(game.mColorHandle, 1, color, 0);
 
 
         // get handle to shape's transformation matrix
-        mMVPMatrixHandle = GLES20.glGetUniformLocation(game.mProgram, "uMVPMatrix");
-        SurfaceRenderer.checkGlError("glGetUniformLocation");
+        //  mMVPMatrixHandle = GLES20.glGetUniformLocation(game.mProgram, "uMVPMatrix");
+        //  SurfaceRenderer.checkGlError("glGetUniformLocation");
 
         // Apply the projection and game transformation
-        GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mvpMatrix, 0);
+        GLES20.glUniformMatrix4fv(game.mMVPMatrixHandle, 1, false, mvpMatrix, 0);
         SurfaceRenderer.checkGlError("glUniformMatrix4fv");
 
 
@@ -286,8 +208,7 @@ public class MainSprite extends Sprite {
 
 
         // Disable vertex array
-        GLES20.glDisableVertexAttribArray(mPositionHandle);
-
+        GLES20.glDisableVertexAttribArray(game.mPositionHandle);
 
     }
 

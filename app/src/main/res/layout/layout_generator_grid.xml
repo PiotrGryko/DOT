@@ -9,27 +9,43 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:padding="10dp">
+        android:orientation="vertical"
+       >
 
-        <pl.slapps.dot.gui.FontedTextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="w"/>
+            android:orientation="vertical">
+        <pl.slapps.dot.gui.FontedTextView
+
+            android:layout_width="wrap_content"
+            android:padding="5dp"
+            android:layout_height="wrap_content"
+            android:text="Width"/>
         <pl.slapps.dot.generator.widget.NumberPickerTextView
             android:id="@+id/et_width"
-            android:layout_width="0dip"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"></pl.slapps.dot.generator.widget.NumberPickerTextView>
-        <pl.slapps.dot.gui.FontedTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="h"/>
+            ></pl.slapps.dot.generator.widget.NumberPickerTextView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+        <pl.slapps.dot.gui.FontedTextView
+            android:padding="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Height"/>
         <pl.slapps.dot.generator.widget.NumberPickerTextView
             android:id="@+id/et_height"
-            android:layout_width="0dip"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"></pl.slapps.dot.generator.widget.NumberPickerTextView>
+            ></pl.slapps.dot.generator.widget.NumberPickerTextView>
+
+
+    </LinearLayout>
 
 
 
