@@ -457,7 +457,7 @@ public class FragmentMainMenu extends Fragment {
 
                 Log.d(TAG, "button online pressed");
 
-                DAO.getWorlds(context, new Response.Listener() {
+                DAO.getWorlds(new Response.Listener() {
                     @Override
                     public void onResponse(Object response) {
                         Log.d(TAG, "online stages fetched");
@@ -533,7 +533,7 @@ public class FragmentMainMenu extends Fragment {
             public void onClick(View view) {
 
 
-                DAO.getRandomStage(context, new Response.Listener() {
+                DAO.getRandomStage(new Response.Listener() {
                     @Override
                     public void onResponse(Object response) {
 

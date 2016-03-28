@@ -384,7 +384,7 @@ public class GeneratorLayoutWorlds {
                 //tmpWorld.id=Long.toString(System.currentTimeMillis());
                 //addWorld(tmpWorld);
 
-                DAO.addWorld(generator.view.context, tmpWorld.toJson(), new Response.Listener() {
+                DAO.addWorld(tmpWorld.toJson(), new Response.Listener() {
                     @Override
                     public void onResponse(Object response) {
                         Log.d(TAG, response.toString());

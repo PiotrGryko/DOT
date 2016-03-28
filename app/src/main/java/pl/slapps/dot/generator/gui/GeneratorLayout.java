@@ -166,7 +166,7 @@ public class GeneratorLayout {
             return;
         }
 
-        DAO.getStages(context, new Response.Listener() {
+        DAO.getStages(new Response.Listener() {
             @Override
             public void onResponse(Object response) {
                 Log.d(TAG, response.toString());
@@ -704,7 +704,7 @@ public class GeneratorLayout {
         toggleSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                generator.saveMaze();
+                generator.saveMaze(null);
             }
         });
 

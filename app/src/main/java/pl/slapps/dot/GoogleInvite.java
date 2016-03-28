@@ -99,7 +99,7 @@ public class GoogleInvite {
                                     Log.d(TAG, "Deep link grabbed " + deepLink);
 
 
-                                    DAO.getStage(context, new Response.Listener() {
+                                    DAO.getStage( new Response.Listener() {
                                         @Override
                                         public void onResponse(Object response) {
 

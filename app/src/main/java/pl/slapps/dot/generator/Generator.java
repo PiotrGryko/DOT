@@ -401,7 +401,11 @@ public class Generator {
 
             }
             output.put("route", route);
+            if(layout.getCurrentWorld()!=null)
             output.put("world_id", layout.getCurrentWorld().id);
+            else
+                output.put("world_id", null);
+
             int maxLogSize = 1000;
 
             for (int i = 0; i <= output.toString().length() / maxLogSize; i++) {
@@ -420,7 +424,7 @@ public class Generator {
     public void shareMaze()
     {
         if(_id==null || _id.trim().equals("")) {
-            DAO.addStage(view.context, dumpMaze(), new Response.Listener() {
+            DAO.addStage(dumpMaze(), new Response.Listener() {
                 @Override
                 public void onResponse(Object response) {
                     Log.d(TAG, response.toString());
@@ -448,18 +452,25 @@ public class Generator {
 
         }
     }
-    public void saveMaze() {
+
+    public interface OnSaveListener
+    {
+        public void onSaved();
+    }
+    public void saveMaze(final OnSaveListener listener) {
 
 
 
 
-        DAO.addStage(view.context, dumpMaze(), new Response.Listener() {
+        DAO.addStage(dumpMaze(), new Response.Listener() {
             @Override
             public void onResponse(Object response) {
                 Log.d(TAG, response.toString());
 
 
                 Toast.makeText(view.context, "Stage saved!", Toast.LENGTH_LONG).show();
+                if(listener!=null)
+                    listener.onSaved();
             }
         }, _id);
 

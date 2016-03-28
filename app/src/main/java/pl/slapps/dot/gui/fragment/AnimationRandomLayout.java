@@ -142,7 +142,7 @@ public class AnimationRandomLayout {
             public void onClick(View view) {
 
 
-                DAO.getRandomStage(context, new Response.Listener() {
+                DAO.getRandomStage(new Response.Listener() {
                     @Override
                     public void onResponse(Object response) {
 

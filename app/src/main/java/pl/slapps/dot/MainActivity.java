@@ -179,7 +179,7 @@ public class MainActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Fabric.with(this, new Crashlytics());
-
+        DAO.initRequestQueue(this);
 
         activityInvite = new GoogleInvite(this);
 

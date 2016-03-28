@@ -77,7 +77,7 @@ public class GeneratorLayoutWorldsList {
             return;
         isLoading(true);
         woldsBase.removeAllViews();
-        DAO.getWorlds(generator.view.context, new Response.Listener() {
+        DAO.getWorlds( new Response.Listener() {
             @Override
             public void onResponse(Object response) {
                 Log.d(TAG, "worlds response");
@@ -162,7 +162,7 @@ public class GeneratorLayoutWorldsList {
                 }).setPositiveButton("yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(final DialogInterface dialogInterface, int i) {
-                        DAO.removeWorld(generator.view.context, new Response.Listener() {
+                        DAO.removeWorld( new Response.Listener() {
                             @Override
                             public void onResponse(Object response) {
                                 layoutWorldsList.removeView(row);

@@ -36,7 +36,7 @@ public class MainSprite extends Sprite {
     private float lightShinning;
     public float spriteSpeed = 0;
 
-    public boolean booster = false;
+    public boolean booster = true;
 
 
     static final int COORDS_PER_VERTEX = 3;
@@ -116,7 +116,7 @@ public class MainSprite extends Sprite {
 
                     speedRatio=1;
                 } else if (tmpCurrent.getDirection() == Route.Movement.LEFTRIGHT || tmpCurrent.getDirection() == Route.Movement.TOPBOTTOM) {
-                    speedRatio=2.5f;
+                    speedRatio=1.5f;
                 } else {
                     speedRatio=0.5f;
                 }

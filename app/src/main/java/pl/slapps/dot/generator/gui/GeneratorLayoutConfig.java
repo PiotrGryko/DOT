@@ -14,6 +14,7 @@ import com.android.volley.Response;
 import pl.slapps.dot.DAO;
 import pl.slapps.dot.R;
 import pl.slapps.dot.generator.Generator;
+import pl.slapps.dot.generator.auto.AutoGenerator;
 
 /**
  * Created by piotr on 14/02/16.
@@ -24,6 +25,7 @@ public class GeneratorLayoutConfig {
     private View layoutConfig;
     private Generator generator;
     private GeneratorLayout generatorLayout;
+    private AutoGenerator autoGenerator;
 
     public View getLayout()
     {
@@ -33,6 +35,7 @@ public class GeneratorLayoutConfig {
     public void initLayout(GeneratorLayout generatorLayout) {
         this.generatorLayout=generatorLayout;
         this.generator=generatorLayout.generator;
+        autoGenerator = new AutoGenerator(generator);
 
 
         layoutConfig = LayoutInflater.from(generator.view.context).inflate(R.layout.layout_generator_config,null);
@@ -40,6 +43,8 @@ public class GeneratorLayoutConfig {
         TextView tvLoad = (TextView) layoutConfig.findViewById(R.id.tv_load);
         TextView tvLoadOnline = (TextView) layoutConfig.findViewById(R.id.tv_load_online);
         TextView tvDeleteOnline = (TextView) layoutConfig.findViewById(R.id.tv_delete_online);
+        TextView tvGenerateRandom= (TextView) layoutConfig.findViewById(R.id.tv_generate_random);
+        TextView tvGenerateWorldStages= (TextView) layoutConfig.findViewById(R.id.tv_generate_world_stages);
 
 
         View.OnClickListener listener = new View.OnClickListener() {
@@ -79,7 +84,7 @@ public class GeneratorLayoutConfig {
                             }).setPositiveButton("yes", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(final DialogInterface dialogInterface, int i) {
-                                    DAO.removeStage(generator.view.context, new Response.Listener() {
+                                    DAO.removeStage(new Response.Listener() {
                                         @Override
                                         public void onResponse(Object response) {
 
@@ -98,6 +103,20 @@ public class GeneratorLayoutConfig {
                         break;
                     }
 
+                    case R.id.tv_generate_random:
+                    {
+
+                        autoGenerator.generateMaze(12,12,null);
+                        break;
+                    }
+
+                    case R.id.tv_generate_world_stages:
+                    {
+
+                        autoGenerator.generateStagesSet(500);
+                        break;
+                    }
+
 
                 }
 
@@ -109,6 +128,8 @@ public class GeneratorLayoutConfig {
         tvLoad.setOnClickListener(listener);
         tvLoadOnline.setOnClickListener(listener);
         tvDeleteOnline.setOnClickListener(listener);
+        tvGenerateRandom.setOnClickListener(listener);
+        tvGenerateWorldStages.setOnClickListener(listener);
 
 
     }

@@ -32,6 +32,37 @@ public class TileRouteManager {
         return false;
     }
 
+    public TileRoute getNeighbour(TileRoute tileRoute, Route.Direction direction)
+    {
+        int x = tileRoute.horizontalPos;
+        int y = tileRoute.verticalPos;
+        TileRoute nextRoute = null;
+        switch (direction)
+        {
+            case LEFT: {
+                if (tileRoute.horizontalPos > 0)
+                    nextRoute = generator.findTile(x-1,y);
+                break;
+            }
+            case RIGHT: {
+                if (tileRoute.horizontalPos < generator.gridX)
+                    nextRoute = generator.findTile(x+1,y);
+                break;
+            }
+            case TOP: {
+                if (tileRoute.verticalPos >0)
+                    nextRoute = generator.findTile(x,y-1);
+                break;
+            }
+            case BOTTOM: {
+                if (tileRoute.verticalPos <generator.gridY)
+                    nextRoute = generator.findTile(x,y+1);
+                break;
+            }
+        }
+        return nextRoute;
+    }
+
     public boolean areConnected(TileRoute currentTile, TileRoute tile)
     {
 

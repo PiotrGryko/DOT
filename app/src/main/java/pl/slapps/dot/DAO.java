@@ -26,9 +26,15 @@ public class DAO {
     final static String url = "http://188.166.101.11:4321/v1/";
     final public static String url_files = "http://188.166.101.11:4321/";
 
+    private static RequestQueue queue;
+    public static void initRequestQueue(Context context)
+    {
+        queue = Volley.newRequestQueue(context);
 
-    public static void addRemoveFav(Context context, Response.Listener listener, Response.ErrorListener errorListener, String stageId, String deviceId) {
-        RequestQueue queue = Volley.newRequestQueue(context);
+    }
+
+    public static void addRemoveFav(Response.Listener listener, Response.ErrorListener errorListener, String stageId, String deviceId) {
+       // RequestQueue queue = Volley.newRequestQueue(context);
 
 // Request a string response from the provided URL.
         String request = url + "/v1/stage?device_id="+deviceId+"&fav="+stageId;
@@ -44,8 +50,8 @@ public class DAO {
         queue.add(stringRequest);
     }
 
-    public static void getFav(Context context, Response.Listener listener, Response.ErrorListener errorListener, String stageId, String deviceId) {
-        RequestQueue queue = Volley.newRequestQueue(context);
+    public static void getFav(Response.Listener listener, Response.ErrorListener errorListener, String stageId, String deviceId) {
+       // RequestQueue queue = Volley.newRequestQueue(context);
 
 // Request a string response from the provided URL.
         String request = url + "device_id?find";
@@ -61,8 +67,8 @@ public class DAO {
         queue.add(stringRequest);
     }
 
-    public static void getSounds(Context context, Response.Listener listener, Response.ErrorListener errorListener) {
-        RequestQueue queue = Volley.newRequestQueue(context);
+    public static void getSounds(Response.Listener listener, Response.ErrorListener errorListener) {
+      //  RequestQueue queue = Volley.newRequestQueue(context);
 
 // Request a string response from the provided URL.
         String request = url + "files?find";
@@ -78,8 +84,8 @@ public class DAO {
         queue.add(stringRequest);
     }
 
-    public static void removeStage(Context context, Response.Listener listener, final String id) {
-        RequestQueue queue = Volley.newRequestQueue(context);
+    public static void removeStage( Response.Listener listener, final String id) {
+       // RequestQueue queue = Volley.newRequestQueue(context);
 
         String request = url + "stage";
         if (id != null)
@@ -107,8 +113,7 @@ public class DAO {
         queue.add(stringRequest);
     }
 
-    public static void addStage(Context context, final JSONObject stage, Response.Listener listener, final String id) {
-        RequestQueue queue = Volley.newRequestQueue(context);
+    public static void addStage(final JSONObject stage, Response.Listener listener, final String id) {
 
         String request = url + "stage";
         if (id != null)
@@ -142,8 +147,8 @@ public class DAO {
         queue.add(stringRequest);
     }
 
-    public static void getStage(Context context, Response.Listener listener, Response.ErrorListener errorListener, String stageId) {
-        RequestQueue queue = Volley.newRequestQueue(context);
+    public static void getStage( Response.Listener listener, Response.ErrorListener errorListener, String stageId) {
+     //   RequestQueue queue = Volley.newRequestQueue(context);
 
 
         String request = url + "stage?_id="+stageId;
@@ -154,8 +159,8 @@ public class DAO {
         queue.add(stringRequest);
     }
 
-    public static void getStages(Context context, Response.Listener listener, Response.ErrorListener errorListener, String worldId) {
-        RequestQueue queue = Volley.newRequestQueue(context);
+    public static void getStages(Response.Listener listener, Response.ErrorListener errorListener, String worldId) {
+       // RequestQueue queue = Volley.newRequestQueue(context);
 
 
         String request = url + "stage?find";
@@ -171,8 +176,8 @@ public class DAO {
 
 
 
-    public static void getRandomStage(Context context, Response.Listener listener, Response.ErrorListener errorListener, String deviceId) {
-        RequestQueue queue = Volley.newRequestQueue(context);
+    public static void getRandomStage(Response.Listener listener, Response.ErrorListener errorListener, String deviceId) {
+       // RequestQueue queue = Volley.newRequestQueue(context);
 
 
         String request = url + "stage?device_id="+deviceId;
@@ -184,8 +189,8 @@ public class DAO {
         queue.add(stringRequest);
     }
 
-    public static void getWorlds(Context context, Response.Listener listener, Response.ErrorListener errorListener, boolean fetchStages) {
-        RequestQueue queue = Volley.newRequestQueue(context);
+    public static void getWorlds( Response.Listener listener, Response.ErrorListener errorListener, boolean fetchStages) {
+       // RequestQueue queue = Volley.newRequestQueue(context);
 
 // Request a string response from the provided URL.
         String request = url + "world?find";
@@ -202,8 +207,8 @@ public class DAO {
         queue.add(stringRequest);
     }
 
-    public static void addWorld(Context context, final JSONObject stage, Response.Listener listener, final String id) {
-        RequestQueue queue = Volley.newRequestQueue(context);
+    public static void addWorld(final JSONObject stage, Response.Listener listener, final String id) {
+      //  RequestQueue queue = Volley.newRequestQueue(context);
 
         String request = url + "world";
         if (id != null)
@@ -238,8 +243,8 @@ public class DAO {
     }
 
 
-    public static void addStageToWorld(Context context, Response.Listener listener, final String id, final String worldId) {
-        RequestQueue queue = Volley.newRequestQueue(context);
+    public static void addStageToWorld(Response.Listener listener, final String id, final String worldId) {
+      //  RequestQueue queue = Volley.newRequestQueue(context);
 
         String request = url + "stage?_id=" + id;
 
@@ -280,8 +285,8 @@ public class DAO {
     }
 
 
-    public static void removeWorld(Context context, Response.Listener listener, final String id) {
-        RequestQueue queue = Volley.newRequestQueue(context);
+    public static void removeWorld(Response.Listener listener, final String id) {
+       // RequestQueue queue = Volley.newRequestQueue(context);
 
         String request = url + "world";
         if (id != null)

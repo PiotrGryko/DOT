@@ -114,7 +114,7 @@ public class ActivityLoader {
     public void loadSounds() {
 
 
-        DAO.getSounds(context, new Response.Listener() {
+        DAO.getSounds(new Response.Listener() {
             @Override
             public void onResponse(Object response) {
 
@@ -209,7 +209,7 @@ public class ActivityLoader {
 
     public void loadStagesFile(final OnStagesLoadingListener listener)
     {
-        DAO.getWorlds(context, new Response.Listener() {
+        DAO.getWorlds(new Response.Listener() {
             @Override
             public void onResponse(Object response) {
 
