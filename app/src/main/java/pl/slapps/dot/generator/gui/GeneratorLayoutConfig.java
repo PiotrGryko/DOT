@@ -106,7 +106,7 @@ public class GeneratorLayoutConfig {
                     case R.id.tv_generate_random:
                     {
 
-                        autoGenerator.generateMaze(12,12,null);
+                        autoGenerator.generateRandomStage();
                         break;
                     }
 

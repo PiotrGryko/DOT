@@ -8,6 +8,7 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.Random;
 
+import pl.slapps.dot.MainActivity;
 import pl.slapps.dot.R;
 import pl.slapps.dot.SurfaceRenderer;
 import pl.slapps.dot.drawing.Quad;
@@ -36,7 +37,7 @@ public class MainSprite extends Sprite {
     private float lightShinning;
     public float spriteSpeed = 0;
 
-    public boolean booster = true;
+    public boolean booster = false;
 
 
     static final int COORDS_PER_VERTEX = 3;
@@ -65,7 +66,10 @@ public class MainSprite extends Sprite {
         this.game = view;
         fence = view.maze;
 
-        spriteSpeed = view.context.getResources().getDimension(R.dimen.speed);
+        if (MainActivity.screenHeight < MainActivity.screenWidth)
+            spriteSpeed = MainActivity.screenHeight/120;
+        else
+            spriteSpeed = MainActivity.screenWidth/120;
 
         configure(config);
 
@@ -114,11 +118,11 @@ public class MainSprite extends Sprite {
             if (booster) {
                 if (tmpCurrent.type == Route.Type.FINISH || tmpCurrent.type == Route.Type.START) {
 
-                    speedRatio=1;
+                    speedRatio = 1;
                 } else if (tmpCurrent.getDirection() == Route.Movement.LEFTRIGHT || tmpCurrent.getDirection() == Route.Movement.TOPBOTTOM) {
-                    speedRatio=1.5f;
+                    speedRatio = 1.5f;
                 } else {
-                    speedRatio=0.5f;
+                    speedRatio = 0.5f;
                 }
             } else {
 

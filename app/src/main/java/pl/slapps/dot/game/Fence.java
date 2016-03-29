@@ -1,6 +1,7 @@
 package pl.slapps.dot.game;
 
 import android.opengl.GLES20;
+import android.util.Log;
 
 
 import java.nio.ByteBuffer;
@@ -115,6 +116,8 @@ public class Fence {
             if (startWall.end.equals(firstWall.start)) {
                 break;
             }
+            Log.d("rrr","sort walls...");
+
         }
 
 

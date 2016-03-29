@@ -21,10 +21,15 @@ import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.facebook.FacebookSdk;
+import com.google.ads.mediation.admob.AdMobAdapter;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.reward.RewardItem;
+import com.google.android.gms.ads.reward.RewardedVideoAd;
+import com.google.android.gms.ads.reward.RewardedVideoAdListener;
 import com.google.android.gms.appinvite.AppInvite;
 import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.google.android.gms.appinvite.AppInviteInvitationResult;
@@ -75,6 +80,7 @@ public class MainActivity extends FragmentActivity {
 
     public InterstitialAd mInterstitialAd;
     public AdView mAdView;
+    public RewardedVideoAd mRewardedVideoAd;
 
     //public MainMenu mainMenu;
     public AnimationScoreLayout scoreLayout;
@@ -306,6 +312,46 @@ public class MainActivity extends FragmentActivity {
         setupFragment();
 
 
+
+        mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
+        mRewardedVideoAd.setRewardedVideoAdListener(new RewardedVideoAdListener() {
+            @Override
+            public void onRewardedVideoAdLoaded() {
+
+            }
+
+            @Override
+            public void onRewardedVideoAdOpened() {
+
+            }
+
+            @Override
+            public void onRewardedVideoStarted() {
+
+            }
+
+            @Override
+            public void onRewardedVideoAdClosed() {
+
+            }
+
+            @Override
+            public void onRewarded(RewardItem rewardItem) {
+
+            }
+
+            @Override
+            public void onRewardedVideoAdLeftApplication() {
+
+            }
+
+            @Override
+            public void onRewardedVideoAdFailedToLoad(int i) {
+
+            }
+        });
+
+
     }
 
     public void showAdv() {
@@ -320,6 +366,26 @@ public class MainActivity extends FragmentActivity {
 
             }
         });
+    }
+
+    public void showVideoAdv() {
+
+        /*
+        Bundle extras = new Bundle();
+        extras.putBoolean("_noRefresh", true);
+        AdRequest adRequest = new AdRequest.Builder().addTestDevice("E94C03F2EE6C70812C2298399AAE3483")
+                .addNetworkExtrasBundle(AdMobAdapter.class, extras)
+                .build();
+        mRewardedVideoAd.loadAd("ca-app-pub-3940256099942544/1033173712", adRequest);
+        mRewardedVideoAd.show();
+ */
+        currentStage++;
+        if(currentStage==activityLoader.stages.size())
+            currentStage=0;
+
+        loadStage(activityLoader.stages.get(currentStage), false);
+
+
     }
 
     private void requestNewInterstitial() {

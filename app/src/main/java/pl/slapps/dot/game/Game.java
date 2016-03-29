@@ -2,6 +2,7 @@ package pl.slapps.dot.game;
 
 import android.opengl.GLES20;
 
+import android.util.Log;
 import android.view.MotionEvent;
 
 import pl.slapps.dot.MainActivity;
@@ -232,6 +233,7 @@ public class Game {
        // ExplosionManager.initBuffers();
         background = new Background(this, stage.config);
 
+        Log.d("rrr", "init stage ");
         maze = null;
         maze = new Maze(this, stage);
 

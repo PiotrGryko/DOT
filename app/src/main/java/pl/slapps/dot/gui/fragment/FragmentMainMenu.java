@@ -279,7 +279,9 @@ public class FragmentMainMenu extends Fragment {
         btnSkipStage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((MainActivity)FragmentMainMenu.this.getActivity()).getActivityBilling().buyGap();
+                //((MainActivity)FragmentMainMenu.this.getActivity()).getActivityBilling().buyGap();
+                ((MainActivity)FragmentMainMenu.this.getActivity()).showVideoAdv();
+
             }
         });
 

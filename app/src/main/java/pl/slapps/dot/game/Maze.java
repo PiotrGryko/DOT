@@ -62,6 +62,7 @@ public class Maze {
         output.add(start);
         while ((start = findNextRoute(start)) != null) {
 
+            Log.d("rrr","sort maze ....");
             output.add(start);
             if (start.getType() == Route.Type.FINISH)
                 break;
@@ -131,6 +132,7 @@ public class Maze {
         this.height = game.gameView.screenHeight / verticalSize;
 
 
+
         for (int i = 0; i < stage.routes.size(); i++) {
 
             Route element = stage.routes.get(i);
@@ -164,7 +166,9 @@ public class Maze {
         }
         sortMaze();
         path = new Path(routes, game, stage.config);
+
         fence = new Fence(routes, game, stage.config);
+
 
 
     }

@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import pl.slapps.dot.R;
+import pl.slapps.dot.drawing.Util;
 import pl.slapps.dot.generator.Generator;
 import pl.slapps.dot.generator.builder.TileRoute;
 import pl.slapps.dot.model.Config;
@@ -63,30 +64,41 @@ public class AutoGenerator {
 
     }
 
+    private void finishSetGeneration() {
+
+        if (dialog.isShowing())
+            dialog.dismiss();
+        generator.view.setDrawing(true);
+
+        boolean flag = generator.getPreview();
+
+        if (flag)
+            generator.stopPreview();
+        generator.refreashMaze();
+        generator.getLayout().refreshControlls();
+
+        if (flag)
+            generator.startPreview();
+    }
+
 
     private void generateStagesSetInternal(final int index, final int count) {
         if (dialog.isShowing()) {
             dialog.setTitle("generating stage " + index + "/" + count);
-            Log.d(TAG,"generating stage "+index +"/"+count);
+            Log.d(TAG, "generating stage " + index + "/" + count);
         }
         generator.saveMaze(new Generator.OnSaveListener() {
             @Override
             public void onSaved() {
                 if (index >= count) {
-                    if(dialog.isShowing())
-                    dialog.dismiss();
-                    generator.view.setDrawing(true);
+                    finishSetGeneration();
 
                     return;
-                }
-                else if (!cancelGeneration) {
-                    generateMaze(0, 0, null);
+                } else if (!cancelGeneration) {
+                    generateMaze(true, index + 1);
                     generateStagesSetInternal(index + 1, count);
-                }
-                else
-                {
-                    dialog.dismiss();
-                    generator.view.setDrawing(true);
+                } else {
+                    finishSetGeneration();
 
                 }
 
@@ -107,7 +119,7 @@ public class AutoGenerator {
 
         generator.view.setDrawing(false);
 
-        generateMaze(0, 0, null);
+        generateMaze(true, index);
         generateStagesSetInternal(index, stagesCount);
 
 
@@ -119,19 +131,57 @@ public class AutoGenerator {
         return "#" + Integer.toHexString(color);
     }
 
-    public void generateMaze(int x, int y, Config config) {
+    public void generateRandomStage() {
+        generateMaze(false, 0);
+    }
 
-        x = 1 + random.nextInt(19);
-        y = 1 + random.nextInt(19);
+    private void generateMaze(boolean set, int count) {
+
+        int step = random.nextInt(20);
+        int x = 3;
+        int y = 3;
+
+        if (set) {
+            step = 0;
+            if (count > 0)
+                step = (int) Math.sqrt(count);
+
+            if (step == 0)
+                step = 1;
+            if (step / 2 > 0) {
+                x = x + step / 2 + random.nextInt(step / 2);
+                y = y + step / 2 + random.nextInt(step / 2);
+            } else {
+                x = x + step;
+                y = y + step;
+            }
+
+        } else {
+            x = x + step;
+            y = y + step;
+        }
+
+
+        String routeColor = randomColor();
+        String dotColor = randomColor();
+
+        if (Util.isColorDark(routeColor) && Util.isColorDark(dotColor)) {
+            dotColor = Util.changeColorBrightness(dotColor, true);
+        } else if (!Util.isColorDark(routeColor) && !Util.isColorDark(dotColor)) {
+            dotColor = Util.changeColorBrightness(dotColor, false);
+
+        }
 
 
         generator.initGrid(x, y);
         generator.getConfig().colors.colorBackground = randomColor();
         generator.getConfig().colors.colorExplosionEnd = randomColor();
         generator.getConfig().colors.colorExplosionStart = randomColor();
-        generator.getConfig().colors.colorShip = randomColor();
+        generator.getConfig().colors.colorShip = dotColor;
         generator.getConfig().colors.colorFence = randomColor();
-        generator.getConfig().colors.colorRoute = randomColor();
+        generator.getConfig().colors.colorRoute = routeColor;
+        generator.getConfig().settings.explosionOneLightDistance = random.nextFloat();
+        generator.getConfig().settings.explosionOneLightShinning = 2.5f * random.nextFloat();
 
 
         int startX = random.nextInt(x);
@@ -155,16 +205,17 @@ public class AutoGenerator {
                 startRoute = next;
         }
 
-        boolean flag = generator.getPreview();
+        if (!set) {
+            boolean flag = generator.getPreview();
 
-        if (flag)
-            generator.stopPreview();
-        generator.refreashMaze();
-        generator.getLayout().refreshControlls();
+            if (flag)
+                generator.stopPreview();
+            generator.refreashMaze();
+            generator.getLayout().refreshControlls();
 
-        if (flag)
-            generator.startPreview();
-
+            if (flag)
+                generator.startPreview();
+        }
 
     }
 
@@ -190,7 +241,6 @@ public class AutoGenerator {
 
 
         int index = random.nextInt(options.size());
-
 
 
         return options.get(index);

@@ -1,5 +1,7 @@
 package pl.slapps.dot.generator.builder;
 
+import java.util.ArrayList;
+
 import pl.slapps.dot.drawing.Junction;
 import pl.slapps.dot.drawing.Wall;
 import pl.slapps.dot.generator.Generator;
@@ -39,15 +41,123 @@ public class TileRouteStart extends TileRoute {
     private String TAG = TileRouteStart.class.getName();
 
     public void initRoute(Route.Movement d) {
-        super.initRoute(d);
+       // super.initRoute(d);
 
         Route.Direction f = this.from;
+
+
+        float top=topY;
+        float left=topX;
+        float right=topX+width;
+        float bottom=topY+height;
+
+
+        switch (f) {
+
+            case LEFT: {
+
+                left = topX + borderX;
+                top = topY + borderY;
+                right = topX + width;
+                bottom = topY+height - borderY;
+
+                if (generator != null) {
+                    backgroundPartOne = new TileRouteBackground(centerX+borderX/2, centerY, width-borderX, routeHeight, generator);
+                } else {
+                    backgroundPartOne = new TileRouteBackground(centerX+borderX/2, centerY, width-borderX, routeHeight);
+
+                }
+
+                break;
+            }
+
+            case RIGHT: {
+
+                left = topX;
+                top = topY + borderY;
+                right = topX + width - borderX;
+                bottom = topY+height - borderY;
+
+                if (generator != null) {
+                    backgroundPartOne = new TileRouteBackground(centerX-borderX/2, centerY, width-borderX, routeHeight, generator);
+                } else {
+                    backgroundPartOne = new TileRouteBackground(centerX-borderX/2, centerY, width-borderX, routeHeight);
+
+                }
+
+                break;
+            }
+            case TOP: {
+
+                left = topX + borderX;
+                top = topY + borderY;
+                right = topX + width - borderX;
+                bottom = topY + height;
+
+                if (generator != null) {
+                    backgroundPartOne = new TileRouteBackground(centerX, centerY + borderY / 2, routeWidth, height-borderY, generator);
+                } else {
+                    backgroundPartOne = new TileRouteBackground(centerX, centerY + borderY / 2, routeWidth, height-borderY);
+
+                }
+                break;
+            }
+            case BOTTOM: {
+                left = topX + borderX;
+                top = topY;
+                right = topX + width - borderX;
+                bottom = topY + height - borderY;
+                if (generator != null) {
+                    backgroundPartOne = new TileRouteBackground(centerX, centerY - borderY / 2, routeWidth, height-borderY, generator);
+                } else {
+                    backgroundPartOne = new TileRouteBackground(centerX, centerY - borderY / 2, routeWidth, height-borderY);
+
+                }
+                break;
+            }
+        }
+
+        switch (d) {
+
+
+            case LEFTRIGHT:
+            case RIGHTLEFT: {
+
+                Wall tWall = new Wall(new Junction(left, top, 0),
+                        new Junction(right, top, 0), Wall.Type.TOP, generator
+                );
+
+                Wall bWall = new Wall(new Junction(left, bottom, 0),
+                        new Junction(right, bottom, 0), Wall.Type.BOTTOM, generator);
+                walls = new ArrayList<>();
+
+                walls.add(tWall);
+                walls.add(bWall);
+
+
+                break;
+            }
+            case TOPBOTTOM:
+            case BOTTOMTOP: {
+
+                Wall lWall = new Wall(new Junction(left, bottom, 0),
+                        new Junction(left, top, 0),
+                        Wall.Type.LEFT, generator);
+
+                Wall rWall = new Wall(new Junction(right, bottom, 0), new Junction(right, top, 0), Wall.Type.RIGHT, generator);
+                walls = new ArrayList<>();
+
+                walls.add(lWall);
+                walls.add(rWall);
+
+            }
+        }
 
 
         switch (f) {
             case LEFT: {
 
-                Wall lWall = new Wall(new Junction(topX, topY + height - borderY, 0), new Junction(topX, topY + borderY, 0), Wall.Type.LEFT, generator);
+                Wall lWall = new Wall(new Junction(left, bottom, 0), new Junction(left, top, 0), Wall.Type.LEFT, generator);
 
                 this.walls.add(lWall);
 
@@ -56,19 +166,19 @@ public class TileRouteStart extends TileRoute {
             }
 
             case RIGHT: {
-                Wall rWall = new Wall(new Junction(topX + width, topY + height - borderY, 0), new Junction(topX + width, topY + borderY, 0), Wall.Type.RIGHT, generator);
+                Wall rWall = new Wall(new Junction(right, bottom, 0), new Junction(right, top, 0), Wall.Type.RIGHT, generator);
 
                 walls.add(rWall);
                 break;
             }
             case TOP: {
-                Wall tWall = new Wall(new Junction(topX + borderX, topY, 0), new Junction(topX + width - borderX, topY, 0), Wall.Type.TOP, generator);
+                Wall tWall = new Wall(new Junction(left, top, 0), new Junction(right, top, 0), Wall.Type.TOP, generator);
 
                 walls.add(tWall);
                 break;
             }
             case BOTTOM: {
-                Wall bWall = new Wall(new Junction(topX + borderX, topY + height, 0), new Junction(topX + width - borderX, topY + height, 0), Wall.Type.BOTTOM, generator);
+                Wall bWall = new Wall(new Junction(left, bottom, 0), new Junction(right, bottom, 0), Wall.Type.BOTTOM, generator);
 
                 walls.add(bWall);
                 break;
