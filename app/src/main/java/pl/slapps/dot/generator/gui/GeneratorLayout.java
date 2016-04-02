@@ -234,7 +234,7 @@ public class GeneratorLayout {
         View v = LayoutInflater.from(context).inflate(R.layout.dialog_stages, null);
         ListView listView = (ListView) v.findViewById(R.id.lv);
         ArrayList<String> entries = new ArrayList<String>();
-        for (int i = 0; i < context.getActivityLoader().stages.size(); i++) {
+        for (int i = 0; i < context.getActivityLoader().jsonStages.length(); i++) {
             entries.add(Integer.toString(i));
         }
         listView.setAdapter(new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, entries));
@@ -243,7 +243,7 @@ public class GeneratorLayout {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View v, int i, long l) {
 
-                loadRoute(context.getActivityLoader().stages.get(i));
+                loadRoute(context.getActivityLoader().getStageAtIndex(i));
                 generator._id = null;
                 generator.getPathBuilderPopup().startRouteConfiguration();
 

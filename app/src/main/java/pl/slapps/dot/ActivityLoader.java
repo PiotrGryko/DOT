@@ -25,6 +25,7 @@ import java.lang.reflect.Field;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import pl.slapps.dot.model.Stage;
 import pl.slapps.dot.model.World;
@@ -39,17 +40,15 @@ public class ActivityLoader {
 
     private MainActivity context;
     public ArrayList<String> sounds;
-    public ArrayList<Stage> stages;
-
+    //public ArrayList<Stage> stages;
+    public JSONArray jsonStages;
     public final String WORLDS_FILE = "worlds.json";
 
-    public ActivityLoader(MainActivity context)
-    {
-        this.context=context;
+    public ActivityLoader(MainActivity context) {
+        this.context = context;
         this.sounds = new ArrayList<>();
-        this.stages = new ArrayList<>();
+        this.jsonStages = new JSONArray();
     }
-
 
 
     private class DownloadFile extends AsyncTask<String, Integer, String> {
@@ -152,7 +151,7 @@ public class ActivityLoader {
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    public  ArrayList<String> listRaw() {
+    public ArrayList<String> listRaw() {
         ArrayList<String> files = new ArrayList<>();
         Field[] fields = R.raw.class.getFields();
         for (int count = 0; count < fields.length; count++) {
@@ -181,10 +180,9 @@ public class ActivityLoader {
 
     }
 
-    private void saveTextFile(String text)
-    {
+    private void saveTextFile(String text) {
         try {
-            File myFile = new File(context.getCacheDir(),WORLDS_FILE);
+            File myFile = new File(context.getCacheDir(), WORLDS_FILE);
             myFile.createNewFile();
             FileOutputStream fOut = new FileOutputStream(myFile);
             OutputStreamWriter myOutWriter =
@@ -201,93 +199,161 @@ public class ActivityLoader {
         }
     }
 
-    public interface OnStagesLoadingListener
-    {
+    public interface OnStagesLoadingListener {
         public void onLoaded();
+
         public void onFailed();
+
+        public void onProgress(float progress);
     }
 
-    public void loadStagesFile(final OnStagesLoadingListener listener)
-    {
-        DAO.getWorlds(new Response.Listener() {
-            @Override
-            public void onResponse(Object response) {
+    public void loadStagesFile(final OnStagesLoadingListener listener, final boolean assets) {
+        if (assets) {
+            loadStages(true,listener);
+          //  if (listener != null)
+          //      listener.onLoaded();
+        } else {
+            DAO.getWorlds(new Response.Listener() {
+                @Override
+                public void onResponse(Object response) {
 
-                saveTextFile(response.toString());
-                loadStages();
-                if(listener!=null)
-                    listener.onLoaded();
+                    saveTextFile(response.toString());
+                    loadStages(false,listener);
+
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Toast.makeText(context, error.toString(), Toast.LENGTH_LONG).show();
+                    loadStages(false,listener);
+
+                }
+            }, true);
+        }
+    }
+
+    private InputStream getInputStream(boolean assets) {
+        InputStream stream = null;
+        try {
+            if (assets)
+                stream = context.getAssets().open("worlds.json");
+            else {
+                File myFile = new File(context.getCacheDir(), WORLDS_FILE);
+                stream = new FileInputStream(myFile);
             }
-        }, new Response.ErrorListener() {
+
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+        return stream;
+
+    }
+
+    public Stage getStageAtIndex(int index)
+    {
+        Stage stage = null;
+
+        try {
+            stage =Stage.valueOf(jsonStages.getJSONObject(index));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return stage;
+    }
+
+    private void loadStages(final boolean assets, final OnStagesLoadingListener listener) {
+
+        new AsyncTask<Object, Boolean, Boolean>() {
             @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(context,error.toString(),Toast.LENGTH_LONG).show();
-                boolean stagesLoaded = loadStages();
-                if(listener!=null && stagesLoaded)
+            protected Boolean doInBackground(Object[] params) {
+
+
+                StringBuilder returnString = new StringBuilder();
+                InputStream fIn = null;
+                InputStreamReader isr = null;
+                BufferedReader input = null;
+                try {
+                    //File myFile = new File(context.getCacheDir(),WORLDS_FILE);
+                    fIn = getInputStream(assets);
+                    // fIn = context.getResources().getAssets()
+                    //        .open(WORLDS_FILE, Context.MODE_WORLD_READABLE);
+
+
+                    isr = new InputStreamReader(fIn);
+                    input = new BufferedReader(isr);
+                    String line = "";
+                    float currentBytes = 0;
+                    float max = fIn.available();
+                    Log.d("nnn","max "+max);
+                    while ((line = input.readLine()) != null) {
+                        returnString.append(line);
+                        currentBytes+=line.length();
+                        Log.d("nnn","current bytes "+currentBytes);
+                        listener.onProgress(currentBytes/max);
+
+                    }
+                } catch (Exception e) {
+                    e.getMessage();
+                } finally {
+                    try {
+                        if (isr != null)
+                            isr.close();
+                        if (fIn != null)
+                            fIn.close();
+                        if (input != null)
+                            input.close();
+                    } catch (Exception e2) {
+                        e2.getMessage();
+                    }
+                }
+
+                try {
+
+                    //ArrayList<World> worlds = new ArrayList<>();
+
+                    JSONObject jsonData = new JSONObject(returnString.toString());
+                    JSONObject api = jsonData.has("api") ? jsonData.getJSONObject("api") : new JSONObject();
+                    jsonStages = new JSONArray();
+                    JSONArray jsonArray = api.has("results") ? api.getJSONArray("results") : new JSONArray();
+
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject world = jsonArray.getJSONObject(i);
+                        JSONArray stages = world.has("stages")?world.getJSONArray("stages"):new JSONArray();
+                        for(int j=0;j<stages.length();j++)
+                        {
+                            jsonStages.put(stages.getJSONObject(j));
+
+                        }
+                        //worlds.add(World.valueOf(jsonArray.getJSONObject(i)));
+                    }
+
+                    /*
+
+                    stages = new ArrayList<>();
+                    for (World w : worlds) {
+                        stages.addAll(w.stages);
+                    }
+*/
+                    Log.d("nnn", "stages loaded " + jsonStages.length());
+                    return true;
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Log.d(TAG, e.toString());
+                    return false;
+                }
+
+
+            }
+
+            public void onPostExecute(Boolean result) {
+                if (result)
                     listener.onLoaded();
                 else
                     listener.onFailed();
             }
-        },true);
-    }
-    private boolean loadStages() {
-        StringBuilder returnString = new StringBuilder();
-        InputStream fIn = null;
-        InputStreamReader isr = null;
-        BufferedReader input = null;
-        try {
-            File myFile = new File(context.getCacheDir(),WORLDS_FILE);
-            fIn = new FileInputStream(myFile);
-           // fIn = context.getResources().getAssets()
-            //        .open(WORLDS_FILE, Context.MODE_WORLD_READABLE);
 
+        }.execute();
 
-
-            isr = new InputStreamReader(fIn);
-            input = new BufferedReader(isr);
-            String line = "";
-            while ((line = input.readLine()) != null) {
-                returnString.append(line);
-            }
-        } catch (Exception e) {
-            e.getMessage();
-        } finally {
-            try {
-                if (isr != null)
-                    isr.close();
-                if (fIn != null)
-                    fIn.close();
-                if (input != null)
-                    input.close();
-            } catch (Exception e2) {
-                e2.getMessage();
-            }
-        }
-
-        try {
-
-            ArrayList<World> worlds = new ArrayList<>();
-            JSONObject jsonData = new JSONObject(returnString.toString());
-            JSONObject api = jsonData.has("api") ? jsonData.getJSONObject("api") : new JSONObject();
-
-            JSONArray jsonArray = api.has("results") ? api.getJSONArray("results") : new JSONArray();
-            for (int i = 0; i < jsonArray.length(); i++) {
-                worlds.add(World.valueOf(jsonArray.getJSONObject(i)));
-            }
-
-
-            stages = new ArrayList<>();
-            for (World w : worlds) {
-                stages.addAll(w.stages);
-            }
-
-            Log.d(TAG, "stages loaded " + stages.size());
-            return true;
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Log.d(TAG, e.toString());
-            return false;
-        }
 
     }
 

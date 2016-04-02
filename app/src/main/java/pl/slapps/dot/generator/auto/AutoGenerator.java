@@ -1,25 +1,17 @@
 package pl.slapps.dot.generator.auto;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.Random;
 
-import pl.slapps.dot.R;
 import pl.slapps.dot.drawing.Util;
 import pl.slapps.dot.generator.Generator;
-import pl.slapps.dot.generator.builder.TileRoute;
-import pl.slapps.dot.model.Config;
-import pl.slapps.dot.model.Route;
 
 /**
  * Created by piotr on 27/03/16.
@@ -30,7 +22,7 @@ public class AutoGenerator {
 
     private Generator generator;
     private Random random;
-
+    private DepthFirstSearch firstSearch;
 
     private boolean cancelGeneration = false;
 
@@ -38,6 +30,7 @@ public class AutoGenerator {
     public AutoGenerator(Generator generator) {
         this.generator = generator;
         this.random = new Random();
+        this.firstSearch = new DepthFirstSearch(generator);
     }
 
 
@@ -135,7 +128,7 @@ public class AutoGenerator {
         generateMaze(false, 0);
     }
 
-    private void generateMaze(boolean set, int count) {
+    private void generateMaze(final boolean set, int count) {
 
         int step = random.nextInt(20);
         int x = 3;
@@ -173,7 +166,8 @@ public class AutoGenerator {
         }
 
 
-        generator.initGrid(x, y);
+
+
         generator.getConfig().colors.colorBackground = randomColor();
         generator.getConfig().colors.colorExplosionEnd = randomColor();
         generator.getConfig().colors.colorExplosionStart = randomColor();
@@ -182,155 +176,30 @@ public class AutoGenerator {
         generator.getConfig().colors.colorRoute = routeColor;
         generator.getConfig().settings.explosionOneLightDistance = random.nextFloat();
         generator.getConfig().settings.explosionOneLightShinning = 2.5f * random.nextFloat();
+        generator.refreashMaze();
 
+        firstSearch.generateMaze(x, y, new Handler.Callback() {
+            @Override
+            public boolean handleMessage(Message msg) {
+                if (!set) {
+                    boolean flag = generator.getPreview();
 
-        int startX = random.nextInt(x);
-        int startY = random.nextInt(y);
+                    if (flag)
+                        generator.stopPreview();
+                    generator.refreashMaze();
+                    generator.getLayout().refreshControlls();
 
-        TileRoute startRoute = generator.findTile(startX, startY);
+                    if (flag)
+                        generator.startPreview();
+                }
 
-
-        while (startRoute != null) {
-            TileRoute next = nextStep(startRoute);
-
-            if (next == null) {
-                TileRoute endRoute = generator.getTileRouteManager().getRouteFinishFromTile(startRoute.from, generator.getTileRouteManager().getOposite(startRoute.from), startRoute);
-
-                int index = generator.tiles.indexOf(startRoute);
-                generator.tiles.set(index, endRoute);
-                startRoute = null;
-
-                Log.d("rrr", "generation finished... " + generator.getStartRoute() + " " + generator.getFinishRoute());
-            } else
-                startRoute = next;
-        }
-
-        if (!set) {
-            boolean flag = generator.getPreview();
-
-            if (flag)
-                generator.stopPreview();
-            generator.refreashMaze();
-            generator.getLayout().refreshControlls();
-
-            if (flag)
-                generator.startPreview();
-        }
-
-    }
-
-    private Route.Direction randomDirection(TileRoute tileRoute, ArrayList<Route.Direction> usedOptions) {
-        Route.Direction from = tileRoute.from;
-        ArrayList<Route.Direction> options = new ArrayList<>();
-
-        if (from != Route.Direction.BOTTOM && !usedOptions.contains(Route.Direction.BOTTOM)) {
-            options.add(Route.Direction.BOTTOM);
-        }
-        if (from != Route.Direction.TOP && !usedOptions.contains(Route.Direction.TOP)) {
-            options.add(Route.Direction.TOP);
-        }
-        if (from != Route.Direction.LEFT && !usedOptions.contains(Route.Direction.LEFT)) {
-            options.add(Route.Direction.LEFT);
-        }
-        if (from != Route.Direction.RIGHT && !usedOptions.contains(Route.Direction.RIGHT)) {
-            options.add(Route.Direction.RIGHT);
-        }
-
-        if (options.size() == 0)
-            return null;
-
-
-        int index = random.nextInt(options.size());
-
-
-        return options.get(index);
-
-
-    }
-
-    private TileRoute nextStep(TileRoute tileRoute) {
-
-
-        // int side = random.nextInt(4);
-
-
-        ArrayList<Route.Direction> usedOptions = new ArrayList<>();
-        TileRoute nextTile = null;
-
-        Route.Direction nextDirection = randomDirection(tileRoute, usedOptions);
-        nextTile = generator.getTileRouteManager().getNeighbour(tileRoute, nextDirection);
-
-        while (nextDirection != null && (nextTile == null || nextTile.type != Route.Type.TILE)) {
-            usedOptions.add(nextDirection);
-            nextDirection = randomDirection(tileRoute, usedOptions);
-            if (nextDirection != null)
-                nextTile = generator.getTileRouteManager().getNeighbour(tileRoute, nextDirection);
-        }
-
-        /*
-        switch (side) {
-            case 0: {
-                nextTile = generator.getTileRouteManager().getNeighbour(tileRoute, Route.Direction.TOP);
-                break;
+                return false;
             }
-            case 1: {
-                nextTile = generator.getTileRouteManager().getNeighbour(tileRoute, Route.Direction.BOTTOM);
-
-                break;
-            }
-            case 2: {
-                nextTile = generator.getTileRouteManager().getNeighbour(tileRoute, Route.Direction.LEFT);
-
-                break;
-            }
-            case 3: {
-                nextTile = generator.getTileRouteManager().getNeighbour(tileRoute, Route.Direction.RIGHT);
-
-                break;
-            }
+        });
 
 
-        }
 
-        if (nextTile == null || nextTile.type != Route.Type.TILE) {
-            nextTile = generator.getTileRouteManager().getNeighbour(tileRoute, Route.Direction.TOP);
 
-        }
-        if (nextTile == null || nextTile.type != Route.Type.TILE) {
-            nextTile = generator.getTileRouteManager().getNeighbour(tileRoute, Route.Direction.BOTTOM);
-
-        }
-        if (nextTile == null || nextTile.type != Route.Type.TILE) {
-            nextTile = generator.getTileRouteManager().getNeighbour(tileRoute, Route.Direction.RIGHT);
-
-        }
-        if (nextTile == null || nextTile.type != Route.Type.TILE) {
-            nextTile = generator.getTileRouteManager().getNeighbour(tileRoute, Route.Direction.LEFT);
-
-        }
-*/
-
-        if (nextTile != null && nextTile.type == Route.Type.TILE) {
-            tileRoute.to = generator.getTileRouteManager().getTo(tileRoute, nextTile);
-            nextTile.from = generator.getTileRouteManager().getOposite(tileRoute.to);
-
-            if (generator.getStartRoute() == null) {
-
-                TileRoute startRoute = generator.getTileRouteManager().getRouteStartFromTile(generator.getTileRouteManager().getOposite(tileRoute.to), tileRoute.to, tileRoute);
-
-                int index = generator.tiles.indexOf(tileRoute);
-                generator.tiles.set(index, startRoute);
-            } else {
-                TileRoute startRoute = generator.getTileRouteManager().getRouteFromTile(tileRoute.from, tileRoute.to, tileRoute);
-
-                int index = generator.tiles.indexOf(tileRoute);
-                generator.tiles.set(index, startRoute);
-            }
-            Log.d("rrr", "step generated ... " + nextTile.horizontalPos + " " + nextTile.verticalPos);
-
-            return nextTile;
-        }
-        return null;
     }
 
 

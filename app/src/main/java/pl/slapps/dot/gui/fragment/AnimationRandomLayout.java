@@ -155,7 +155,7 @@ public class AnimationRandomLayout {
 
                             context.loadStage(Stage.valueOf(object), true);
 
-                            context.mAdView.setVisibility(View.GONE);
+                            //mAdView.setVisibility(View.GONE);
                             hideAnimation.startAnimation(300);
 
 

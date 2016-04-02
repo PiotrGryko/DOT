@@ -25,6 +25,8 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,6 +36,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Random;
 
 import pl.slapps.dot.DAO;
 import pl.slapps.dot.MainActivity;
@@ -41,6 +44,7 @@ import pl.slapps.dot.R;
 import pl.slapps.dot.SurfaceRenderer;
 import pl.slapps.dot.adapter.AdapterStages;
 import pl.slapps.dot.adapter.AdapterWorlds;
+import pl.slapps.dot.drawing.Util;
 import pl.slapps.dot.gui.AnimationMainMenu;
 import pl.slapps.dot.model.Config;
 import pl.slapps.dot.model.Stage;
@@ -54,13 +58,11 @@ public class FragmentMainMenu extends Fragment {
 
     //private MainMenu mainMenu;
 
-    public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState)
-    {
+    public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
 
-        this.context = (MainActivity)getActivity();
+        this.context = (MainActivity) getActivity();
         this.game = context.surfaceRenderer;
         //mainMenu = new MainMenu(context,context.surfaceRenderer);
-
 
 
         View v = init();
@@ -94,6 +96,13 @@ public class FragmentMainMenu extends Fragment {
     private ImageButton btnSkipStage;
     private ImageButton btnDisableAds;
 
+    private String startBackgroundColor;
+    private String startTextColor;
+    public AdView mAdView;
+
+
+    private Random random = new Random();
+
 
     private ProgressBar bar;
 
@@ -112,7 +121,6 @@ public class FragmentMainMenu extends Fragment {
     public LinearLayout getLayoutHeader() {
         return layoutHeader;
     }
-
 
 
     public ImageView getStartButton() {
@@ -145,8 +153,9 @@ public class FragmentMainMenu extends Fragment {
 //            int c = Color.argb(100, Color.red(color), Color.green(color), Color.blue(color));
 
             currentColor = colorString;
+            //int color = getBackground().getSolidColor();
 
-            animationMainMenu.setColor("#ffffff", colorString);
+            animationMainMenu.setColor(startBackgroundColor, colorString);
 
             //getBackground().setBackgroundColor(c);
         } else {
@@ -185,7 +194,6 @@ public class FragmentMainMenu extends Fragment {
     }
 
 
-
     public void displayError() {
 
         bar.setVisibility(View.GONE);
@@ -204,16 +212,19 @@ public class FragmentMainMenu extends Fragment {
 
         btnPlay.setColorFilter(color);
         btnGenerate.setColorFilter(color);
+        btnSkipStage.setColorFilter(color);
+
 
         //tvName.setText(stage.name);
         //tvDesc.setText(stage.description);
-        tvName.setText("#"+currentStage);
+        tvName.setText("#" + currentStage);
         //layoutMenu.setVisibility(View.VISIBLE);
         bar.setVisibility(View.GONE);
         //layoutHeader.setVisibility(View.VISIBLE);
         btnPlay.setVisibility(View.VISIBLE);
         layoutPurchase.setVisibility(View.VISIBLE);
         btnGenerate.setVisibility(View.VISIBLE);
+        btnSkipStage.setVisibility(View.VISIBLE);
 
     }
 
@@ -249,22 +260,27 @@ public class FragmentMainMenu extends Fragment {
         return returnString.toString();
     }
 
+    private String randomColor() {
+        int color = Color.rgb(random.nextInt(255), random.nextInt(255), random.nextInt(255));
+
+        return "#" + Integer.toHexString(color);
+    }
 
     private View init() {
 
         animationMainMenu = new AnimationMainMenu(this);
 
         layout = LayoutInflater.from(context).inflate(R.layout.fragment_main_menu, null);
-        bar = (ProgressBar)layout.findViewById(R.id.bar);
+        bar = (ProgressBar) layout.findViewById(R.id.bar);
         layoutMenu = (LinearLayout) layout.findViewById(R.id.layout_menu);
         layoutBtns = (LinearLayout) layout.findViewById(R.id.layout_btns);
         layoutHeader = (LinearLayout) layout.findViewById(R.id.layout_header);
         //tvHeader = (TextView) layout.findViewById(R.id.tv_header);
 
 
-        layoutPurchase=(LinearLayout)layout.findViewById(R.id.layout_purchase);
-        btnSkipStage=(ImageButton)layout.findViewById(R.id.skip_stage);
-        btnDisableAds =(ImageButton)layout.findViewById(R.id.disable_ads);
+        layoutPurchase = (LinearLayout) layout.findViewById(R.id.layout_purchase);
+        btnSkipStage = (ImageButton) layout.findViewById(R.id.skip_stage);
+        btnDisableAds = (ImageButton) layout.findViewById(R.id.disable_ads);
 
         tvName = (TextView) layout.findViewById(R.id.tv_lvl);
         tvDesc = (TextView) layout.findViewById(R.id.tv_desc);
@@ -276,11 +292,31 @@ public class FragmentMainMenu extends Fragment {
         btnOnline = (ImageButton) layout.findViewById(R.id.btn_online);
         btnShuffle = (ImageButton) layout.findViewById(R.id.btn_shuffle);
 
+        mAdView = (AdView) layout.findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+
+
+        startTextColor = randomColor();
+        startBackgroundColor = randomColor();
+
+/*
+        if (Util.isColorDark(color1) && Util.isColorDark(color2)) {
+            color1 = Util.changeColorBrightness(color1, true);
+        } else if (!Util.isColorDark(color1) && !Util.isColorDark(color2)) {
+            color1 = Util.changeColorBrightness(color1, false);
+
+        }
+  */
+        layoutMenu.setBackgroundColor(Color.parseColor(startBackgroundColor));
+        bar.getIndeterminateDrawable().setColorFilter(Color.parseColor(startTextColor), android.graphics.PorterDuff.Mode.MULTIPLY);
+        tvName.setTextColor(Color.parseColor(startTextColor));
+
         btnSkipStage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //((MainActivity)FragmentMainMenu.this.getActivity()).getActivityBilling().buyGap();
-                ((MainActivity)FragmentMainMenu.this.getActivity()).showVideoAdv();
+                ((MainActivity) FragmentMainMenu.this.getActivity()).showVideoAdv();
 
             }
         });
@@ -331,7 +367,7 @@ public class FragmentMainMenu extends Fragment {
             public void onClick(View view) {
 
 
-                context.mAdView.setVisibility(View.GONE);
+                mAdView.setVisibility(View.GONE);
                 animationMainMenu.hideMenu();
 
             }
@@ -346,10 +382,7 @@ public class FragmentMainMenu extends Fragment {
                 game.setRunnig(true);
 
 
-
-
                 ///context.gameHolder.removeView(layout);
-
 
 
                 //context.gameHolder.removeView(layoutMenu);
@@ -360,7 +393,7 @@ public class FragmentMainMenu extends Fragment {
                 //context.rootLayout.addView(context.getActivityControls().getLayoutButtons());
 
                 //menuHideAnimation.startAnimation(500);
-                context.mAdView.setVisibility(View.GONE);
+                mAdView.setVisibility(View.GONE);
 
 
             }
@@ -376,8 +409,6 @@ public class FragmentMainMenu extends Fragment {
         btnStages.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-
 
 
                 Log.d(TAG, "online stages fetched");
@@ -422,7 +453,7 @@ public class FragmentMainMenu extends Fragment {
                                 @Override
                                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-                                    context.loadStage(world.stages.get(i),false);
+                                    context.loadStage(world.stages.get(i), false);
                                     stagesDialog.dismiss();
                                     worldsDialog.dismiss();
                                 }
@@ -439,22 +470,12 @@ public class FragmentMainMenu extends Fragment {
                 worldsDialog.show();
 
 
-
-
-
-
-
-
-
             }
         });
 
         btnOnline.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-
-
 
 
                 Log.d(TAG, "button online pressed");
@@ -503,7 +524,7 @@ public class FragmentMainMenu extends Fragment {
                                         @Override
                                         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-                                            context.loadStage(world.stages.get(i),false);
+                                            context.loadStage(world.stages.get(i), false);
                                             stagesDialog.dismiss();
                                             worldsDialog.dismiss();
                                         }
@@ -546,9 +567,9 @@ public class FragmentMainMenu extends Fragment {
                             object = object.has("api") ? object.getJSONObject("api") : object;
                             object = object.has("doc") ? object.getJSONObject("doc") : object;
 
-                            context.loadStage(Stage.valueOf(object),true);
+                            context.loadStage(Stage.valueOf(object), true);
 
-                            context.mAdView.setVisibility(View.GONE);
+                            mAdView.setVisibility(View.GONE);
                             animationMainMenu.hideMenu();
 
 
@@ -567,15 +588,12 @@ public class FragmentMainMenu extends Fragment {
 
             }
         });
-        if(context.getCurrentStage()!=null)
-        context.loadStage(context.getCurrentStage(),false);
-
+        if (context.getCurrentStage() != null)
+            context.loadStage(context.getCurrentStage(), false);
 
 
         return layout;
     }
-
-
 
 
 }

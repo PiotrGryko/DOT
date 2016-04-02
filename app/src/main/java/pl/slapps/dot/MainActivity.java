@@ -1,7 +1,10 @@
 package pl.slapps.dot;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -79,7 +82,6 @@ public class MainActivity extends FragmentActivity {
     }
 
     public InterstitialAd mInterstitialAd;
-    public AdView mAdView;
     public RewardedVideoAd mRewardedVideoAd;
 
     //public MainMenu mainMenu;
@@ -187,6 +189,9 @@ public class MainActivity extends FragmentActivity {
         Fabric.with(this, new Crashlytics());
         DAO.initRequestQueue(this);
 
+       // if(Build.VERSION.SDK_INT>=11)
+       // setTheme(android.R.style.Theme_Holo_Dialog);
+
         activityInvite = new GoogleInvite(this);
 
         activityInvite.receive();
@@ -259,15 +264,15 @@ public class MainActivity extends FragmentActivity {
         activityLoader.loadStagesFile(new ActivityLoader.OnStagesLoadingListener() {
             @Override
             public void onLoaded() {
-                if (currentStage < activityLoader.stages.size())
-                    loadStage(activityLoader.stages.get(currentStage), false);
+                if (currentStage < activityLoader.jsonStages.length())
+                    loadStage(activityLoader.getStageAtIndex(currentStage), false);
                 else {
 
-                    if (activityLoader.stages.size() == 0) {
+                    if (activityLoader.jsonStages.length() == 0) {
                         Toast.makeText(MainActivity.this, "??", Toast.LENGTH_LONG).show();
                     } else {
                         currentStage = 0;
-                        loadStage(activityLoader.stages.get(currentStage), false);
+                        loadStage(activityLoader.getStageAtIndex(currentStage), false);
                     }
                 }
             }
@@ -281,15 +286,19 @@ public class MainActivity extends FragmentActivity {
 
                 }
             }
-        });
+
+            @Override
+            public void onProgress(float progress) {
+                Log.d("nnn","on loading progress "+progress);
+
+            }
+        },true);
 
 
         //soundsManager.playBackgroundBirds();
 
 
-        mAdView = (AdView) findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
+
 
 
         mInterstitialAd = new InterstitialAd(this);
@@ -379,11 +388,26 @@ public class MainActivity extends FragmentActivity {
         mRewardedVideoAd.loadAd("ca-app-pub-3940256099942544/1033173712", adRequest);
         mRewardedVideoAd.show();
  */
-        currentStage++;
-        if(currentStage==activityLoader.stages.size())
-            currentStage=0;
 
-        loadStage(activityLoader.stages.get(currentStage), false);
+        new AlertDialog.Builder(this).setTitle("Skip to next stage?").setPositiveButton("yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                currentStage++;
+                if(currentStage==activityLoader.jsonStages.length())
+                    currentStage=0;
+
+                loadStage(activityLoader.getStageAtIndex(currentStage), false);
+                dialog.dismiss();;
+
+            }
+        }).setNegativeButton("no", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        }).show();
+
+
 
 
     }
@@ -401,7 +425,7 @@ public class MainActivity extends FragmentActivity {
     {
 
 
-        surfaceRenderer.loadStageData(activityLoader.stages.get(currentStage));
+        surfaceRenderer.loadStageData(activityLoader.getStageAtIndex(currentStage));
 
     }
 
@@ -484,7 +508,7 @@ public class MainActivity extends FragmentActivity {
             showRandom();
         } else {
             currentStage++;
-            if (currentStage >= activityLoader.stages.size())
+            if (currentStage >= activityLoader.jsonStages.length())
                 currentStage = 0;
 
 
@@ -507,7 +531,7 @@ public class MainActivity extends FragmentActivity {
 
                             //mainMenu.playStage(false);
 
-                            loadStage(activityLoader.stages.get(currentStage), false);
+                            loadStage(activityLoader.getStageAtIndex(currentStage), false);
                             //surfaceRenderer.setRunnig(true);
                             surfaceRenderer.setDrawing(true);
 
@@ -539,7 +563,6 @@ public class MainActivity extends FragmentActivity {
                 setupFragment();
                 surfaceRenderer.setRunnig(false);
                 gameHolder.removeView(mockView);
-                mAdView.setVisibility(View.VISIBLE);
 
 
                 drawerContent.removeAllViews();

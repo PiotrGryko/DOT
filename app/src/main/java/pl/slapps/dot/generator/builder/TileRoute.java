@@ -26,6 +26,7 @@ public class TileRoute extends Tile {
     private boolean currentTile = false;
     private boolean currentHeadTile = false;
     public boolean drawCoin = false;
+    public boolean visited = false;
 
     public void setCurrentTile(boolean flag) {
         currentTile = flag;

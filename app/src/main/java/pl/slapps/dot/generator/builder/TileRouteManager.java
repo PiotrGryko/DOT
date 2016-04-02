@@ -117,8 +117,8 @@ public class TileRouteManager {
 
     public TileRoute getPreviousTileForRoute(TileRoute currentTile)
     {
-        if(currentTile.type== Route.Type.TILE)
-            return null;
+      //  if(currentTile.type== Route.Type.TILE)
+      //      return null;
 
         //Route.Direction nextRouteFrom = getOposite(currentTile.to);
         int xStart = currentTile.horizontalPos;
