@@ -21,6 +21,7 @@ import com.android.volley.Response;
 import pl.slapps.dot.DAO;
 import pl.slapps.dot.MainActivity;
 import pl.slapps.dot.R;
+import pl.slapps.dot.adapter.AdapterSounds;
 import pl.slapps.dot.generator.Generator;
 import pl.slapps.dot.model.World;
 import yuku.ambilwarna.AmbilWarnaDialog;
@@ -270,7 +271,7 @@ public class GeneratorLayoutWorlds {
                 dialogChooseSound.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 final View chooseView = LayoutInflater.from(generator.view.context).inflate(R.layout.dialog_stages, null);
                 ListView lv = (ListView) chooseView.findViewById(R.id.lv);
-                lv.setAdapter(new ArrayAdapter<String>(generator.view.context, android.R.layout.simple_list_item_1, generator.view.context.getActivityLoader().listRaw()));
+                lv.setAdapter(new AdapterSounds(generator.view.context,  generator.view.context.getActivityLoader().listRaw()));
 
                 lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
@@ -293,7 +294,7 @@ public class GeneratorLayoutWorlds {
                 dialogChooseSound.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 View chooseView = LayoutInflater.from(generator.view.context).inflate(R.layout.dialog_stages, null);
                 ListView lv = (ListView) chooseView.findViewById(R.id.lv);
-                lv.setAdapter(new ArrayAdapter<String>(generator.view.context, android.R.layout.simple_list_item_1, generator.view.context.getActivityLoader().listRaw()));
+                lv.setAdapter(new AdapterSounds(generator.view.context,  generator.view.context.getActivityLoader().listRaw()));
                 lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -316,7 +317,7 @@ public class GeneratorLayoutWorlds {
                 dialogChooseSound.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 View chooseView = LayoutInflater.from(generator.view.context).inflate(R.layout.dialog_stages, null);
                 ListView lv = (ListView) chooseView.findViewById(R.id.lv);
-                lv.setAdapter(new ArrayAdapter<String>(generator.view.context, android.R.layout.simple_list_item_1, generator.view.context.getActivityLoader().listRaw()));
+                lv.setAdapter(new AdapterSounds(generator.view.context,  generator.view.context.getActivityLoader().listRaw()));
                 lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -339,7 +340,7 @@ public class GeneratorLayoutWorlds {
                 dialogChooseSound.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 View chooseView = LayoutInflater.from(generator.view.context).inflate(R.layout.dialog_stages, null);
                 ListView lv = (ListView) chooseView.findViewById(R.id.lv);
-                lv.setAdapter(new ArrayAdapter<String>(generator.view.context, android.R.layout.simple_list_item_1, generator.view.context.getActivityLoader().listRaw()));
+                lv.setAdapter(new AdapterSounds(generator.view.context,  generator.view.context.getActivityLoader().listRaw()));
                 lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {

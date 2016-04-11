@@ -113,7 +113,7 @@ public class DAO {
         queue.add(stringRequest);
     }
 
-    public static void addStage(final JSONObject stage, Response.Listener listener, final String id) {
+    public static void addStage(final JSONObject stage, Response.Listener listener, final Response.ErrorListener errorListener, final String id) {
 
         String request = url + "stage";
         if (id != null)
@@ -126,7 +126,7 @@ public class DAO {
             @Override
             public void onErrorResponse(VolleyError error) {
 
-
+                errorListener.onErrorResponse(error);
                 Log.d(TAG, error.toString());
             }
         }) {

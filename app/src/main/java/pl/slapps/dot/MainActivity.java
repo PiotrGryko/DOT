@@ -3,8 +3,6 @@ package pl.slapps.dot;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
-import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -24,33 +22,20 @@ import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.facebook.FacebookSdk;
-import com.google.ads.mediation.admob.AdMobAdapter;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.reward.RewardItem;
 import com.google.android.gms.ads.reward.RewardedVideoAd;
 import com.google.android.gms.ads.reward.RewardedVideoAdListener;
-import com.google.android.gms.appinvite.AppInvite;
-import com.google.android.gms.appinvite.AppInviteInvitation;
-import com.google.android.gms.appinvite.AppInviteInvitationResult;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.ResultCallback;
 
 
-import java.util.ArrayList;
+
 
 import io.fabric.sdk.android.Fabric;
 
-import pl.slapps.dot.billing.util.IabHelper;
-import pl.slapps.dot.billing.util.IabResult;
-import pl.slapps.dot.billing.util.Purchase;
-import pl.slapps.dot.drawing.Util;
 import pl.slapps.dot.gui.AnimationShow;
-import pl.slapps.dot.gui.fragment.AnimationRandomLayout;
 import pl.slapps.dot.gui.fragment.FragmentMainMenu;
 import pl.slapps.dot.gui.AnimationScoreLayout;
 import pl.slapps.dot.model.Stage;
@@ -77,16 +62,11 @@ public class MainActivity extends FragmentActivity {
     private Handler handler = new Handler();
 
 
-    public Handler getHandler() {
-        return handler;
-    }
 
     public InterstitialAd mInterstitialAd;
     public RewardedVideoAd mRewardedVideoAd;
 
-    //public MainMenu mainMenu;
     public AnimationScoreLayout scoreLayout;
-    public AnimationRandomLayout randomLayout;
 
 
     public DrawerLayout drawer;
@@ -100,7 +80,7 @@ public class MainActivity extends FragmentActivity {
 
     private ActivityLoader activityLoader;
     private ActivityControls activityControls;
-    private GoogleBilling activityBilling;
+   // private GoogleBilling activityBilling;
     private GoogleInvite activityInvite;
 
 
@@ -108,7 +88,7 @@ public class MainActivity extends FragmentActivity {
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        activityBilling.handleActivityResult(requestCode, resultCode, data);
+     //   activityBilling.handleActivityResult(requestCode, resultCode, data);
         activityInvite.onActivityResult(requestCode, resultCode, data);
         Log.d("RRR", "on activity result ");
     }
@@ -128,10 +108,11 @@ public class MainActivity extends FragmentActivity {
         return activityControls;
     }
 
+    /*
     public GoogleBilling getActivityBilling() {
         return activityBilling;
     }
-
+*/
     public GoogleInvite getActivityInvite() {
         return activityInvite;
     }
@@ -140,6 +121,10 @@ public class MainActivity extends FragmentActivity {
         return soundsManager;
     }
 
+    public Handler getHandler()
+    {
+        return handler;
+    }
 
     public View getMockView() {
         return mockView;
@@ -174,32 +159,31 @@ public class MainActivity extends FragmentActivity {
 
     }
 
-    /*
-        @Override
-        public void onDestroy() {
-            super.onDestroy();
-            if (mService != null) {
-                unbindService(mServiceConn);
-            }
-        }
-    */
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (activityLoader != null)
+            activityLoader.onDestroy();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Fabric.with(this, new Crashlytics());
         DAO.initRequestQueue(this);
 
-       // if(Build.VERSION.SDK_INT>=11)
-       // setTheme(android.R.style.Theme_Holo_Dialog);
+        // if(Build.VERSION.SDK_INT>=11)
+        // setTheme(android.R.style.Theme_Holo_Dialog);
 
         activityInvite = new GoogleInvite(this);
 
         activityInvite.receive();
 
 
-        activityBilling = new GoogleBilling(this);
-        activityBilling.setupBilling();
-        activityLoader = new ActivityLoader(this);
+      //  activityBilling = new GoogleBilling(this);
+      //  activityBilling.setupBilling();
+        activityLoader = new ActivityLoader(this,handler);
 
         activityLoader.listCatche();
         activityLoader.loadSounds();
@@ -244,7 +228,6 @@ public class MainActivity extends FragmentActivity {
 
         //mainMenu = new MainMenu(this, surfaceRenderer);
         scoreLayout = new AnimationScoreLayout(surfaceRenderer);
-        randomLayout = new AnimationRandomLayout(surfaceRenderer);
 
         drawer = (DrawerLayout) findViewById(R.id.drawer);
         drawerContent = (LinearLayout) findViewById(R.id.drawer_content);
@@ -255,7 +238,6 @@ public class MainActivity extends FragmentActivity {
         //mainMenu.init();
         surfaceRenderer.init(this);
         scoreLayout.initLayout(this);
-        randomLayout.initLayout(this);
         //initMainMenu();
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -264,15 +246,16 @@ public class MainActivity extends FragmentActivity {
         activityLoader.loadStagesFile(new ActivityLoader.OnStagesLoadingListener() {
             @Override
             public void onLoaded() {
+                Log.d(TAG,"on loaded current stage "+currentStage);
                 if (currentStage < activityLoader.jsonStages.length())
-                    loadStage(activityLoader.getStageAtIndex(currentStage), false);
+                    loadStage(activityLoader.getStageAtIndex(currentStage));
                 else {
 
                     if (activityLoader.jsonStages.length() == 0) {
                         Toast.makeText(MainActivity.this, "??", Toast.LENGTH_LONG).show();
                     } else {
                         currentStage = 0;
-                        loadStage(activityLoader.getStageAtIndex(currentStage), false);
+                        loadStage(activityLoader.getStageAtIndex(currentStage));
                     }
                 }
             }
@@ -289,16 +272,13 @@ public class MainActivity extends FragmentActivity {
 
             @Override
             public void onProgress(float progress) {
-                Log.d("nnn","on loading progress "+progress);
+                Log.d("nnn", "on loading progress " + progress);
 
             }
-        },true);
+        }, false);
 
 
         //soundsManager.playBackgroundBirds();
-
-
-
 
 
         mInterstitialAd = new InterstitialAd(this);
@@ -308,6 +288,7 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onAdClosed() {
                 requestNewInterstitial();
+                surfaceRenderer.getGame().setPaused(false);
                 //    mainMenu.headerHideAnimation.startAnimation(500);
                 //    mainMenu.btnsHideAnimation.startAnimation(500);
                 //mAdView.setVisibility(View.GONE);
@@ -319,7 +300,6 @@ public class MainActivity extends FragmentActivity {
 
 
         setupFragment();
-
 
 
         mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
@@ -393,11 +373,12 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 currentStage++;
-                if(currentStage==activityLoader.jsonStages.length())
-                    currentStage=0;
+                if (currentStage == activityLoader.jsonStages.length())
+                    currentStage = 0;
 
-                loadStage(activityLoader.getStageAtIndex(currentStage), false);
-                dialog.dismiss();;
+                loadStage(activityLoader.getStageAtIndex(currentStage));
+                dialog.dismiss();
+                ;
 
             }
         }).setNegativeButton("no", new DialogInterface.OnClickListener() {
@@ -406,8 +387,6 @@ public class MainActivity extends FragmentActivity {
                 dialog.dismiss();
             }
         }).show();
-
-
 
 
     }
@@ -429,9 +408,8 @@ public class MainActivity extends FragmentActivity {
 
     }
 
-    public void loadStage(final Stage stage, boolean shuffle) {
+    public void loadStage(final Stage stage) {
 
-        this.isRandomStage = shuffle;
         surfaceRenderer.setRunnig(false);
         try {
 
@@ -448,7 +426,6 @@ public class MainActivity extends FragmentActivity {
             }
 
             scoreLayout.config(stage, currentStage);
-            randomLayout.config(stage);
 
 
             surfaceRenderer.loadStageData(stage);
@@ -467,46 +444,9 @@ public class MainActivity extends FragmentActivity {
             drawer.openDrawer(drawerContent);
     }
 
-    public void showRandom() {
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                //Log.d("Zzz", "load stage " + currentStage + " " + activityLoader.stages.size());
-                //mainMenu.getAnimationMainMenu().showMe;
-
-
-                randomLayout.showLayout(new AnimationShow.OnAnimationListener() {
-                    @Override
-                    public void onAnimationEnd() {
-
-
-                        //  Log.d("zzz", "move to next stage");
-                        //mainMenu.playStage(false);
-
-                        //loadStage(activityLoader.stages.get(currentStage));
-                        //surfaceRenderer.setRunnig(true);
-                        // surfaceRenderer.setDrawing(true);
-
-
-                    }
-
-                    @Override
-                    public void onAnimationStart() {
-
-                    }
-                });
-            }
-        });
-    }
-
-    private boolean isRandomStage;
 
     public void moveToNextStage() {
 
-        if (isRandomStage) {
-
-            showRandom();
-        } else {
             currentStage++;
             if (currentStage >= activityLoader.jsonStages.length())
                 currentStage = 0;
@@ -515,6 +455,7 @@ public class MainActivity extends FragmentActivity {
             int savedStage = preferences.getInt("current_stage", 0);
             if (savedStage < currentStage) {
                 unlockedStage = currentStage;
+
                 preferences.edit().putInt("current_stage", unlockedStage).apply();
             }
 
@@ -531,7 +472,7 @@ public class MainActivity extends FragmentActivity {
 
                             //mainMenu.playStage(false);
 
-                            loadStage(activityLoader.getStageAtIndex(currentStage), false);
+                            loadStage(activityLoader.getStageAtIndex(currentStage));
                             //surfaceRenderer.setRunnig(true);
                             surfaceRenderer.setDrawing(true);
 
@@ -548,26 +489,27 @@ public class MainActivity extends FragmentActivity {
                 }
 
             });
-        }
+
     }
 
 
     public void onBackPressed() {
 
+        //
 
-        if (isRandomStage && randomLayout.getLayout().getParent() == null) {
-            randomLayout.showLayout(null);
-        } else if (surfaceRenderer.onBackPressed()) {
+
+        if (surfaceRenderer.onBackPressed()) {
+            surfaceRenderer.drawGenerator = false;
             if (getCurrentFragment() == null) {
-                randomLayout.hide();
+
+               // surfaceRenderer.setRunnig(false);
+              //  surfaceRenderer.setDrawing(false);
                 setupFragment();
-                surfaceRenderer.setRunnig(false);
                 gameHolder.removeView(mockView);
 
 
                 drawerContent.removeAllViews();
                 drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-                isRandomStage = false;
 
 
             } else {

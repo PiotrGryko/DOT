@@ -34,16 +34,18 @@ public class Background extends Sprite {
 
 
 
+
     public void configure(Config config) {
-        this.config=config;
+        this.config = config;
 
-        if (!config.settings.switchBackgroundColors) {
-            color = Util.parseColor(config.colors.colorBackground);
-        } else {
-            switchColors = true;
-            color = Util.parseColor(config.colors.colorSwitchBackgroundStart);
+        //if (!config.settings.switchBackgroundColors) {
+        color = Util.parseColor(config.colors.colorBackground);
 
-        }
+        // } else {
+        //     switchColors = true;
+        //     color = Util.parseColor(config.colors.colorSwitchBackgroundStart);
+
+        // }
     }
 
     public Background(Game view, Config config) {

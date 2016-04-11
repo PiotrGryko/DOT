@@ -18,6 +18,7 @@ public class SoundsManager {
 
     private Uri moveSound;
     private Uri crashSound;
+    private Uri crashSoundTwo;
     private Uri soundFinish;
     private Uri backgroundSound;
 
@@ -25,16 +26,21 @@ public class SoundsManager {
     private AsyncPlayer asyncPlayer;
     private AsyncPlayer asyncPlayerPress;
     private AsyncPlayer asyncPlayerCrash;
+    private AsyncPlayer asyncPlayerCrashTwo;
+
     private AsyncPlayer asyncPlayerBackground;
     private Context context;
 
     public static String DEFAULT_PRESS = "click2";
     public static String DEFAULT_CRASH = "spacebib";
     public static String DEFAULT_FINISH = "finish";
+    public static String DEFAULT_COIN = "coin";
+
 
     private String key = "cache/";
 
     private Sounds sounds;
+    private boolean crashFlag;
 
     public static AsyncPlayer getPlayer(String tag) {
         return new AsyncPlayer(tag);
@@ -44,6 +50,8 @@ public class SoundsManager {
         asyncPlayer.stop();
         asyncPlayerBackground.stop();
         asyncPlayerCrash.stop();
+        asyncPlayerCrashTwo.stop();
+
         asyncPlayerPress.stop();
     }
 
@@ -83,6 +91,14 @@ public class SoundsManager {
         } else
             crashSound = parseSound(DEFAULT_CRASH);
 
+        if (!sounds.soundCrashTwo.equals("")) {
+            if (sounds.soundCrashTwo.contains(key))
+                crashSoundTwo = Uri.parse(sounds.soundCrashTwo);
+            else
+                crashSoundTwo = parseSound(sounds.soundCrashTwo);
+        } else
+            crashSound = parseSound(DEFAULT_CRASH);
+
         if (!sounds.soundFinish.equals("")) {
             if (sounds.soundFinish.contains(key))
                 soundFinish = Uri.parse(sounds.soundFinish);
@@ -100,12 +116,15 @@ public class SoundsManager {
         this.sounds = new Sounds();
         moveSound = Uri.parse("android.resource://" + context.getPackageName() + "/raw/click2");
         crashSound = Uri.parse("android.resource://" + context.getPackageName() + "/raw/spacebib");
+        crashSoundTwo = Uri.parse("android.resource://" + context.getPackageName() + "/raw/spacebib");
+
         soundFinish = Uri.parse("android.resource://" + context.getPackageName() + "/raw/finish");
 
         asyncPlayer = new AsyncPlayer("action");
         asyncPlayerBackground = new AsyncPlayer("background");
         asyncPlayerPress = new AsyncPlayer("press");
         asyncPlayerCrash = new AsyncPlayer("crash");
+        asyncPlayerCrashTwo = new AsyncPlayer("crashTwo");
 
 
     }
@@ -132,12 +151,26 @@ public class SoundsManager {
 
     }
 
-    public void playCrashSound() {
-        if (!sounds.overlap)
+    public void playCoinSound() {
 
+            playOverlapped(parseSound(DEFAULT_COIN));
+        //  mediaPlayerMove.start();
+
+    }
+
+    public void playCrashSound() {
+
+
+        if (crashFlag)
+        {
             asyncPlayerCrash.play(context, crashSound, false, AudioManager.STREAM_MUSIC);
-        else
-            playOverlapped(crashSound);
+
+        } else {
+            asyncPlayerCrashTwo.play(context, crashSoundTwo, false, AudioManager.STREAM_MUSIC);
+
+        }
+        crashFlag = !crashFlag;
+
 
         //  mediaPlayerCrash.start();
     }
@@ -160,6 +193,12 @@ public class SoundsManager {
             asyncPlayer.play(context, custom, false, AudioManager.STREAM_MUSIC);
         else
             playOverlapped(custom);
+
+    }
+
+    public void playUri(Uri uri) {
+        asyncPlayer.play(context, uri, false, AudioManager.STREAM_MUSIC);
+
 
     }
 

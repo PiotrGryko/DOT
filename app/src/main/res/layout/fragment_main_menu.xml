@@ -43,6 +43,7 @@
                         android:adjustViewBounds="true"
                         android:background="@drawable/circle_btn_selector"
                         android:padding="15dp"
+                        android:soundEffectsEnabled="false"
                         android:scaleType="centerInside"
                         android:visibility="gone"
                         android:src="@drawable/play"
@@ -143,18 +144,6 @@
                             android:src="@drawable/stages"
                             android:textColor="#ffffff" />
 
-                        <ImageButton
-                            android:visibility="gone"
-                            android:id="@+id/btn_shuffle"
-                            android:layout_width="70dp"
-                            android:layout_height="70dp"
-                            android:layout_margin="5dp"
-                            android:adjustViewBounds="true"
-                            android:background="@drawable/circle_btn_selector"
-                            android:padding="10dp"
-                            android:scaleType="centerInside"
-                            android:src="@drawable/shuffle"
-                            android:textColor="#ffffff" />
 
 
                     </LinearLayout>

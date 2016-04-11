@@ -40,11 +40,11 @@ public class GeneratorLayoutConfig {
 
         layoutConfig = LayoutInflater.from(generator.view.context).inflate(R.layout.layout_generator_config,null);
 
-        TextView tvLoad = (TextView) layoutConfig.findViewById(R.id.tv_load);
+     //   TextView tvLoad = (TextView) layoutConfig.findViewById(R.id.tv_load);
         TextView tvLoadOnline = (TextView) layoutConfig.findViewById(R.id.tv_load_online);
         TextView tvDeleteOnline = (TextView) layoutConfig.findViewById(R.id.tv_delete_online);
-        TextView tvGenerateRandom= (TextView) layoutConfig.findViewById(R.id.tv_generate_random);
-        TextView tvGenerateWorldStages= (TextView) layoutConfig.findViewById(R.id.tv_generate_world_stages);
+      //  TextView tvGenerateRandom= (TextView) layoutConfig.findViewById(R.id.tv_generate_random);
+      //  TextView tvGenerateWorldStages= (TextView) layoutConfig.findViewById(R.id.tv_generate_world_stages);
 
 
         View.OnClickListener listener = new View.OnClickListener() {
@@ -54,14 +54,14 @@ public class GeneratorLayoutConfig {
 
                 switch (id) {
 
-
+/*
                     case R.id.tv_load: {
                         GeneratorLayoutConfig.this.generatorLayout.loadMaze();
 
 
                         break;
                     }
-
+*/
                     case R.id.tv_load_online: {
                         GeneratorLayoutConfig.this.generatorLayout.loadOnlineMaze();
                         break;
@@ -95,7 +95,8 @@ public class GeneratorLayoutConfig {
                                         }
                                     }, generator._id);
                                 }
-                            }).show();
+                            }).create();
+                            dialog.show();
 
 
                         }
@@ -103,19 +104,7 @@ public class GeneratorLayoutConfig {
                         break;
                     }
 
-                    case R.id.tv_generate_random:
-                    {
 
-                        autoGenerator.generateRandomStage();
-                        break;
-                    }
-
-                    case R.id.tv_generate_world_stages:
-                    {
-
-                        autoGenerator.generateStagesSet(500);
-                        break;
-                    }
 
 
                 }
@@ -125,11 +114,11 @@ public class GeneratorLayoutConfig {
         };
 
 
-        tvLoad.setOnClickListener(listener);
+   //     tvLoad.setOnClickListener(listener);
         tvLoadOnline.setOnClickListener(listener);
         tvDeleteOnline.setOnClickListener(listener);
-        tvGenerateRandom.setOnClickListener(listener);
-        tvGenerateWorldStages.setOnClickListener(listener);
+    //    tvGenerateRandom.setOnClickListener(listener);
+    //    tvGenerateWorldStages.setOnClickListener(listener);
 
 
     }

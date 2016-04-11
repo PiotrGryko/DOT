@@ -32,6 +32,8 @@ public class Colors {
     public String colorSwitchDotStart = "#FFFFFF";
     public String colorSwitchDotEnd = "#FFFFFF";
 
+    public String colorFilter ="#000000";
+
 
 
     public JSONObject toJson() {
@@ -52,6 +54,8 @@ public class Colors {
 
             colors.put("switch_dot_start", colorSwitchDotStart);
             colors.put("switch_dot_end", colorSwitchDotEnd);
+            colors.put("color_filter", colorFilter);
+
 
 
         } catch (JSONException e) {
@@ -83,6 +87,7 @@ public class Colors {
 
             String switchDotStart = colors.has("switch_dot_start") ? colors.getString("switch_dot_start") : returnObject.colorSwitchDotStart;
             String switchDotEnd = colors.has("switch_dot_end") ? colors.getString("switch_dot_end") : returnObject.colorSwitchDotEnd;
+            String colorFilter = colors.has("color_filter") ? colors.getString("color_filter") : returnObject.colorFilter;
 
 
 
@@ -93,7 +98,7 @@ public class Colors {
             returnObject.colorRoute = colorRoute;
             returnObject.colorShip = colorShip;
             returnObject.colorFence = colorFence;
-
+            returnObject.colorFilter=colorFilter;
             returnObject.colorSwitchBackgroundStart=switchBackgroundStart;
             returnObject.colorSwitchBackgroundEnd=switchBackgroundEnd;
 

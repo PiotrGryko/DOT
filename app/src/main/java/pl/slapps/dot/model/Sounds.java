@@ -13,6 +13,8 @@ public class Sounds {
     public String soundBackground="";
     public String soundPress= SoundsManager.DEFAULT_PRESS;
     public String soundCrash=SoundsManager.DEFAULT_CRASH;
+    public String soundCrashTwo=SoundsManager.DEFAULT_CRASH;
+
     public String soundFinish=SoundsManager.DEFAULT_FINISH;
 
     public boolean overlap;
@@ -23,6 +25,8 @@ public class Sounds {
             sounds.put("finish", soundFinish);
             sounds.put("press", soundPress);
             sounds.put("crash", soundCrash);
+            sounds.put("crash_two", soundCrashTwo);
+
             sounds.put("background", soundBackground);
             sounds.put("overlap", overlap);
 
@@ -44,12 +48,15 @@ public class Sounds {
             String soundFinish = sounds.has("finish") ? sounds.getString("finish") : "";
             String soundPress = sounds.has("press") ? sounds.getString("press") : "";
             String soundCrash = sounds.has("crash") ? sounds.getString("crash") : "";
+            String soundCrashTwo = sounds.has("crash_two") ? sounds.getString("crash_two") : "";
+
             String soundBackground = sounds.has("background") ? sounds.getString("background") : "";
             boolean overlap = sounds.has("overlap") ? sounds.getBoolean("overlap") : false;
 
 
             returnObject.soundBackground = soundBackground;
             returnObject.soundCrash = soundCrash;
+            returnObject.soundCrashTwo=soundCrashTwo;
             returnObject.soundFinish = soundFinish;
             returnObject.soundPress = soundPress;
             returnObject.overlap=overlap;

@@ -10,6 +10,7 @@ import android.widget.ImageView;
 
 import java.io.IOException;
 
+import pl.slapps.dot.MainActivity;
 import pl.slapps.dot.R;
 
 /**
@@ -17,18 +18,18 @@ import pl.slapps.dot.R;
  */
 public class PlayButton extends ImageView{
 
-    private MediaPlayer player;
+    //private MediaPlayer player;
     private Uri uri;
-    private Context context;
-    private boolean isPrepared;
+    private MainActivity context;
+    //private boolean isPrepared;
     public PlayButton(Context context) {
         super(context);
-        this.context=context;
+        this.context=(MainActivity) context;
     }
 
     public PlayButton(Context context, AttributeSet attrs) {
         super(context, attrs);
-        this.context=context;
+        this.context=(MainActivity) context;
     }
 
     public void play(Uri uri)
@@ -36,6 +37,10 @@ public class PlayButton extends ImageView{
 
         this.uri = uri;
 
+      //  this.player = new MediaPlayer();
+        PlayButton.this.setImageDrawable(getContext().getResources().getDrawable(R.drawable.play_btn));
+
+/*
         if(player != null && player.isPlaying())
         {
             player.stop();
@@ -44,9 +49,11 @@ public class PlayButton extends ImageView{
             player = null;
             return;
         }
-        this.player = new MediaPlayer();
-
+*/
         //player=new MediaPlayer();
+
+        context.getSoundsManager().playUri(uri);
+        /*
 
         this.player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
@@ -66,13 +73,13 @@ public class PlayButton extends ImageView{
 
         try {
             player.setDataSource(context, uri);
-            player.prepareAsync();
+            player.prepare();
             PlayButton.this.setImageDrawable(context.getResources().getDrawable(R.drawable.stop));
 
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+*/
 
     }
 

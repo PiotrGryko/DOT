@@ -17,27 +17,15 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <pl.slapps.dot.gui.FontedTextView
-                android:id="@+id/tv_load"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/abc_list_selector_holo_light"
-                android:paddingBottom="5dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:paddingTop="5dp"
-                android:text="Load stage" />
+
 
             <pl.slapps.dot.gui.FontedTextView
                 android:id="@+id/tv_load_online"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/abc_list_selector_holo_light"
-                android:paddingBottom="5dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:paddingTop="5dp"
-                android:text="Load online stage" />
+                android:padding="10dp"
+                android:text="LOAD API STAGE" />
 
 
             <pl.slapps.dot.gui.FontedTextView
@@ -45,33 +33,9 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/abc_list_selector_holo_light"
-                android:paddingBottom="5dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:paddingTop="5dp"
-                android:text="delete online stage" />
+                android:padding="10dp"
+                android:text="DELETE API STAGE" />
 
-            <pl.slapps.dot.gui.FontedTextView
-                android:id="@+id/tv_generate_random"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/abc_list_selector_holo_light"
-                android:paddingBottom="5dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:paddingTop="5dp"
-                android:text="generate random stage" />
-
-            <pl.slapps.dot.gui.FontedTextView
-                android:id="@+id/tv_generate_world_stages"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/abc_list_selector_holo_light"
-                android:paddingBottom="5dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:paddingTop="5dp"
-                android:text="generate world stages set" />
 
 
 

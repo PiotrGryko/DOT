@@ -2,6 +2,7 @@ package pl.slapps.dot;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -17,6 +18,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -43,11 +45,16 @@ public class ActivityLoader {
     //public ArrayList<Stage> stages;
     public JSONArray jsonStages;
     public final String WORLDS_FILE = "worlds.json";
+    private LoadStages stagesThread;
+    private Handler handler;
 
-    public ActivityLoader(MainActivity context) {
+
+    public ActivityLoader(MainActivity context, Handler handler) {
         this.context = context;
         this.sounds = new ArrayList<>();
         this.jsonStages = new JSONArray();
+        this.handler = handler;
+
     }
 
 
@@ -109,6 +116,7 @@ public class ActivityLoader {
         }
 
     }
+
 
     public void loadSounds() {
 
@@ -209,23 +217,23 @@ public class ActivityLoader {
 
     public void loadStagesFile(final OnStagesLoadingListener listener, final boolean assets) {
         if (assets) {
-            loadStages(true,listener);
-          //  if (listener != null)
-          //      listener.onLoaded();
+            loadStages(true, listener);
+            //  if (listener != null)
+            //      listener.onLoaded();
         } else {
             DAO.getWorlds(new Response.Listener() {
                 @Override
                 public void onResponse(Object response) {
 
                     saveTextFile(response.toString());
-                    loadStages(false,listener);
+                    loadStages(false, listener);
 
                 }
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     Toast.makeText(context, error.toString(), Toast.LENGTH_LONG).show();
-                    loadStages(false,listener);
+                    loadStages(false, listener);
 
                 }
             }, true);
@@ -249,110 +257,148 @@ public class ActivityLoader {
 
     }
 
-    public Stage getStageAtIndex(int index)
-    {
+    public Stage getStageAtIndex(int index) {
         Stage stage = null;
 
         try {
-            stage =Stage.valueOf(jsonStages.getJSONObject(index));
+            stage = Stage.valueOf(jsonStages.getJSONObject(index));
         } catch (JSONException e) {
             e.printStackTrace();
         }
         return stage;
     }
 
+    public void onDestroy() {
+        if (stagesThread != null) {
+            stagesThread.cancel();
+            stagesThread = null;
+        }
+        Runtime.getRuntime().gc();
+    }
+
+    class LoadStages extends Thread {
+        StringBuilder returnString = null;
+        InputStream fIn = null;
+
+        boolean assets;
+        OnStagesLoadingListener listener;
+        boolean running;
+
+        public void load(boolean assets, OnStagesLoadingListener listener) {
+            this.assets = assets;
+            this.listener = listener;
+
+            start();
+        }
+
+        public void cancel() {
+
+            interrupt();
+
+
+            returnString = null;
+            listener = null;
+            if (fIn != null) {
+                try {
+                    fIn.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                fIn = null;
+
+            }
+            stagesThread = null;
+
+            Log.d("EEE", "Cancel internal");
+
+
+        }
+
+
+        public void run() {
+
+            boolean result = false;
+            running = true;
+
+            try {
+                fIn = getInputStream(assets);
+                returnString = new StringBuilder();
+                byte[] bytes = new byte[1000];
+                int numRead = 0;
+                while ((numRead = fIn.read(bytes)) >= 0) {
+                    returnString.append(new String(bytes, 0, numRead));
+                }
+
+            } catch (Exception e) {
+                e.getMessage();
+            } finally {
+                try {
+
+                    if (fIn != null)
+                        fIn.close();
+
+                } catch (Exception e2) {
+                    e2.getMessage();
+                }
+            }
+
+            try {
+
+                JSONObject jsonData = new JSONObject(returnString.toString());
+                JSONObject api = jsonData.has("api") ? jsonData.getJSONObject("api") : new JSONObject();
+                jsonStages = new JSONArray();
+                JSONArray jsonArray = api.has("results") ? api.getJSONArray("results") : new JSONArray();
+
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject world = jsonArray.getJSONObject(i);
+                    JSONArray stages = world.has("stages") ? world.getJSONArray("stages") : new JSONArray();
+                    for (int j = 0; j < stages.length(); j++) {
+                        jsonStages.put(stages.getJSONObject(j));
+
+                    }
+                }
+
+                result = true;
+            } catch (JSONException e) {
+                e.printStackTrace();
+                Log.d(TAG, e.toString());
+                result = false;
+            }
+
+            if (result)
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(listener!=null)
+                        listener.onLoaded();
+                        onDestroy();
+
+                    }
+                });
+            else
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(listener!=null)
+                        listener.onFailed();
+                        onDestroy();
+                    }
+                });
+            running = false;
+            //clear();
+
+        }
+
+    }
+
     private void loadStages(final boolean assets, final OnStagesLoadingListener listener) {
 
-        new AsyncTask<Object, Boolean, Boolean>() {
-            @Override
-            protected Boolean doInBackground(Object[] params) {
+        if (stagesThread != null) {
+            stagesThread.cancel();
 
-
-                StringBuilder returnString = new StringBuilder();
-                InputStream fIn = null;
-                InputStreamReader isr = null;
-                BufferedReader input = null;
-                try {
-                    //File myFile = new File(context.getCacheDir(),WORLDS_FILE);
-                    fIn = getInputStream(assets);
-                    // fIn = context.getResources().getAssets()
-                    //        .open(WORLDS_FILE, Context.MODE_WORLD_READABLE);
-
-
-                    isr = new InputStreamReader(fIn);
-                    input = new BufferedReader(isr);
-                    String line = "";
-                    float currentBytes = 0;
-                    float max = fIn.available();
-                    Log.d("nnn","max "+max);
-                    while ((line = input.readLine()) != null) {
-                        returnString.append(line);
-                        currentBytes+=line.length();
-                        Log.d("nnn","current bytes "+currentBytes);
-                        listener.onProgress(currentBytes/max);
-
-                    }
-                } catch (Exception e) {
-                    e.getMessage();
-                } finally {
-                    try {
-                        if (isr != null)
-                            isr.close();
-                        if (fIn != null)
-                            fIn.close();
-                        if (input != null)
-                            input.close();
-                    } catch (Exception e2) {
-                        e2.getMessage();
-                    }
-                }
-
-                try {
-
-                    //ArrayList<World> worlds = new ArrayList<>();
-
-                    JSONObject jsonData = new JSONObject(returnString.toString());
-                    JSONObject api = jsonData.has("api") ? jsonData.getJSONObject("api") : new JSONObject();
-                    jsonStages = new JSONArray();
-                    JSONArray jsonArray = api.has("results") ? api.getJSONArray("results") : new JSONArray();
-
-                    for (int i = 0; i < jsonArray.length(); i++) {
-                        JSONObject world = jsonArray.getJSONObject(i);
-                        JSONArray stages = world.has("stages")?world.getJSONArray("stages"):new JSONArray();
-                        for(int j=0;j<stages.length();j++)
-                        {
-                            jsonStages.put(stages.getJSONObject(j));
-
-                        }
-                        //worlds.add(World.valueOf(jsonArray.getJSONObject(i)));
-                    }
-
-                    /*
-
-                    stages = new ArrayList<>();
-                    for (World w : worlds) {
-                        stages.addAll(w.stages);
-                    }
-*/
-                    Log.d("nnn", "stages loaded " + jsonStages.length());
-                    return true;
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    Log.d(TAG, e.toString());
-                    return false;
-                }
-
-
-            }
-
-            public void onPostExecute(Boolean result) {
-                if (result)
-                    listener.onLoaded();
-                else
-                    listener.onFailed();
-            }
-
-        }.execute();
+        }
+        stagesThread = new LoadStages();
+        stagesThread.load(assets, listener);
 
 
     }

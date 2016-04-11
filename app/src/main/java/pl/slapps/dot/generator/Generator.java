@@ -7,6 +7,7 @@ import android.view.MotionEvent;
 import android.widget.Toast;
 
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -418,6 +419,8 @@ public class Generator {
         } catch (Throwable t) {
             t.printStackTrace();
         }
+
+        Log.d(TAG,"maze dumped, stage id: "+_id);
         return output;
     }
 
@@ -444,6 +447,11 @@ public class Generator {
                     }
 
                 }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+
+                }
             }, _id);
         }
         else
@@ -456,23 +464,32 @@ public class Generator {
     public interface OnSaveListener
     {
         public void onSaved();
+        public void onFailed();
+
     }
     public void saveMaze(final OnSaveListener listener) {
 
 
 
 
-        DAO.addStage(dumpMaze(), new Response.Listener() {
+        JSONObject data = dumpMaze();
+
+        DAO.addStage(data, new Response.Listener() {
             @Override
             public void onResponse(Object response) {
                 Log.d(TAG, response.toString());
 
 
                 Toast.makeText(view.context, "Stage saved!", Toast.LENGTH_LONG).show();
-                if(listener!=null)
+                if (listener != null)
                     listener.onSaved();
             }
-        }, _id);
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                listener.onFailed();
+            }
+        },_id);
 
 
     }
@@ -497,6 +514,9 @@ public class Generator {
 
     public void loadRoute(Stage maze) {
         //this.elements=elements;
+
+        if(getPreview())
+            stopPreview();
 
 
         tiles.clear();
@@ -585,8 +605,12 @@ public class Generator {
 
 
     public void startPreview() {
+
+
         if(getStartRoute() == null)
             return;
+
+
         view.getGame().setPreview(true);
         view.getGame().initStage(Stage.valueOf(dumpMaze()));
         //view.context.drawer.closeDrawer(view.context.drawerContent);

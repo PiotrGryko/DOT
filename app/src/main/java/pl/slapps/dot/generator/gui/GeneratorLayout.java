@@ -58,6 +58,8 @@ public class GeneratorLayout {
     private LinearLayout layoutPreviewBase;
     private LinearLayout layoutLightsBase;
     private LinearLayout layoutEffectsBase;
+    private LinearLayout layoutRandomBase;
+
 
 
     /*
@@ -77,6 +79,8 @@ public class GeneratorLayout {
     private LinearLayout toggleChooseWorld;
     private LinearLayout toggleSave;
     private LinearLayout toggleShare;
+    private LinearLayout toggleRandom;
+
 
 
 
@@ -106,6 +110,7 @@ public class GeneratorLayout {
     private GeneratorLayoutPreview layoutPreview;
     private GeneratorLayoutLights layoutLights;
     private GeneratorLayoutEffects layoutEffects;
+    private GeneratorLayoutRandom layoutRandom;
 
     public GeneratorLayoutConstruct layoutConstruct;
 
@@ -128,6 +133,8 @@ public class GeneratorLayout {
         this.layoutPreview = new GeneratorLayoutPreview();
         this.layoutLights = new GeneratorLayoutLights();
         this.layoutEffects = new GeneratorLayoutEffects();
+        this.layoutRandom = new GeneratorLayoutRandom();
+
 
     }
 
@@ -153,6 +160,7 @@ public class GeneratorLayout {
         layoutStrings.refreashLayout(stage);
         layoutLights.refreashLayout();
         layoutEffects.refreashLayout();
+
 
 
 
@@ -474,6 +482,7 @@ public class GeneratorLayout {
         layoutPreview.initLayout(this);
         layoutLights.initLayout(this);
         layoutEffects.initLayout(this);
+        layoutRandom.initLayout(this);
 
 
         layoutGridBase = (LinearLayout) v.findViewById(R.id.layout_grid_size_base);
@@ -511,6 +520,9 @@ public class GeneratorLayout {
 
         layoutEffectsBase = (LinearLayout) v.findViewById(R.id.layout_effects_base);
         toggleEffects = (LinearLayout) v.findViewById(R.id.toggle_effects);
+
+        layoutRandomBase = (LinearLayout) v.findViewById(R.id.layout_random_base);
+        toggleRandom = (LinearLayout) v.findViewById(R.id.toggle_random);
 
         toggleSave = (LinearLayout) v.findViewById(R.id.toggle_save);
         toggleShare = (LinearLayout) v.findViewById(R.id.toggle_share);
@@ -673,6 +685,22 @@ public class GeneratorLayout {
                 }
             }
         });
+
+        toggleRandom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (layoutRandom.getLayout().getParent() == null) {
+                    layoutRandomBase.addView(layoutRandom.getLayout());
+                    toggleRandom.setSelected(true);
+
+                } else {
+                    layoutRandomBase.removeView(layoutRandom.getLayout());
+                    toggleRandom.setSelected(false);
+
+                }
+            }
+        });
+
 
         toggleChooseWorld.setOnClickListener(new View.OnClickListener() {
             @Override

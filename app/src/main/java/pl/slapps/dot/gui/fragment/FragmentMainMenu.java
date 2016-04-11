@@ -20,11 +20,6 @@ import android.widget.TextView;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
-import com.facebook.login.LoginResult;
-import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
@@ -44,7 +39,6 @@ import pl.slapps.dot.R;
 import pl.slapps.dot.SurfaceRenderer;
 import pl.slapps.dot.adapter.AdapterStages;
 import pl.slapps.dot.adapter.AdapterWorlds;
-import pl.slapps.dot.drawing.Util;
 import pl.slapps.dot.gui.AnimationMainMenu;
 import pl.slapps.dot.model.Config;
 import pl.slapps.dot.model.Stage;
@@ -90,7 +84,6 @@ public class FragmentMainMenu extends Fragment {
     private ImageButton btnGenerate;
     private ImageButton btnStages;
     private ImageButton btnOnline;
-    private ImageButton btnShuffle;
 
     private LinearLayout layoutPurchase;
     private ImageButton btnSkipStage;
@@ -172,7 +165,6 @@ public class FragmentMainMenu extends Fragment {
         btnGenerate.setEnabled(false);
         btnStages.setEnabled(false);
         btnOnline.setEnabled(false);
-        btnShuffle.setEnabled(false);
 
     }
 
@@ -182,7 +174,6 @@ public class FragmentMainMenu extends Fragment {
         btnGenerate.setEnabled(true);
         btnStages.setEnabled(true);
         btnOnline.setEnabled(true);
-        btnShuffle.setEnabled(true);
 
     }
 
@@ -290,7 +281,6 @@ public class FragmentMainMenu extends Fragment {
         btnGenerate = (ImageButton) layout.findViewById(R.id.btn_generate);
         btnStages = (ImageButton) layout.findViewById(R.id.btn_stages);
         btnOnline = (ImageButton) layout.findViewById(R.id.btn_online);
-        btnShuffle = (ImageButton) layout.findViewById(R.id.btn_shuffle);
 
         mAdView = (AdView) layout.findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
@@ -324,7 +314,7 @@ public class FragmentMainMenu extends Fragment {
         btnDisableAds.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((MainActivity) FragmentMainMenu.this.getActivity()).getActivityBilling().disableAds();
+                //  ((MainActivity) FragmentMainMenu.this.getActivity()).getActivityBilling().disableAds();
             }
         });
 
@@ -367,8 +357,10 @@ public class FragmentMainMenu extends Fragment {
             public void onClick(View view) {
 
 
+                game.drawGenerator = false;
                 mAdView.setVisibility(View.GONE);
                 animationMainMenu.hideMenu();
+                context.getSoundsManager().playFinishSound();
 
             }
         });
@@ -453,7 +445,7 @@ public class FragmentMainMenu extends Fragment {
                                 @Override
                                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-                                    context.loadStage(world.stages.get(i), false);
+                                    context.loadStage(world.stages.get(i));
                                     stagesDialog.dismiss();
                                     worldsDialog.dismiss();
                                 }
@@ -524,7 +516,7 @@ public class FragmentMainMenu extends Fragment {
                                         @Override
                                         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-                                            context.loadStage(world.stages.get(i), false);
+                                            context.loadStage(world.stages.get(i));
                                             stagesDialog.dismiss();
                                             worldsDialog.dismiss();
                                         }
@@ -551,45 +543,9 @@ public class FragmentMainMenu extends Fragment {
 
             }
         });
-        btnShuffle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
 
-
-                DAO.getRandomStage(new Response.Listener() {
-                    @Override
-                    public void onResponse(Object response) {
-
-                        Log.d(TAG, response.toString());
-                        JSONObject object = null;
-                        try {
-                            object = new JSONObject(response.toString());
-                            object = object.has("api") ? object.getJSONObject("api") : object;
-                            object = object.has("doc") ? object.getJSONObject("doc") : object;
-
-                            context.loadStage(Stage.valueOf(object), true);
-
-                            mAdView.setVisibility(View.GONE);
-                            animationMainMenu.hideMenu();
-
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.d(TAG, error.toString());
-
-                    }
-                }, context.android_id);
-
-            }
-        });
         if (context.getCurrentStage() != null)
-            context.loadStage(context.getCurrentStage(), false);
+            context.loadStage(context.getCurrentStage());
 
 
         return layout;

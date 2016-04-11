@@ -32,6 +32,8 @@ public class Settings {
 
     public boolean disableBackground =false;
 
+    public float speedRatio = 1;
+
 
 
     public JSONObject toJson() {
@@ -55,6 +57,7 @@ public class Settings {
 
             settings.put("dot_light_distance_start", dotLightDistanceStart);
             settings.put("dot_light_distance_end", dotLightDistanceEnd);
+            settings.put("speed_ratio", speedRatio);
 
 
 
@@ -92,7 +95,7 @@ public class Settings {
             boolean switchRouteColors = settings.has("switch_route_colors") ? settings.getBoolean("switch_route_colors"):returnObject.switchRouteColors;
             boolean switchLightsDistance = settings.has("switch_lights_distance") ? settings.getBoolean("switch_lights_distance"):returnObject.switchRouteColors;
             boolean switchDotColor = settings.has("switch_dot_color") ? settings.getBoolean("switch_dot_color"):returnObject.switchDotColor;
-
+            float speedRatio = settings.has("speed_ratio")?settings.getInt("speed_ratio"):1;
 
 
             returnObject.dotLightDistance=(float)dotLightDistance;
@@ -102,6 +105,7 @@ public class Settings {
             returnObject.explosionTwoLightDistance=(float)explosionTwoLightDistance;
             returnObject.explosionTwoLightShinning=(float)explosionTwoLightShinning;
             returnObject.explosionParticlesCount=explosionParticlesCount;
+            returnObject.speedRatio=speedRatio;
 
             returnObject.dotLightDistanceStart=(float)dotLightDistanceStart;
             returnObject.dotLightDistanceEnd=(float)dotLightDistanceEnd;

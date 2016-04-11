@@ -22,7 +22,7 @@ public class AutoGenerator {
 
     private Generator generator;
     private Random random;
-    private DepthFirstSearch firstSearch;
+    public DepthFirstSearch firstSearch;
 
     private boolean cancelGeneration = false;
 
@@ -75,10 +75,11 @@ public class AutoGenerator {
     }
 
 
-    private void generateStagesSetInternal(final int index, final int count) {
+    int retries = 0;
+    private void generateStagesSetInternal(final int index, final int count, final int widht, final int height, final float percent) {
         if (dialog.isShowing()) {
             dialog.setTitle("generating stage " + index + "/" + count);
-            Log.d(TAG, "generating stage " + index + "/" + count);
+            Log.d(TAG, "generating stage " + index + "/" + count + " world "+generator.getLayout().getCurrentWorld().id);
         }
         generator.saveMaze(new Generator.OnSaveListener() {
             @Override
@@ -88,32 +89,80 @@ public class AutoGenerator {
 
                     return;
                 } else if (!cancelGeneration) {
-                    generateMaze(true, index + 1);
-                    generateStagesSetInternal(index + 1, count);
+                    generateMaze(true, index + 1,widht,height,percent, new Generator.OnSaveListener() {
+                        @Override
+                        public void onSaved() {
+                            generator.view.context.getHandler().post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    generateStagesSetInternal(index + 1, count,widht,height,percent);
+
+                                }
+                            });
+
+                        }
+
+                        @Override
+                        public void onFailed() {
+
+                        }
+                    });
+
                 } else {
-                    finishSetGeneration();
+                    generator.view.context.getHandler().post(new Runnable() {
+                        @Override
+                        public void run() {
+                            finishSetGeneration();
+
+                        }
+                    });
 
                 }
 
 
             }
+
+            @Override
+            public void onFailed() {
+
+            }
         });
     }
 
-    public void generateStagesSet(int stagesCount) {
+    public void generateStagesSet(final int stagesCount, final int widht, final int height, final float percent) {
         cancelGeneration = false;
+
         if (generator.getLayout().getCurrentWorld() == null) {
             Toast.makeText(generator.view.context, "Select world first!", Toast.LENGTH_LONG).show();
             return;
         }
 
-        int index = 0;
+        generator._id=null;
+
+        final int index = 0;
         initDialog();
 
         generator.view.setDrawing(false);
 
-        generateMaze(true, index);
-        generateStagesSetInternal(index, stagesCount);
+        generateMaze(true, index,widht,height,percent, new Generator.OnSaveListener() {
+            @Override
+            public void onSaved() {
+                generator.view.context.getHandler().post(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        generateStagesSetInternal(index, stagesCount,widht,height,percent);
+
+                    }
+                });
+
+            }
+
+            @Override
+            public void onFailed() {
+
+            }
+        });
 
 
     }
@@ -125,34 +174,19 @@ public class AutoGenerator {
     }
 
     public void generateRandomStage() {
-        generateMaze(false, 0);
+        generator._id=null;
+
+        generateMaze(false, 0,1+random.nextInt(30),1+random.nextInt(30),0.8f, null);
     }
 
-    private void generateMaze(final boolean set, int count) {
+    private void generateMaze(final boolean set, int count, int widht, int height, float percent, final Generator.OnSaveListener onSaveListener) {
 
-        int step = random.nextInt(20);
-        int x = 3;
-        int y = 3;
+        if (firstSearch.isRunning)
+            return;
 
-        if (set) {
-            step = 0;
-            if (count > 0)
-                step = (int) Math.sqrt(count);
+        int x = widht;
+        int y = height;
 
-            if (step == 0)
-                step = 1;
-            if (step / 2 > 0) {
-                x = x + step / 2 + random.nextInt(step / 2);
-                y = y + step / 2 + random.nextInt(step / 2);
-            } else {
-                x = x + step;
-                y = y + step;
-            }
-
-        } else {
-            x = x + step;
-            y = y + step;
-        }
 
 
         String routeColor = randomColor();
@@ -165,39 +199,55 @@ public class AutoGenerator {
 
         }
 
-
-
+        float dotShinning = 1.25f + 1.25f*random.nextFloat();
+        float dotDistance = dotShinning-1.25f;
 
         generator.getConfig().colors.colorBackground = randomColor();
         generator.getConfig().colors.colorExplosionEnd = randomColor();
         generator.getConfig().colors.colorExplosionStart = randomColor();
         generator.getConfig().colors.colorShip = dotColor;
         generator.getConfig().colors.colorFence = randomColor();
+        generator.getConfig().colors.colorFilter = "#000000";
+
         generator.getConfig().colors.colorRoute = routeColor;
         generator.getConfig().settings.explosionOneLightDistance = random.nextFloat();
         generator.getConfig().settings.explosionOneLightShinning = 2.5f * random.nextFloat();
+        generator.getConfig().settings.dotLightDistance=dotDistance;
+        generator.getConfig().settings.dotLightShinning=dotShinning;
         generator.refreashMaze();
 
-        firstSearch.generateMaze(x, y, new Handler.Callback() {
+        final boolean flag = generator.getPreview();
+        generator.stopPreview();
+
+        firstSearch.generateMaze(x, y,percent, new Handler.Callback() {
             @Override
             public boolean handleMessage(Message msg) {
+
                 if (!set) {
-                    boolean flag = generator.getPreview();
 
-                    if (flag)
-                        generator.stopPreview();
-                    generator.refreashMaze();
-                    generator.getLayout().refreshControlls();
 
-                    if (flag)
-                        generator.startPreview();
+                    generator.view.context.getHandler().post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (flag)
+                                generator.stopPreview();
+                            generator.refreashMaze();
+                            generator.getLayout().refreshControlls();
+
+                            if (flag)
+                                generator.startPreview();
+                        }
+                    });
+
+
                 }
+
+                if (onSaveListener != null)
+                    onSaveListener.onSaved();
 
                 return false;
             }
-        });
-
-
+        }, !set);
 
 
     }

@@ -36,8 +36,11 @@ public class MainSprite extends Sprite {
     private float lightDistance;
     private float lightShinning;
     public float spriteSpeed = 0;
+    public float defaultSpeed = 0;
 
     public boolean booster = false;
+    private final long BOOSTER_TIME = 10 * 1000;
+    private long BOOSTER_START_TIME;
 
 
     static final int COORDS_PER_VERTEX = 3;
@@ -46,6 +49,20 @@ public class MainSprite extends Sprite {
 
     float color[] = {0.0f, 0.0f, 0.0f, 1.0f};
 
+    public void startBooster() {
+        BOOSTER_START_TIME = System.currentTimeMillis();
+        booster = true;
+
+        if (game != null)
+            this.game.colorFilter = Util.parseColor("#0011FF");
+    }
+
+    private void stopBooster() {
+        if(booster) {
+            booster = false;
+            this.game.colorFilter = Util.parseColor(config.colors.colorFilter);
+        }
+    }
 
     public void setPrepareToDie(boolean prepareToDie) {
         this.prepareToDie = prepareToDie;
@@ -67,10 +84,11 @@ public class MainSprite extends Sprite {
         fence = view.maze;
 
         if (MainActivity.screenHeight < MainActivity.screenWidth)
-            spriteSpeed = MainActivity.screenHeight/120;
+            defaultSpeed = MainActivity.screenHeight / 120;
         else
-            spriteSpeed = MainActivity.screenWidth/120;
+            defaultSpeed = MainActivity.screenWidth / 120;
 
+        spriteSpeed = defaultSpeed;
         configure(config);
 
 
@@ -79,6 +97,9 @@ public class MainSprite extends Sprite {
 
     public void configure(Config config) {
         this.config = config;
+
+        if (config.settings.speedRatio != 0)
+            spriteSpeed = defaultSpeed * config.settings.speedRatio;
 
         if (!config.settings.switchDotColor) {
             color = Util.parseColor(config.colors.colorShip);
@@ -102,15 +123,21 @@ public class MainSprite extends Sprite {
     public void update() {
         super.update();
 
+        if (booster) {
+            if (System.currentTimeMillis() - BOOSTER_START_TIME > BOOSTER_TIME) {
+                stopBooster();
+
+            }
+        }
 
         //TileRoute collision = fence.checkRouteCollision(centerX, centerY, width / 2);
         TileRoute tmpCurrent = fence.getCurrentRouteObject(centerX, centerY);
-        Wall.Type collision = tmpCurrent.checkCollision(centerX, centerY, width / 2);
 
         fence.checkCoinCollision(this);
-
-
-        if (currentTile != tmpCurrent) {
+        Wall.Type collision = null;
+        if (tmpCurrent != null)
+            collision = tmpCurrent.checkCollision(centerX, centerY, width / 2);
+        if (tmpCurrent != null && currentTile != tmpCurrent) {
 
             currentTile = tmpCurrent;
 
@@ -119,7 +146,7 @@ public class MainSprite extends Sprite {
                 if (tmpCurrent.type == Route.Type.FINISH || tmpCurrent.type == Route.Type.START) {
 
                     speedRatio = 1;
-                } else if (tmpCurrent.getDirection() == Route.Movement.LEFTRIGHT || tmpCurrent.getDirection() == Route.Movement.TOPBOTTOM) {
+                } else if (tmpCurrent.getDirection() == Route.Movement.LEFTRIGHT || tmpCurrent.getDirection() == Route.Movement.TOPBOTTOM || tmpCurrent.getDirection() == Route.Movement.BOTTOMTOP || tmpCurrent.getDirection() == Route.Movement.RIGHTLEFT) {
                     speedRatio = 1.5f;
                 } else {
                     speedRatio = 0.5f;
@@ -142,12 +169,14 @@ public class MainSprite extends Sprite {
         }
 
         if (collision != null) {
+            stopBooster();
             if (currentTile.getType() == Route.Type.FINISH) {
                 game.explodeDot(false);
                 game.destroyDot();
-                if (game.getPreview())
+                if (game.getPreview()) {
                     game.resetDot();
-                else
+                    game.context.getSoundsManager().playFinishSound();
+                } else
                     game.gameView.moveToNextLvl();
                 //    game.resetDot();
 
@@ -157,8 +186,10 @@ public class MainSprite extends Sprite {
             } else {
                 game.explodeDot(true);
 
-                if (new Random().nextFloat() > 0.99f)
+                if (new Random().nextFloat() > 0.93f) {
+                    game.setPaused(true);
                     game.context.showAdv();
+                }
 
                 game.resetDot();
                 //   game.toggleColors();
@@ -202,7 +233,7 @@ public class MainSprite extends Sprite {
         GLES20.glUniform3f(game.mDotLightPosHandle, getCenterX(), getCenterY(), 0.0f);
         GLES20.glUniform1f(game.mDotLightDistanceHandle, lightDistance);
         GLES20.glUniform1f(game.mDotLightShinningHandle, lightShinning);
-        GLES20.glUniform4fv(game.mDotLightColorHandle, 1, color, 0);
+        //  GLES20.glUniform4fv(game.mDotLightColorHandle, 1, color, 0);
 
 
         // Draw the square

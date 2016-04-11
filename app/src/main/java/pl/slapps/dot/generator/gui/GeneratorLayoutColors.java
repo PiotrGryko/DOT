@@ -33,6 +33,7 @@ public class GeneratorLayoutColors {
     private View colorExplosionEnd;
     private View colorDotLight;
     private View colorExplosionLight;
+    private View colorFilter;
 
     private View colorCurrent;
     private TextView currentColorLabel;
@@ -43,7 +44,7 @@ public class GeneratorLayoutColors {
 
 
     private enum COLOR_TYPE{
-        LIGHT_DOT,DOT,ROUTE,BACKGROUND,FENCE,EXPLOSION_START,EXPLOSION_END;
+        LIGHT_DOT,DOT,ROUTE,BACKGROUND,FENCE,EXPLOSION_START,EXPLOSION_END,COLOR_FILTER;
     }
 
     public View getLayout()
@@ -166,6 +167,22 @@ public class GeneratorLayoutColors {
                     }
                 });
                 break;
+            case COLOR_FILTER:
+                currentColorLabel.setText("color filter");
+                colorCurrent.setBackgroundColor(Color.parseColor(generator.getConfig().colors.colorFilter));
+                ambilWarnaView.setColor(Color.parseColor(generator.getConfig().colors.colorFilter));
+                ambilWarnaView.setListener(new AmbilWarnaView.OnAmbilWarnaListener() {
+                    @Override
+                    public void onTouch(int color) {
+                        colorFilter.setBackgroundColor(color);
+                        generator.getConfig().colors.colorFilter = "#" + Integer.toHexString(color);
+
+
+                        generator.refreashMaze();
+                        refreashCurrentColor(color);
+                    }
+                });
+                break;
 
 
         }
@@ -183,7 +200,7 @@ public class GeneratorLayoutColors {
         colorDotLight.setBackgroundColor(Color.parseColor(generator.getConfig().colors.colorShipLight));
         colorExplosionLight.setBackgroundColor(Color.parseColor(generator.getConfig().colors.colorExplosionLight));
         colorFence.setBackgroundColor(Color.parseColor(generator.getConfig().colors.colorFence));
-
+        colorFilter.setBackgroundColor(Color.parseColor(generator.getConfig().colors.colorFilter));
     }
 
     public void initLayout(final GeneratorLayout generatorLayout) {
@@ -212,6 +229,7 @@ public class GeneratorLayoutColors {
         final LinearLayout tvDotColor = (LinearLayout) layoutColors.findViewById(R.id.tv_dot_color);
         final LinearLayout tvExplosionStartColor = (LinearLayout) layoutColors.findViewById(R.id.tv_explosion_start_color);
         final LinearLayout tvExplosionEndColor = (LinearLayout) layoutColors.findViewById(R.id.tv_explosion_end_color);
+        final LinearLayout tvFilterColor = (LinearLayout) layoutColors.findViewById(R.id.tv_filter_color);
 
         colorDotLight = layoutColors.findViewById(R.id.color_dot_light);
         colorExplosionLight = layoutColors.findViewById(R.id.color_explosion_light);
@@ -222,6 +240,7 @@ public class GeneratorLayoutColors {
         colorExplosionEnd = layoutColors.findViewById(R.id.color_explosion_end);
         colorFence = layoutColors.findViewById(R.id.color_fence);
         colorCurrent = layoutColors.findViewById(R.id.color_current);
+        colorFilter = layoutColors.findViewById(R.id.color_filter);
 
         currentColorLabel = (TextView)layoutColors.findViewById(R.id.current_color_label);
 
@@ -317,6 +336,18 @@ public class GeneratorLayoutColors {
 
 
                 setCurrentCurrentLabel(COLOR_TYPE.FENCE);
+
+                colorusList.setVisibility(View.GONE);
+
+            }
+        });
+
+        tvFilterColor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+                setCurrentCurrentLabel(COLOR_TYPE.COLOR_FILTER);
 
                 colorusList.setVisibility(View.GONE);
 

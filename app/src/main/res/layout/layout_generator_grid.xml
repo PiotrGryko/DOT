@@ -9,45 +9,64 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
-        android:orientation="vertical"
-       >
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-        <pl.slapps.dot.gui.FontedTextView
 
-            android:layout_width="wrap_content"
-            android:padding="5dp"
-            android:layout_height="wrap_content"
-            android:text="Width"/>
-        <pl.slapps.dot.generator.widget.NumberPickerTextView
-            android:id="@+id/et_width"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            ></pl.slapps.dot.generator.widget.NumberPickerTextView>
+            <pl.slapps.dot.gui.FontedTextView
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:text="Width" />
+
+            <pl.slapps.dot.generator.widget.NumberPickerTextView
+                android:id="@+id/et_width"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"></pl.slapps.dot.generator.widget.NumberPickerTextView>
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-        <pl.slapps.dot.gui.FontedTextView
+
+            <pl.slapps.dot.gui.FontedTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:text="Height" />
+
+            <pl.slapps.dot.generator.widget.NumberPickerTextView
+                android:id="@+id/et_height"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"></pl.slapps.dot.generator.widget.NumberPickerTextView>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:padding="5dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Height"/>
-        <pl.slapps.dot.generator.widget.NumberPickerTextView
-            android:id="@+id/et_height"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            ></pl.slapps.dot.generator.widget.NumberPickerTextView>
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <pl.slapps.dot.gui.FontedTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="speed: " />
 
 
-    </LinearLayout>
-
-
+            <SeekBar
+                android:id="@+id/sb_speed"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left" />
+        </LinearLayout>
 
     </LinearLayout>
 

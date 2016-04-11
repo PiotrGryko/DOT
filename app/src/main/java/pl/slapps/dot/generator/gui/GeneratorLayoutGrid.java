@@ -4,6 +4,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 import pl.slapps.dot.R;
@@ -26,6 +27,7 @@ public class GeneratorLayoutGrid {
     */
     private NumberPickerTextView etWidth;
     private NumberPickerTextView etHeight;
+    private SeekBar speedSeekbar;
 
 
     public View getLayout() {
@@ -36,6 +38,8 @@ public class GeneratorLayoutGrid {
     public void refreashLayout() {
         etWidth.putValue(generator.gridX);
         etHeight.putValue(generator.gridY);
+        speedSeekbar.setProgress((int) (100 * generator.getConfig().settings.speedRatio));
+
     }
 
     public void initLayout(final GeneratorLayout generatorLayout) {
@@ -45,7 +49,7 @@ public class GeneratorLayoutGrid {
 
         etWidth = (NumberPickerTextView) layoutGrid.findViewById(R.id.et_width);
         etHeight = (NumberPickerTextView) layoutGrid.findViewById(R.id.et_height);
-
+        speedSeekbar = (SeekBar) layoutGrid.findViewById(R.id.sb_speed);
         etHeight.setInteger(true);
         etWidth.setInteger(true);
 
@@ -63,6 +67,27 @@ public class GeneratorLayoutGrid {
             public void onValueChanged(float value) {
                 generator.initGrid((int) etWidth.getValue(), (int) value);
                 refreashLayout();
+            }
+        });
+
+        speedSeekbar.setMax(200);
+        speedSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                float value = ((float) i / 100.0f);
+                generator.getConfig().settings.speedRatio = value;
+                generator.refreashMaze();
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
             }
         });
 

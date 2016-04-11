@@ -17,6 +17,7 @@ import pl.slapps.dot.model.Route;
 public class DepthFirstSearch {
     private Generator generator;
     private Random random;
+    public boolean isRunning;
 
     public DepthFirstSearch(Generator generator) {
         this.generator = generator;
@@ -134,7 +135,6 @@ public class DepthFirstSearch {
     public boolean allTilesVisited() {
 
 
-        float count = 0;
         for (int i = 0; i < generator.tiles.size(); i++) {
             if (!generator.tiles.get(i).visited) {
                 return false;
@@ -144,7 +144,7 @@ public class DepthFirstSearch {
         return true;
     }
 
-    public boolean shouldstop() {
+    public boolean shouldstop(float percent) {
 
 
         float count = 0;
@@ -158,18 +158,19 @@ public class DepthFirstSearch {
 
         float left = count/generator.tiles.size();
 
-        if (left<=0.20)
+        if (left<=1-percent)
             return true;
         else
             return false;
     }
 
-    public void generateMaze(final int x, final int y, final Handler.Callback callback) {
+    public void generateMaze(final int x, final int y, final float percent, final Handler.Callback callback, final boolean sleep) {
 
 
         new Thread() {
             public void run() {
 
+                isRunning=true;
                 generator.initGrid(x, y);
 
 
@@ -183,7 +184,7 @@ public class DepthFirstSearch {
                     TileRoute next = nextStep(startRoute);
 
                     if (next == null) {
-                        if(shouldstop())
+                        if(shouldstop(percent))
                             break;
                         Log.d("ggg", "getting back " + startRoute.from + " " + startRoute.to + " " + startRoute.type);
 
@@ -203,15 +204,18 @@ public class DepthFirstSearch {
                         Log.d("ggg", "getting forward " + next);
 
                     }
-                    try {
-                        Thread.sleep(50);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                    if(sleep) {
+                        try {
+                            Thread.sleep(50);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
 
 
                 }
 
+                /*
                 if(startRoute.type== Route.Type.ROUTE) {
                     TileRoute endRoute = generator.getTileRouteManager().getNextTileForRoute(startRoute);
                     endRoute.from = generator.getTileRouteManager().getOposite(startRoute.to);
@@ -223,13 +227,15 @@ public class DepthFirstSearch {
                 }
                 else
                 {
+                  */
                     TileRoute finisRoute = generator.getTileRouteManager().getRouteFinishFromTile(startRoute.from, generator.getTileRouteManager().getOposite(startRoute.from), startRoute);
                     int index = generator.tiles.indexOf(startRoute);
                     generator.tiles.set(index, finisRoute);
-                }
+                //}
 
                 Log.d("rrr", "generation finished... " + generator.getStartRoute() + " " + generator.getFinishRoute());
                 callback.handleMessage(null);
+                isRunning=false;
 /*
 
         while (startRoute != null) {

@@ -51,6 +51,7 @@ public class TileRoute extends Tile {
         backgroundColor = route.backgroundColor;
         sound = route.sound;
         speedRatio = route.speedRatio;
+        drawCoin=route.drawCoin;
 
 
 

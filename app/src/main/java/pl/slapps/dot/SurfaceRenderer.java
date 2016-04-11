@@ -42,7 +42,7 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
 
 
 
-    private boolean drawGenerator = false;
+    public boolean drawGenerator = false;
     private boolean startMonitoring = false;
     private boolean isRunning = false;
     private boolean isDrawing = true;
@@ -56,6 +56,7 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
     public boolean onBackPressed() {
         if (generator.getPreview()) {
             generator.stopPreview();
+            Log.d("ggg","stop preview "+isDrawing +" "+isRunning+" "+drawGenerator);
             return false;
         }
         generator.getPathPopup().dissmissControls();
@@ -85,6 +86,9 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
                     GLES20.glBindAttribLocation(programHandle, i, attributes[i]);
                 }
             }
+
+            Log.e(TAG,"vertex shader info log: "+GLES20.glGetShaderInfoLog(vertexShaderHandle));
+            Log.e(TAG,"fragment shader info log: "+GLES20.glGetShaderInfoLog(fragmentShaderHandle));
 
             // Link the two shaders together into a program.
             GLES20.glLinkProgram(programHandle);
@@ -230,6 +234,8 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
         GLES20.glShaderSource(shader, shaderCode);
         GLES20.glCompileShader(shader);
 
+        checkGlError("glCompileShader");
+
         return shader;
     }
 
@@ -278,7 +284,6 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
 
     public void loadStageData(Stage stage) {
 
-        drawGenerator = false;
         currentStage = stage;
         game.initStage(stage);
 

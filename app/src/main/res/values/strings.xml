@@ -22,6 +22,8 @@
     <string name="generator_lights">Change lights</string>
     <string name="generator_effects">Add game effects</string>
     <string name="generator_save">Save</string>
+    <string name="generator_random">Random maze</string>
+
 
 
 

@@ -110,7 +110,7 @@ public class GoogleInvite {
                                                     object = object.has("api")?object.getJSONObject("api"):object;
                                                     object = object.has("doc")?object.getJSONObject("doc"):object;
                                                 Stage stage = Stage.valueOf(object);
-                                                context.loadStage(stage,false);
+                                                context.loadStage(stage);
 
                                             } catch (JSONException e) {
                                                 e.printStackTrace();

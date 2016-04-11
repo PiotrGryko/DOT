@@ -31,6 +31,7 @@ public class Particle extends Quad {
     public float startHeight;
     public FloatBuffer explosionBufferedVertex;
     public int bufferStartPosition;
+    public int index;
 
 
     public float x; // used to increas/decreas sprite position
@@ -67,6 +68,7 @@ public class Particle extends Quad {
   
     public void initDrawing(FloatBuffer bufferedVertex, int index) {
         explosionBufferedVertex = bufferedVertex;
+        this.index=index;
         initVertexArray(centerX, centerY, width, height);
         bufferStartPosition = index * vertices.length;
         explosionBufferedVertex.position(bufferStartPosition);
@@ -130,6 +132,8 @@ public class Particle extends Quad {
                     break;
             }
         }
+
+
 
 
     }

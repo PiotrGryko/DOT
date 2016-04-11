@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/layout_config"
+        android:padding="10dp"
+
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
+        android:orientation="vertical">
+
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <pl.slapps.dot.gui.FontedTextView
+                android:paddingBottom="10dp"
+                android:paddingTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tv_generate_random"
+                android:gravity="center"
+                android:text="GENERATE RANDOM STAGE"
+                android:background="@android:drawable/list_selector_background"/>
+
+
+
+            <pl.slapps.dot.gui.FontedTextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/abc_list_selector_holo_light"
+
+                android:text="generate world stages set" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Stages count" />
+
+            <pl.slapps.dot.generator.widget.NumberPickerTextView
+                android:layout_width="wrap_content"
+                android:id="@+id/count_stages"
+                android:layout_height="wrap_content"></pl.slapps.dot.generator.widget.NumberPickerTextView>
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="size" />
+
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="width" />
+
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:id="@+id/cb_width_random"
+
+                    android:layout_height="wrap_content"
+                    android:text="random" />
+
+                <pl.slapps.dot.generator.widget.NumberPickerTextView
+                    android:layout_width="wrap_content"
+                    android:id="@+id/count_width"
+
+                    android:layout_height="wrap_content"></pl.slapps.dot.generator.widget.NumberPickerTextView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="height" />
+
+                <CheckBox
+                    android:id="@+id/cb_height_random"
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="random" />
+
+                <pl.slapps.dot.generator.widget.NumberPickerTextView
+                    android:layout_width="wrap_content"
+                    android:id="@+id/count_height"
+
+                    android:layout_height="wrap_content"></pl.slapps.dot.generator.widget.NumberPickerTextView>
+
+            </LinearLayout>
+
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="stop alghoritm at" />
+
+            <RadioGroup
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+
+                <RadioButton
+                    android:id="@+id/cb_100"
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="100%" />
+
+                <RadioButton
+                    android:id="@+id/cb_85"
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="85%" />
+
+                <RadioButton
+                    android:id="@+id/cb_70"
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="70%" />
+
+                <RadioButton
+                    android:id="@+id/cb_50"
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="50%" />
+            </RadioGroup>
+
+            <pl.slapps.dot.gui.FontedTextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:id="@+id/tv_generate_world_stages"
+                android:text="GENERATE WORLD STAGES"
+                android:background="@android:drawable/list_selector_background"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

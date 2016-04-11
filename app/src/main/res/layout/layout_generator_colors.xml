@@ -279,6 +279,32 @@
             </LinearLayout>
 
 
+            <LinearLayout
+                android:id="@+id/tv_filter_color"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/abc_list_selector_holo_light"
+                android:orientation="horizontal"
+                android:padding="5dp">
+
+                <View
+                    android:id="@+id/color_filter"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+
+                    android:layout_margin="5dp"></View>
+
+                <pl.slapps.dot.gui.FontedTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:text="Color filter" />
+
+
+            </LinearLayout>
+
+
         </LinearLayout>
 
 

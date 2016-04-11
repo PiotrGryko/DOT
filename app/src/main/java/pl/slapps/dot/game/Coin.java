@@ -27,6 +27,8 @@ public class Coin extends Sprite {
 
 
     private Config config;
+    private float coinX;
+    private float cointY;
 
 
     float color[] = {1.0f, 1.0f, 1.0f, 1.0f
@@ -53,8 +55,10 @@ public class Coin extends Sprite {
 
         if(flag)
         {
-            view.explodeDot(true);
             mainSprite.booster=true;
+            view.explosionManager.explode(coinX,cointY,mainSprite.spriteSpeed);
+            mainSprite.startBooster();
+            view.context.getSoundsManager().playCoinSound();
             //view.addExplosion(new ExplosionManager(view, mainSprite.centerX, mainSprite.centerY, System.currentTimeMillis(), mainSprite.spriteSpeed, (int)view.dotSize, config));
             //view.context.getSoundsManager().playCrashSound();
         }
@@ -82,6 +86,8 @@ public class Coin extends Sprite {
     public Coin(Game view, float centerX, float centerY, float width, float height) {
         super(centerX, centerY, width, height, true);
         this.view = view;
+        this.coinX=centerX;
+        this.cointY=centerY;
         this.config = config;
         configure(config);
 
