@@ -21,6 +21,7 @@ import com.android.volley.Response;
 import pl.slapps.dot.DAO;
 import pl.slapps.dot.MainActivity;
 import pl.slapps.dot.R;
+import pl.slapps.dot.SoundsService;
 import pl.slapps.dot.adapter.AdapterSounds;
 import pl.slapps.dot.generator.Generator;
 import pl.slapps.dot.model.World;
@@ -226,7 +227,9 @@ public class GeneratorLayoutWorlds {
                     return;
                 }
 
-                generator.view.context.getSoundsManager().playRawFile(tmpWorld.soundBackground);
+                //SoundsService.getSoundsManager().playRawFile(tmpWorld.soundBackground);
+                MainActivity.sendAction(SoundsService.ACTION_RAW,tmpWorld.soundBackground);
+
             }
         });
         btnPlayPress.setOnClickListener(new View.OnClickListener() {
@@ -236,7 +239,9 @@ public class GeneratorLayoutWorlds {
                     Toast.makeText(generator.view.context, "Select file first", Toast.LENGTH_LONG).show();
                     return;
                 }
-                generator.view.context.getSoundsManager().playRawFile(tmpWorld.soundPress);
+               // SoundsService.getSoundsManager().playRawFile(tmpWorld.soundPress);
+                MainActivity.sendAction(SoundsService.ACTION_RAW,tmpWorld.soundPress);
+
 
             }
         });
@@ -247,7 +252,9 @@ public class GeneratorLayoutWorlds {
                     Toast.makeText(generator.view.context, "Select file first", Toast.LENGTH_LONG).show();
                     return;
                 }
-                generator.view.context.getSoundsManager().playRawFile(tmpWorld.soundCrash);
+//                SoundsService.getSoundsManager().playRawFile(tmpWorld.soundCrash);
+                MainActivity.sendAction(SoundsService.ACTION_RAW,tmpWorld.soundCrash);
+
 
             }
         });
@@ -258,7 +265,9 @@ public class GeneratorLayoutWorlds {
                     Toast.makeText(generator.view.context, "Select file first", Toast.LENGTH_LONG).show();
                     return;
                 }
-                generator.view.context.getSoundsManager().playRawFile(tmpWorld.soundFinish);
+  //              SoundsService.getSoundsManager().playRawFile(tmpWorld.soundFinish);
+                MainActivity.sendAction(SoundsService.ACTION_RAW,tmpWorld.soundFinish);
+
 
             }
         });

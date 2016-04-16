@@ -1,8 +1,16 @@
 package pl.slapps.dot;
 
 import android.app.AlertDialog;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.Build;
+import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -31,13 +39,12 @@ import com.google.android.gms.ads.reward.RewardedVideoAd;
 import com.google.android.gms.ads.reward.RewardedVideoAdListener;
 
 
-
-
 import io.fabric.sdk.android.Fabric;
 
 import pl.slapps.dot.gui.AnimationShow;
 import pl.slapps.dot.gui.fragment.FragmentMainMenu;
 import pl.slapps.dot.gui.AnimationScoreLayout;
+import pl.slapps.dot.model.Sounds;
 import pl.slapps.dot.model.Stage;
 
 public class MainActivity extends FragmentActivity {
@@ -52,7 +59,8 @@ public class MainActivity extends FragmentActivity {
     private Stage CURRENT_STAGE;
 
 
-    private SoundsManager soundsManager;
+
+  //  private SoundsManager soundsManager;
 
     private SharedPreferences preferences;
 
@@ -60,7 +68,6 @@ public class MainActivity extends FragmentActivity {
     private int unlockedStage = 0;
 
     private Handler handler = new Handler();
-
 
 
     public InterstitialAd mInterstitialAd;
@@ -80,17 +87,65 @@ public class MainActivity extends FragmentActivity {
 
     private ActivityLoader activityLoader;
     private ActivityControls activityControls;
-   // private GoogleBilling activityBilling;
+    // private GoogleBilling activityBilling;
     private GoogleInvite activityInvite;
 
 
     //IInAppBillingService mService;
 
+
+
+    private static Messenger mService = null;
+    private static boolean mBound;
+    public static boolean mute;
+
+    /** Defines callbacks for service binding, passed to bindService() */
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            mService = new Messenger(service);
+            mBound = true;
+            if(CURRENT_STAGE!=null)
+                sendAction(SoundsService.ACTION_CONFIG,CURRENT_STAGE.config.sounds);
+
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+            mService=null;
+        }
+    };
+
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-     //   activityBilling.handleActivityResult(requestCode, resultCode, data);
+        //   activityBilling.handleActivityResult(requestCode, resultCode, data);
         activityInvite.onActivityResult(requestCode, resultCode, data);
         Log.d("RRR", "on activity result ");
+    }
+
+    public static void sendAction(int action,Object data)
+    {
+        if (!mBound) return;
+
+        if(action!= SoundsService.ACTION_MUTE && mute && action!= SoundsService.ACTION_CONFIG)
+            return;
+        // Create and send a message to the service, using a supported 'what' value
+        Message msg = Message.obtain(null, action, 0, 0,data);
+        try {
+            mService.send(msg);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void mute(boolean flag)
+    {
+        mute=flag;
+        if(mute)
+            sendAction(SoundsService.ACTION_MUTE,null);
     }
 
 
@@ -117,12 +172,11 @@ public class MainActivity extends FragmentActivity {
         return activityInvite;
     }
 
-    public SoundsManager getSoundsManager() {
-        return soundsManager;
-    }
+  //  public SoundsManager getSoundsManager() {
+  //      return soundsManager;
+  //  }
 
-    public Handler getHandler()
-    {
+    public Handler getHandler() {
         return handler;
     }
 
@@ -160,11 +214,18 @@ public class MainActivity extends FragmentActivity {
     }
 
 
+
     @Override
     public void onDestroy() {
         super.onDestroy();
         if (activityLoader != null)
             activityLoader.onDestroy();
+
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
+
     }
 
     @Override
@@ -172,6 +233,9 @@ public class MainActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         Fabric.with(this, new Crashlytics());
         DAO.initRequestQueue(this);
+
+        Intent intent = new Intent(this, SoundsService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
         // if(Build.VERSION.SDK_INT>=11)
         // setTheme(android.R.style.Theme_Holo_Dialog);
@@ -181,9 +245,9 @@ public class MainActivity extends FragmentActivity {
         activityInvite.receive();
 
 
-      //  activityBilling = new GoogleBilling(this);
-      //  activityBilling.setupBilling();
-        activityLoader = new ActivityLoader(this,handler);
+        //  activityBilling = new GoogleBilling(this);
+        //  activityBilling.setupBilling();
+        activityLoader = new ActivityLoader(this, handler);
 
         activityLoader.listCatche();
         activityLoader.loadSounds();
@@ -197,8 +261,7 @@ public class MainActivity extends FragmentActivity {
         screenWidth = this.getResources().getDisplayMetrics().widthPixels;
         FacebookSdk.sdkInitialize(this.getApplicationContext());
 
-
-        soundsManager = new SoundsManager(this);
+     //   soundsManager = new SoundsManager(this);
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         this.getWindow().setFlags(
@@ -236,7 +299,7 @@ public class MainActivity extends FragmentActivity {
         //setupFragment();
 
         //mainMenu.init();
-        surfaceRenderer.init(this);
+        surfaceRenderer.init();
         scoreLayout.initLayout(this);
         //initMainMenu();
 
@@ -246,7 +309,7 @@ public class MainActivity extends FragmentActivity {
         activityLoader.loadStagesFile(new ActivityLoader.OnStagesLoadingListener() {
             @Override
             public void onLoaded() {
-                Log.d(TAG,"on loaded current stage "+currentStage);
+                Log.d(TAG, "on loaded current stage " + currentStage);
                 if (currentStage < activityLoader.jsonStages.length())
                     loadStage(activityLoader.getStageAtIndex(currentStage));
                 else {
@@ -368,8 +431,13 @@ public class MainActivity extends FragmentActivity {
         mRewardedVideoAd.loadAd("ca-app-pub-3940256099942544/1033173712", adRequest);
         mRewardedVideoAd.show();
  */
+        AlertDialog.Builder builder = null;
 
-        new AlertDialog.Builder(this).setTitle("Skip to next stage?").setPositiveButton("yes", new DialogInterface.OnClickListener() {
+        if (Build.VERSION.SDK_INT >= 11)
+            builder = new AlertDialog.Builder(this, AlertDialog.THEME_HOLO_LIGHT);
+        else
+            builder = new AlertDialog.Builder(this);
+        AlertDialog dialog = builder.setMessage("Skip to next stage?").setPositiveButton("yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 currentStage++;
@@ -386,7 +454,10 @@ public class MainActivity extends FragmentActivity {
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
             }
-        }).show();
+        }).create();
+
+        dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        dialog.show();
 
 
     }
@@ -447,48 +518,48 @@ public class MainActivity extends FragmentActivity {
 
     public void moveToNextStage() {
 
-            currentStage++;
-            if (currentStage >= activityLoader.jsonStages.length())
-                currentStage = 0;
+        currentStage++;
+        if (currentStage >= activityLoader.jsonStages.length())
+            currentStage = 0;
 
 
-            int savedStage = preferences.getInt("current_stage", 0);
-            if (savedStage < currentStage) {
-                unlockedStage = currentStage;
+        int savedStage = preferences.getInt("current_stage", 0);
+        if (savedStage < currentStage) {
+            unlockedStage = currentStage;
 
-                preferences.edit().putInt("current_stage", unlockedStage).apply();
+            preferences.edit().putInt("current_stage", unlockedStage).apply();
+        }
+
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                //mainMenu.getAnimationMainMenu().showMe;
+
+
+                scoreLayout.showScore(new AnimationShow.OnAnimationListener() {
+                    @Override
+                    public void onAnimationEnd() {
+
+
+                        //mainMenu.playStage(false);
+
+                        loadStage(activityLoader.getStageAtIndex(currentStage));
+                        //surfaceRenderer.setRunnig(true);
+                        surfaceRenderer.setDrawing(true);
+
+
+                    }
+
+                    @Override
+                    public void onAnimationStart() {
+
+                    }
+                });
+
+
             }
 
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    //mainMenu.getAnimationMainMenu().showMe;
-
-
-                    scoreLayout.showScore(new AnimationShow.OnAnimationListener() {
-                        @Override
-                        public void onAnimationEnd() {
-
-
-                            //mainMenu.playStage(false);
-
-                            loadStage(activityLoader.getStageAtIndex(currentStage));
-                            //surfaceRenderer.setRunnig(true);
-                            surfaceRenderer.setDrawing(true);
-
-
-                        }
-
-                        @Override
-                        public void onAnimationStart() {
-
-                        }
-                    });
-
-
-                }
-
-            });
+        });
 
     }
 
@@ -502,8 +573,8 @@ public class MainActivity extends FragmentActivity {
             surfaceRenderer.drawGenerator = false;
             if (getCurrentFragment() == null) {
 
-               // surfaceRenderer.setRunnig(false);
-              //  surfaceRenderer.setDrawing(false);
+                // surfaceRenderer.setRunnig(false);
+                //  surfaceRenderer.setDrawing(false);
                 setupFragment();
                 gameHolder.removeView(mockView);
 
@@ -513,7 +584,7 @@ public class MainActivity extends FragmentActivity {
 
 
             } else {
-                soundsManager.stopBackgroundPlayer();
+               // mService.getSoundsManager().stopBackgroundPlayer();
 
                 finish();
             }

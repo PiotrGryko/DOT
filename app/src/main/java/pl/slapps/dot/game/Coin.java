@@ -4,6 +4,7 @@ import android.opengl.GLES20;
 import android.util.Log;
 
 import pl.slapps.dot.MainActivity;
+import pl.slapps.dot.SoundsService;
 import pl.slapps.dot.SurfaceRenderer;
 import pl.slapps.dot.drawing.Sprite;
 import pl.slapps.dot.drawing.Util;
@@ -58,7 +59,9 @@ public class Coin extends Sprite {
             mainSprite.booster=true;
             view.explosionManager.explode(coinX,cointY,mainSprite.spriteSpeed);
             mainSprite.startBooster();
-            view.context.getSoundsManager().playCoinSound();
+            MainActivity.sendAction(SoundsService.ACTION_COIN,null);
+
+            //  SoundsService.getSoundsManager().playCoinSound();
             //view.addExplosion(new ExplosionManager(view, mainSprite.centerX, mainSprite.centerY, System.currentTimeMillis(), mainSprite.spriteSpeed, (int)view.dotSize, config));
             //view.context.getSoundsManager().playCrashSound();
         }

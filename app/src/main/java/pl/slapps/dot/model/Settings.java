@@ -95,7 +95,7 @@ public class Settings {
             boolean switchRouteColors = settings.has("switch_route_colors") ? settings.getBoolean("switch_route_colors"):returnObject.switchRouteColors;
             boolean switchLightsDistance = settings.has("switch_lights_distance") ? settings.getBoolean("switch_lights_distance"):returnObject.switchRouteColors;
             boolean switchDotColor = settings.has("switch_dot_color") ? settings.getBoolean("switch_dot_color"):returnObject.switchDotColor;
-            float speedRatio = settings.has("speed_ratio")?settings.getInt("speed_ratio"):1;
+            float speedRatio = settings.has("speed_ratio")?(float)settings.getDouble("speed_ratio"):1.0f;
 
 
             returnObject.dotLightDistance=(float)dotLightDistance;

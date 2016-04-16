@@ -221,15 +221,16 @@
         android:orientation="horizontal">
 
         <ImageButton
-            android:id="@+id/disable_ads"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:id="@+id/disable_sounds"
+            android:layout_width="50dp"
+
+            android:layout_height="50dp"
             android:layout_margin="5dp"
             android:adjustViewBounds="true"
             android:background="@drawable/circle_btn_selector"
-            android:padding="5dp"
+            android:padding="10dp"
             android:scaleType="centerInside"
-            android:src="@drawable/disable_ads"
+            android:src="@drawable/disable_sounds"
             android:text="play"
             android:textColor="#ffffff" />
 

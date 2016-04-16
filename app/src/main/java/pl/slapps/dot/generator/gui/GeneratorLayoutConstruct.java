@@ -15,7 +15,9 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import pl.slapps.dot.MainActivity;
 import pl.slapps.dot.R;
+import pl.slapps.dot.SoundsService;
 import pl.slapps.dot.generator.Generator;
 import pl.slapps.dot.generator.builder.TileRoute;
 import pl.slapps.dot.generator.widget.NumberPickerTextView;
@@ -87,7 +89,9 @@ public class GeneratorLayoutConstruct {
                     return;
                 }
 
-                generator.view.context.getSoundsManager().playRawFile(route.sound);
+                MainActivity.sendAction(SoundsService.ACTION_RAW,route.sound);
+
+                //   SoundsService.getSoundsManager().playRawFile(route.sound);
             }
         });
 
@@ -157,7 +161,9 @@ public class GeneratorLayoutConstruct {
         imgTrash.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                generator.view.context.getSoundsManager().playRawFile("construct");
+             //   SoundsService.getSoundsManager().playRawFile("construct");
+                MainActivity.sendAction(SoundsService.ACTION_RAW,"construct");
+
 
                 TileRoute r = new TileRoute(generator.view.screenWidth, generator.view.screenHeight, generator.gridX, generator.gridY, route.horizontalPos, route.verticalPos, Route.Direction.TOP, Route.Direction.RIGHT, Route.Type.TILE,generator);
                 generator.tiles.remove(route);

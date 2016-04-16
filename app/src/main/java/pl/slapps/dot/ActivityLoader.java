@@ -161,10 +161,16 @@ public class ActivityLoader {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public ArrayList<String> listRaw() {
         ArrayList<String> files = new ArrayList<>();
-        Field[] fields = R.raw.class.getFields();
+        String[] fields = new String[0];
+        try {
+            fields = context.getAssets().list("sounds");
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.d("yyy",e.toString());
+        }
         for (int count = 0; count < fields.length; count++) {
 
-            files.add(fields[count].getName());
+            files.add(fields[count]);
 
         }
         for (int i = 0; i < sounds.size(); i++) {

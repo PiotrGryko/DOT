@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 
 import pl.slapps.dot.MainActivity;
+import pl.slapps.dot.SoundsService;
 import pl.slapps.dot.SurfaceRenderer;
 import pl.slapps.dot.drawing.Util;
 import pl.slapps.dot.model.Route;
@@ -19,15 +20,15 @@ import pl.slapps.dot.generator.builder.TileRoute;
 public class Game {
 
 
-    public Game(MainActivity context, SurfaceRenderer gameView) {
-        this.context = context;
+    public Game(SurfaceRenderer gameView) {
+        //this.context = context;
         this.gameView = gameView;
 
         dotSize = gameView.screenWidth / 20;
 
     }
 
-    public MainActivity context;
+    //public MainActivity context;
     public SurfaceRenderer gameView;
 
 
@@ -68,8 +69,6 @@ public class Game {
 
 
     public float colorFilter[] = {0.0f, 0.0f, 0.0f, 1.0f};
-
-
 
 
     public void setPreview(boolean preview) {
@@ -298,8 +297,8 @@ public class Game {
         mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
 
 
-     //   if(!updateThread.isAlive())
-     //   updateThread.start();
+        //   if(!updateThread.isAlive())
+        //   updateThread.start();
     }
 
 
@@ -308,8 +307,11 @@ public class Game {
         //updateThread.interrupt();
 
 
-        context.getSoundsManager().configure(stage.config.sounds);
-        context.getSoundsManager().playBackgroundSound();
+        MainActivity.sendAction(SoundsService.ACTION_CONFIG, stage.config.sounds);
+        MainActivity.sendAction(SoundsService.ACTION_BACKGROUND, null);
+
+//        SoundsService.getSoundsManager().configure(stage.config.sounds);
+//        SoundsService.getSoundsManager().playBackgroundSound();
         colorFilter = Util.parseColor(stage.config.colors.colorFilter);
 
 
@@ -332,7 +334,7 @@ public class Game {
         resetDot();
 
         //updateThread.start();
-        Log.d("SSS","Thread startd");
+        Log.d("SSS", "Thread startd");
     }
 
 
@@ -360,7 +362,7 @@ public class Game {
 
         if (explosionManager != null)
             explosionManager.drawGl2(mMVPMatrix);
-         update();
+        update();
 
 
     }
@@ -423,11 +425,10 @@ public class Game {
                         if (current != null) {
 
                             if (current.sound.equals(""))
-                                context.getSoundsManager().playMoveSound();
+                                MainActivity.sendAction(SoundsService.ACTION_PRESS, null);
                             else
-                                context.getSoundsManager().playRawFile(current.sound);
+                                MainActivity.sendAction(SoundsService.ACTION_RAW, current.sound);
                             setDotMovement(getNextMove(current));
-                            //setDotMovement(current.next);
                         }
 
 
@@ -464,7 +465,9 @@ public class Game {
             explosionManager.configure(currentStage.config);
         }
 
-        context.getSoundsManager().configure(currentStage.config.sounds);
+        MainActivity.sendAction(SoundsService.ACTION_CONFIG, currentStage.config.sounds);
+
+        // SoundsService.getSoundsManager().configure(currentStage.config.sounds);
 
         colorFilter = Util.parseColor(currentStage.config.colors.colorFilter);
 
@@ -494,7 +497,9 @@ public class Game {
             if (r != null) {
                 Route.Movement movement = r.getDirection();
 
-                context.getSoundsManager().playMoveSound();
+                MainActivity.sendAction(SoundsService.ACTION_PRESS, null);
+
+//                SoundsService.getSoundsManager().playMoveSound();
 
                 setDotMovement(movement);
             }
@@ -529,8 +534,10 @@ public class Game {
     public ExplosionManager explodeDot(boolean sound) {
         explosionManager.explode(mainSprite.centerX, mainSprite.centerY, mainSprite.spriteSpeed);
 
-        if (sound)
-            context.getSoundsManager().playCrashSound();
+        MainActivity.sendAction(SoundsService.ACTION_CRASH, null);
+
+        //if (sound)
+        //    SoundsService.getSoundsManager().playCrashSound();
         return null;
     }
 

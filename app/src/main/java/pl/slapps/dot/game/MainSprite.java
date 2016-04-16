@@ -10,6 +10,7 @@ import java.util.Random;
 
 import pl.slapps.dot.MainActivity;
 import pl.slapps.dot.R;
+import pl.slapps.dot.SoundsService;
 import pl.slapps.dot.SurfaceRenderer;
 import pl.slapps.dot.drawing.Quad;
 import pl.slapps.dot.drawing.Sprite;
@@ -175,7 +176,9 @@ public class MainSprite extends Sprite {
                 game.destroyDot();
                 if (game.getPreview()) {
                     game.resetDot();
-                    game.context.getSoundsManager().playFinishSound();
+                    MainActivity.sendAction(SoundsService.ACTION_FINISH,null);
+
+                    // SoundsService.getSoundsManager().playFinishSound();
                 } else
                     game.gameView.moveToNextLvl();
                 //    game.resetDot();
@@ -186,11 +189,12 @@ public class MainSprite extends Sprite {
             } else {
                 game.explodeDot(true);
 
+                /*
                 if (new Random().nextFloat() > 0.93f) {
                     game.setPaused(true);
                     game.context.showAdv();
                 }
-
+*/
                 game.resetDot();
                 //   game.toggleColors();
             }

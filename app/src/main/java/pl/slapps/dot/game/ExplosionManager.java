@@ -282,8 +282,10 @@ public class ExplosionManager {
 
     public void update(long current) {
         for (int i = 0; i < explosions.length; i++)
-            if (explosions[i] != null)
+            if (explosions[i] != null) {
                 explosions[i].update(current);
+
+            }
 
 
     }

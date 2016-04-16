@@ -1,5 +1,7 @@
 package pl.slapps.dot.drawing;
 
+import android.util.Log;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -22,6 +24,8 @@ public class Sprite {
     public ShortBuffer bufferedIndices;
 
     public Quad quad;
+    private long lastFrame;
+    private float DEFAULT_FRAME = 16;
 
 
     public float x; // used to increas/decreas sprite position
@@ -91,10 +95,25 @@ public class Sprite {
     }
 
     public void update() {
-        moveX += x;
-        moveY += y;
-        centerX += x;
-        centerY += y;
+        float ratio =1;
+        /*
+        if(lastFrame==0)
+            lastFrame = System.currentTimeMillis();
+        else
+        {
+            long newFrame = System.currentTimeMillis();
+            float frameDuration = newFrame-lastFrame;
+            ratio = frameDuration/DEFAULT_FRAME;
+            lastFrame=newFrame;
+
+           // Log.e("ggg", "time " + frameDuration);
+
+        }
+*/
+        moveX += x*ratio;
+        moveY += y*ratio;
+        centerX += x*ratio;
+        centerY += y*ratio;
 
         quad.update(x,y);
         quad.initSharedVerticles();

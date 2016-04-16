@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import pl.slapps.dot.MainActivity;
 import pl.slapps.dot.R;
 import pl.slapps.dot.SoundsManager;
+import pl.slapps.dot.SoundsService;
 import pl.slapps.dot.generator.widget.PlayButton;
 
 /**
@@ -56,7 +57,7 @@ public class AdapterSounds extends ArrayAdapter {
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                playButton.play(context.getSoundsManager().parseSound(sounds.get(position)));
+                playButton.play(sounds.get(position));
             }
         });
 

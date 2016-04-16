@@ -16,7 +16,9 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import pl.slapps.dot.MainActivity;
 import pl.slapps.dot.R;
+import pl.slapps.dot.SoundsService;
 import pl.slapps.dot.adapter.AdapterSounds;
 import pl.slapps.dot.generator.Generator;
 import pl.slapps.dot.generator.builder.TileRoute;
@@ -1064,7 +1066,9 @@ public class GeneratorLayoutPath {
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
             public void onClick(View vi) {
-                generator.view.context.getSoundsManager().playRawFile("construct");
+               // SoundsService.getSoundsManager().playRawFile("construct");
+                MainActivity.sendAction(SoundsService.ACTION_RAW,"construct");
+
 
                 final int id = vi.getId();
                 TileRoute r = null;
@@ -1286,7 +1290,9 @@ public class GeneratorLayoutPath {
                     return;
                 }
 
-                generator.view.context.getSoundsManager().playRawFile(generatorLayout.tile.sound);
+                MainActivity.sendAction(SoundsService.ACTION_RAW,generatorLayout.tile.sound);
+
+                //SoundsService.getSoundsManager().playRawFile(generatorLayout.tile.sound);
             }
         });
 
@@ -1360,7 +1366,9 @@ public class GeneratorLayoutPath {
         imgTrash.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                generator.view.context.getSoundsManager().playRawFile("construct");
+               // SoundsService.getSoundsManager().playRawFile("construct");
+                MainActivity.sendAction(SoundsService.ACTION_RAW,"construct");
+
 
                 TileRoute r = new TileRoute(generator.view.screenWidth, generator.view.screenHeight, generator.gridX, generator.gridY, generatorLayout.tile.horizontalPos, generatorLayout.tile.verticalPos, Route.Direction.TOP, Route.Direction.RIGHT, Route.Type.TILE, generator);
                 generator.tiles.remove(generatorLayout.tile);

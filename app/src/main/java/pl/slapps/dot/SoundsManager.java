@@ -41,6 +41,21 @@ public class SoundsManager {
 
     private Sounds sounds;
     private boolean crashFlag;
+    private boolean mute;
+
+    public boolean getMute()
+    {
+        return mute;
+    }
+    public void mute(boolean mute) {
+        if(!mute)
+            stopMusic();
+        this.mute = mute;
+    }
+    public void toggleMute()
+    {
+        mute(!mute);
+    }
 
     public static AsyncPlayer getPlayer(String tag) {
         return new AsyncPlayer(tag);
@@ -138,11 +153,15 @@ public class SoundsManager {
     }
 
     public void playFinishSound() {
+        if(mute)
+            return;
         asyncPlayer.play(context, soundFinish, false, AudioManager.STREAM_MUSIC);
         //  mediaPlayerMove.start();
     }
 
     public void playMoveSound() {
+        if(mute)
+            return;
         if (!sounds.overlap)
             asyncPlayerPress.play(context, moveSound, false, AudioManager.STREAM_MUSIC);
         else
@@ -152,17 +171,20 @@ public class SoundsManager {
     }
 
     public void playCoinSound() {
+        if(mute)
+            return;
 
-            playOverlapped(parseSound(DEFAULT_COIN));
+        playOverlapped(parseSound(DEFAULT_COIN));
         //  mediaPlayerMove.start();
 
     }
 
     public void playCrashSound() {
+        if(mute)
+            return;
 
 
-        if (crashFlag)
-        {
+        if (crashFlag) {
             asyncPlayerCrash.play(context, crashSound, false, AudioManager.STREAM_MUSIC);
 
         } else {
@@ -177,6 +199,8 @@ public class SoundsManager {
 
 
     public void playBackgroundSound() {
+        if(mute)
+            return;
         asyncPlayerBackground.stop();
         if (backgroundSound == null)
             return;
@@ -188,6 +212,8 @@ public class SoundsManager {
     }
 
     public void playRawFile(String filename) {
+        if(mute)
+            return;
         Uri custom = parseSound(filename);
         if (!sounds.overlap)
             asyncPlayer.play(context, custom, false, AudioManager.STREAM_MUSIC);
@@ -197,6 +223,8 @@ public class SoundsManager {
     }
 
     public void playUri(Uri uri) {
+        if(mute)
+            return;
         asyncPlayer.play(context, uri, false, AudioManager.STREAM_MUSIC);
 
 

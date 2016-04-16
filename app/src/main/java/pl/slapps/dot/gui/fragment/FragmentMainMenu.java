@@ -36,6 +36,7 @@ import java.util.Random;
 import pl.slapps.dot.DAO;
 import pl.slapps.dot.MainActivity;
 import pl.slapps.dot.R;
+import pl.slapps.dot.SoundsService;
 import pl.slapps.dot.SurfaceRenderer;
 import pl.slapps.dot.adapter.AdapterStages;
 import pl.slapps.dot.adapter.AdapterWorlds;
@@ -87,7 +88,7 @@ public class FragmentMainMenu extends Fragment {
 
     private LinearLayout layoutPurchase;
     private ImageButton btnSkipStage;
-    private ImageButton btnDisableAds;
+    private ImageButton btnDisableSounds;
 
     private String startBackgroundColor;
     private String startTextColor;
@@ -204,6 +205,7 @@ public class FragmentMainMenu extends Fragment {
         btnPlay.setColorFilter(color);
         btnGenerate.setColorFilter(color);
         btnSkipStage.setColorFilter(color);
+        btnDisableSounds.setColorFilter(color);
 
 
         //tvName.setText(stage.name);
@@ -271,8 +273,9 @@ public class FragmentMainMenu extends Fragment {
 
         layoutPurchase = (LinearLayout) layout.findViewById(R.id.layout_purchase);
         btnSkipStage = (ImageButton) layout.findViewById(R.id.skip_stage);
-        btnDisableAds = (ImageButton) layout.findViewById(R.id.disable_ads);
+        btnDisableSounds = (ImageButton) layout.findViewById(R.id.disable_sounds);
 
+        btnDisableSounds.setSelected(MainActivity.mute);
         tvName = (TextView) layout.findViewById(R.id.tv_lvl);
         tvDesc = (TextView) layout.findViewById(R.id.tv_desc);
 
@@ -311,9 +314,20 @@ public class FragmentMainMenu extends Fragment {
             }
         });
 
-        btnDisableAds.setOnClickListener(new View.OnClickListener() {
+        btnDisableSounds.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (btnDisableSounds.isSelected()) {
+                    btnDisableSounds.setSelected(false);
+                    //    SoundsService.getSoundsManager().mute(false);
+                    //     MainActivity.sendAction(SoundsService.ACTION_BACKGROUND,null);
+
+                    MainActivity.mute(false);
+                } else {
+                    btnDisableSounds.setSelected(true);
+                    //SoundsService.getSoundsManager().mute(true);
+                    MainActivity.mute(true);
+                }
                 //  ((MainActivity) FragmentMainMenu.this.getActivity()).getActivityBilling().disableAds();
             }
         });
@@ -360,7 +374,8 @@ public class FragmentMainMenu extends Fragment {
                 game.drawGenerator = false;
                 mAdView.setVisibility(View.GONE);
                 animationMainMenu.hideMenu();
-                context.getSoundsManager().playFinishSound();
+                //  SoundsService.getSoundsManager().playFinishSound();
+                MainActivity.sendAction(SoundsService.ACTION_FINISH, null);
 
             }
         });
@@ -368,7 +383,9 @@ public class FragmentMainMenu extends Fragment {
         btnGenerate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                context.getSoundsManager().stopBackgroundPlayer();
+                //   SoundsService.getSoundsManager().stopBackgroundPlayer();
+                MainActivity.sendAction(SoundsService.ACTION_MUTE, null);
+
                 game.initGenerator();
 
                 game.setRunnig(true);

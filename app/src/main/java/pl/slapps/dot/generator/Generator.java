@@ -16,6 +16,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import pl.slapps.dot.DAO;
+import pl.slapps.dot.MainActivity;
+import pl.slapps.dot.SoundsService;
 import pl.slapps.dot.SurfaceRenderer;
 import pl.slapps.dot.generator.builder.PathBuilderDraw;
 import pl.slapps.dot.generator.builder.PathBuilderPopup;
@@ -95,6 +97,7 @@ public class Generator {
         } catch (Throwable t) {
             Log.d(TAG, "background color  null ");
         }
+
     }
 
 
@@ -623,7 +626,7 @@ public class Generator {
     }
 
     public void stopPreview() {
-        view.context.getSoundsManager().stopMusic();
+        MainActivity.sendAction(SoundsService.ACTION_MUTE,null);
         view.getGame().setPreview(false);
         runPreview = false;
         refreashMaze();

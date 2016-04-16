@@ -40,8 +40,6 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
     public final float[] mModelMatrix = new float[16];
 
 
-
-
     public boolean drawGenerator = false;
     private boolean startMonitoring = false;
     private boolean isRunning = false;
@@ -56,7 +54,7 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
     public boolean onBackPressed() {
         if (generator.getPreview()) {
             generator.stopPreview();
-            Log.d("ggg","stop preview "+isDrawing +" "+isRunning+" "+drawGenerator);
+            Log.d("ggg", "stop preview " + isDrawing + " " + isRunning + " " + drawGenerator);
             return false;
         }
         generator.getPathPopup().dissmissControls();
@@ -87,8 +85,8 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
                 }
             }
 
-            Log.e(TAG,"vertex shader info log: "+GLES20.glGetShaderInfoLog(vertexShaderHandle));
-            Log.e(TAG,"fragment shader info log: "+GLES20.glGetShaderInfoLog(fragmentShaderHandle));
+            Log.e(TAG, "vertex shader info log: " + GLES20.glGetShaderInfoLog(vertexShaderHandle));
+            Log.e(TAG, "fragment shader info log: " + GLES20.glGetShaderInfoLog(fragmentShaderHandle));
 
             // Link the two shaders together into a program.
             GLES20.glLinkProgram(programHandle);
@@ -120,7 +118,6 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
         this.context = context;
 
 
-
     }
 
     public SurfaceRenderer(Context context, AttributeSet attributeSet) {
@@ -130,10 +127,11 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
         this.context = (MainActivity) context;
 
 
-
     }
 
 
+    long lastUpdateTime = 0;
+    int framesCount=0;
     @Override
     public void onDrawFrame(GL10 gl) {
 
@@ -146,15 +144,24 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
         if (isDrawing) {
             if (drawGenerator && generator != null) {
                 generator.onDraw(mMVPMatrix);
-            }
-            else if (game != null)
+            } else if (game != null)
                 game.onDraw(mMVPMatrix);
         }
 
         long renderTime = System.currentTimeMillis() - currentTime;
 
         if (startMonitoring && isRunning) {
-            context.getActivityControls().setMax(renderTime);
+            if (System.currentTimeMillis() - lastUpdateTime > 1000 && framesCount>0) {
+
+                context.getActivityControls().setMax(framesCount);
+                lastUpdateTime = System.currentTimeMillis();
+
+                framesCount=0;
+            }
+            else
+            {
+                framesCount+=1;
+            }
             //context.getActivityControls().setMin(renderTime);
             //context.setCurrent(renderTime);
         }
@@ -179,6 +186,8 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
 
         // Set the background clear color to black.
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        GLES20.glDisable(GLES20.GL_DEPTH_TEST);
+        GLES20.glDisable(GLES20.GL_CULL_FACE);
 
         // Use culling to remove back faces.
         //GLES20.glEnable(GLES20.GL_CULL_FACE);
@@ -203,7 +212,6 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
         // NOTE: In OpenGL 1, a ModelView matrix is used, which is a combination of a model and
         // generator matrix. In OpenGL 2, we can keep track of these matrices separately if we choose.
         Matrix.setLookAtM(mViewMatrix, 0, eyeX, eyeY, eyeZ, lookX, lookY, lookZ, upX, upY, upZ);
-
 
 
         game.initGameShaders();
@@ -246,7 +254,7 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
      * <pre>
      * mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");
      * MyGLRenderer.checkGlError("glGetUniformLocation");</pre>
-     *
+     * <p/>
      * If the operation is not successful, the check throws an error.
      *
      * @param glOperation - Name of the OpenGL call to check.
@@ -259,14 +267,12 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
         }
     }
 
-    public void setDrawing(boolean isDrawing)
-    {
-        this.isDrawing=isDrawing;
+    public void setDrawing(boolean isDrawing) {
+        this.isDrawing = isDrawing;
     }
 
-    public void setInteracting(boolean interacting)
-    {
-        this.isRunning=interacting;
+    public void setInteracting(boolean interacting) {
+        this.isRunning = interacting;
     }
 
     public void setRunnig(boolean isRunnig) {
@@ -301,13 +307,13 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
     }
 
 
-    public void init(MainActivity context) {
+    public void init() {
 
 
         screenWidth = this.getResources().getDisplayMetrics().widthPixels;
         screenHeight = this.getResources().getDisplayMetrics().heightPixels;
 
-        game = new Game(context, this);
+        game = new Game(this);
         generator = new Generator(this, 9, 15);
 
 
@@ -316,7 +322,8 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
 
     public void moveToNextLvl() {
 
-        context.getSoundsManager().playFinishSound();
+        MainActivity.sendAction(SoundsService.ACTION_FINISH,null);
+        //SoundsService.getSoundsManager().playFinishSound();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -337,7 +344,7 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
 
             case MotionEvent.ACTION_DOWN:
             case MotionEvent.ACTION_MOVE:
-            case MotionEvent.ACTION_UP:{
+            case MotionEvent.ACTION_UP: {
 
 
                 if (isRunning) {

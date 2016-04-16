@@ -80,8 +80,8 @@ public class ActivityControls {
                 String current = tvMax.getText().toString();
 
                 try {
-                    float v = Long.parseLong(current);
-                    if (value > v)
+                   // float v = Long.parseLong(current);
+                    //if (value < v)
                         tvMax.setText(Long.toString(value));
                 } catch (Throwable t) {
                     tvMax.setText(Long.toString(value));
