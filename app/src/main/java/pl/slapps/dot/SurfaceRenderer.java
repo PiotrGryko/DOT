@@ -4,8 +4,11 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+import android.opengl.GLUtils;
 import android.opengl.Matrix;
 import android.os.Handler;
 import android.support.v4.widget.DrawerLayout;
@@ -46,6 +49,8 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
     private boolean isDrawing = true;
     public boolean isInitialized = false;
 
+    private Thread gameThread;
+
 
     public Game getGame() {
         return game;
@@ -66,6 +71,42 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
 
         return true;
     }
+
+    public int loadTexture(Bitmap bitmap) {
+        final int[] textureHandle = new int[1];
+
+        GLES20.glGenTextures(1, textureHandle, 0);
+
+        if (textureHandle[0] != 0) {
+
+
+            // Read in the resource
+
+            // Bind to the texture in OpenGL
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle[0]);
+
+            // Set filtering
+            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
+            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
+
+            // Load the bitmap into the bound texture.
+            GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
+
+            // Recycle the bitmap, since its data has been loaded into OpenGL.
+            bitmap.recycle();
+        }
+
+        if (textureHandle[0] == 0) {
+            throw new RuntimeException("Error loading texture.");
+        }
+
+        return textureHandle[0];
+    }
+
+    public void unloadTexture() {
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
+    }
+
 
     public int createAndLinkProgram(final int vertexShaderHandle, final int fragmentShaderHandle, final String[] attributes) {
         int programHandle = GLES20.glCreateProgram();
@@ -116,7 +157,8 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
         setEGLContextClientVersion(2);
         this.setRenderer(this);
         this.context = context;
-
+        this.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+        setGameLoop();
 
     }
 
@@ -125,53 +167,133 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
         setEGLContextClientVersion(2);
         this.setRenderer(this);
         this.context = (MainActivity) context;
+        this.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+        setGameLoop();
 
+    }
+
+    private void setGameLoop() {
+
+        if (gameThread != null)
+            return;
+
+        Log.e("ccc", "start");
+        setDrawing(true);
+        //  setRunnig(true);
+
+        gameThread = new Thread() {
+
+            //long LAST_TIME;
+            //long INTERVAL = 10 * 1000000;
+
+            @Override
+            public void run() {
+                super.run();
+                while (isDrawing) {
+
+
+                    //if (System.nanoTime() - LAST_TIME > INTERVAL) {
+                    if (!ondraw) {
+                        requestRender();
+
+                        //          LAST_TIME = System.nanoTime();
+                    }
+
+                }
+            }
+        };
+
+        gameThread.start();
+    }
+
+    public void stopGameThread() {
+
+        if (gameThread == null)
+            return;
+        setDrawing(false);
+        //   setRunnig(false);
+
+        gameThread.interrupt();
+        //gameThread.stop();
+        gameThread = null;
+
+        Log.e("ccc", "stop");
+    }
+
+    public void onPause() {
+        super.onPause();
+        stopGameThread();
+        if (game != null)
+            game.onPause();
+
+
+    }
+
+    public void onResume() {
+        super.onResume();
+        setGameLoop();
+        if(game!=null)
+            game.onResume();
 
     }
 
 
     long lastUpdateTime = 0;
-    int framesCount=0;
+    int framesCount = 0;
+    private boolean ondraw = false;
+
     @Override
     public void onDrawFrame(GL10 gl) {
 
-        long currentTime = System.currentTimeMillis();
 
         Matrix.setIdentityM(mModelMatrix, 0);
 
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
 
         if (isDrawing) {
+            ondraw = true;
+            /// long tmp = System.currentTimeMillis();
+
             if (drawGenerator && generator != null) {
                 generator.onDraw(mMVPMatrix);
             } else if (game != null)
                 game.onDraw(mMVPMatrix);
-        }
 
-        long renderTime = System.currentTimeMillis() - currentTime;
 
-        if (startMonitoring && isRunning) {
-            if (System.currentTimeMillis() - lastUpdateTime > 1000 && framesCount>0) {
+            //    long diff = System.currentTimeMillis() - tmp;
+            //    if (diff > 3)
+            //        Log.e("ccc", "render time =" + diff);
 
-                context.getActivityControls().setMax(framesCount);
-                lastUpdateTime = System.currentTimeMillis();
 
-                framesCount=0;
+            if (startMonitoring) {
+                if (System.currentTimeMillis() - lastUpdateTime > 1000 && framesCount > 0) {
+                    //  Log.d("ccc","frames "+framesCount);
+
+                    context.getActivityControls().setMax(framesCount);
+                    lastUpdateTime = System.currentTimeMillis();
+
+
+                    framesCount = 0;
+                    // Log.d("ccc","monitor time ="+(System.nanoTime()-tmp)/1000000);
+
+                } else {
+                    framesCount += 1;
+                }
+
             }
-            else
-            {
-                framesCount+=1;
-            }
-            //context.getActivityControls().setMin(renderTime);
-            //context.setCurrent(renderTime);
+            ondraw = false;
         }
 
     }
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
-
-
+/*
+        Log.d("GLTEST", "GL_RENDERER = " + gl.glGetString(GL10.GL_RENDERER));
+        Log.d("GLTEST", "GL_VENDOR = " + gl.glGetString(GL10.GL_VENDOR));
+        Log.d("GLTEST", "GL_VERSION = " + gl.glGetString(GL10.GL_VERSION));
+        Log.i("GLTEST", "GL_EXTENSIONS = " + gl.glGetString(GL10.GL_EXTENSIONS));
+*/
         // Set the OpenGL viewport to the same size as the surface.
         GLES20.glViewport(0, 0, width, height);
 
@@ -282,7 +404,7 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
             context.getActivityControls().resetLogs();
         }
         if (!isRunnig && drawGenerator) {
-            context.drawerContent.removeAllViews();
+            //    context.drawerContent.removeAllViews();
             context.clearStageState();
         }
 
@@ -299,11 +421,14 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
     public void initGenerator() {
 
         drawGenerator = true;
-        context.drawerContent.addView(generator.getLayout().onCreateView());
-        context.drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+
+        generator.initMenu();
+        //generator.getLayout().onCreateView();
+        // context.drawerContent.addView(generator.getLayout().onCreateView());
+        // context.drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
         generator.reset();
 
-        context.drawer.openDrawer(context.drawerContent);
+        //    context.drawer.openDrawer(context.drawerContent);
     }
 
 
@@ -322,7 +447,7 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
 
     public void moveToNextLvl() {
 
-        MainActivity.sendAction(SoundsService.ACTION_FINISH,null);
+        MainActivity.sendAction(SoundsService.ACTION_FINISH, null);
         //SoundsService.getSoundsManager().playFinishSound();
         handler.postDelayed(new Runnable() {
             @Override

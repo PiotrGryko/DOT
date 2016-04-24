@@ -120,12 +120,7 @@ public class Coin extends Sprite {
         GLES20.glUniform4fv(view.mColorHandle, 1, color, 0);
 
 
-        // get handle to shape's transformation matrix
-        SurfaceRenderer.checkGlError("glGetUniformLocation");
 
-        // Apply the projection and generator transformation
-        GLES20.glUniformMatrix4fv(view.mMVPMatrixHandle, 1, false, mvpMatrix, 0);
-        SurfaceRenderer.checkGlError("glUniformMatrix4fv");
 
 
         // Draw the square

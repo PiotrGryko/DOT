@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:ads="http://schemas.android.com/apk/res-auto"
     android:id="@+id/root_layout"
@@ -8,51 +6,18 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <android.support.v4.widget.DrawerLayout
-        android:id="@+id/drawer"
+    <RelativeLayout
+        android:id="@+id/game_holder"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
 
-
-        <RelativeLayout
-            android:id="@+id/game_holder"
+        <pl.slapps.dot.SurfaceRenderer
+            android:id="@+id/game"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
-
-            <pl.slapps.dot.SurfaceRenderer
-                android:id="@+id/game"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent" />
-
-            <View
-                android:id="@+id/mock_view"
-
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
-
-            </View>
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:id="@+id/fragments_container"></LinearLayout>
+            android:layout_height="fill_parent" />
 
 
-        </RelativeLayout>
-
-        <LinearLayout
-            android:id="@+id/drawer_content"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_gravity="start"
-            android:background="#ffffff"
-            android:orientation="vertical">
-
-
-        </LinearLayout>
-    </android.support.v4.widget.DrawerLayout>
-
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/layout_buttons"
@@ -62,7 +27,6 @@
         android:gravity="right"
         android:orientation="vertical"
         android:padding="5dp">
-
 
 
         <LinearLayout
@@ -76,14 +40,12 @@
                 android:text="FPS: " />
 
             <TextView
-                android:background="#ffffff"
                 android:id="@+id/tv_max_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="#ffffff"
                 android:textStyle="bold" />
         </LinearLayout>
-
-
 
 
     </LinearLayout>

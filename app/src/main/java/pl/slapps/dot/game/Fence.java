@@ -116,7 +116,6 @@ public class Fence {
             if (startWall.end.equals(firstWall.start)) {
                 break;
             }
-            Log.d("rrr","sort walls...");
 
         }
 
@@ -152,7 +151,7 @@ public class Fence {
 
 
         // Add program to OpenGL environment
-        GLES20.glUseProgram(game.mProgram);
+        //GLES20.glUseProgram(game.mProgram);
 
         // get handle to vertex shader's vPosition member
 
@@ -172,8 +171,8 @@ public class Fence {
 
 
         // Apply the projection and generator transformation
-        GLES20.glUniformMatrix4fv(game.mMVPMatrixHandle, 1, false, mvpMatrix, 0);
-        SurfaceRenderer.checkGlError("glUniformMatrix4fv");
+        //GLES20.glUniformMatrix4fv(game.mMVPMatrixHandle, 1, false, mvpMatrix, 0);
+        //SurfaceRenderer.checkGlError("glUniformMatrix4fv");
 
 
         GLES20.glDrawArrays(GL10.GL_LINE_LOOP, 0, this.vert.length / 2);

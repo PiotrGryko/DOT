@@ -24,8 +24,10 @@ public class Sprite {
     public ShortBuffer bufferedIndices;
 
     public Quad quad;
-    private long lastFrame;
-    private float DEFAULT_FRAME = 16;
+    public long LAST_FRAME;
+    private final long NANO = 1000000;
+    private final float SECOND = 1000 * NANO;
+    private final float DEFAULT_FRAME = SECOND / 60;
 
 
     public float x; // used to increas/decreas sprite position
@@ -54,6 +56,7 @@ public class Sprite {
     public void initBuffers() {
         vertices = quad.vertices;
         indices = quad.indices;
+
 
 
         ByteBuffer bytes = ByteBuffer.allocateDirect(vertices.length * 4);
@@ -94,32 +97,33 @@ public class Sprite {
         return y;
     }
 
-    public void update() {
-        float ratio =1;
+    public void update(float ratio) {
+        //float ratio = 1;
+     //   if(ratio<1)
+            ratio=ratio/16.6f;
+        if(ratio>2)
+            ratio=2;
+        //ratio=1;
         /*
-        if(lastFrame==0)
-            lastFrame = System.currentTimeMillis();
-        else
+        if (LAST_FRAME != 0)
         {
-            long newFrame = System.currentTimeMillis();
-            float frameDuration = newFrame-lastFrame;
-            ratio = frameDuration/DEFAULT_FRAME;
-            lastFrame=newFrame;
-
-           // Log.e("ggg", "time " + frameDuration);
-
+            long diff = System.nanoTime() - LAST_FRAME;
+            ratio = diff / DEFAULT_FRAME;
         }
 */
-        moveX += x*ratio;
-        moveY += y*ratio;
-        centerX += x*ratio;
-        centerY += y*ratio;
 
-        quad.update(x,y);
+        moveX += x * ratio;
+        moveY += y * ratio;
+        centerX += x * ratio;
+        centerY += y * ratio;
+        // Log.d("HHH","x="+(x*ratio)+" y="+(y*ratio));
+
+        quad.update(x * ratio, y * ratio);
         quad.initSharedVerticles();
         this.bufferedVertex.position(0);
         this.bufferedVertex.put(quad.vertices);
         this.bufferedVertex.position(0);
+        LAST_FRAME = System.nanoTime();
     }
 
     public float getCenterX() {
@@ -130,12 +134,11 @@ public class Sprite {
         return centerY;
     }
 
-    public boolean cointains(Verticle v)
-    {
-        if(v.x<centerX+width/2
-                && v.x>centerX-width/2
-                && v.y<centerY+height/2
-                && v.y>centerY-height/2)
+    public boolean cointains(Verticle v) {
+        if (v.x < centerX + width / 2
+                && v.x > centerX - width / 2
+                && v.y < centerY + height / 2
+                && v.y > centerY - height / 2)
             return true;
 
         return false;

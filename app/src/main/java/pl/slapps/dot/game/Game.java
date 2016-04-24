@@ -3,10 +3,13 @@ package pl.slapps.dot.game;
 import android.net.Uri;
 import android.opengl.GLES20;
 
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.MotionEvent;
 
 import pl.slapps.dot.MainActivity;
+import pl.slapps.dot.R;
+import pl.slapps.dot.Shaders;
 import pl.slapps.dot.SoundsService;
 import pl.slapps.dot.SurfaceRenderer;
 import pl.slapps.dot.drawing.Util;
@@ -60,15 +63,35 @@ public class Game {
     public int mPointMVPMatrixHandle;
 
 
+    public int mTextureUniformHandle;
+
+    /**
+     * This will be used to pass in model texture coordinate information.
+     */
+    public int mTextureCoordinateHandle;
+
+
     public int mProgram;
     public int mPointProgram;
 
 
     private boolean isPreview = false;
     private boolean isPaused = true;
+    private boolean isCrashed = true;
 
 
     public float colorFilter[] = {0.0f, 0.0f, 0.0f, 1.0f};
+
+    public void onPause() {
+        if (background != null)
+            background.onPause();
+    }
+
+    public void onResume() {
+        if (background != null)
+            background.onResume();
+        ;
+    }
 
 
     public void setPreview(boolean preview) {
@@ -91,182 +114,17 @@ public class Game {
     // Define a simple shader program for our point.
 
 
-    final String pointVertexShader =
-            "uniform mat4 uMVPMatrix;      "
-                    + "attribute vec4 vPosition;     "
-                    + "attribute float vSize;     "
-                    + "void main()                    "
-                    + "{                              "
-
-                    + "   gl_Position = uMVPMatrix   "
-                    + "               * vPosition;   "
-                    + "   gl_PointSize = vSize;         "
-                    + "}                              ";
-
-    final String pointFragmentShader =
-            "precision mediump float;       " +
-                    "uniform lowp vec4 vColor;          // This is the color from the vertex shader interpolated across the\n"
-
-                    + "void main()                    "
-                    + "{                              "
-                    + "   gl_FragColor = vColor;      "
-                    + "}                              ";
-/*
-
-
-    final static String vertexShaderCode =
-            "uniform mat4 uMVPMatrix;      " +
-                    // A constant representing the combined model/generator/projection matrix
-                    "attribute vec4 vPosition;     " +
-                    // Per-vertex position information we will pass in.
-
-                    // Per-vertex color information we will pass in.
-                    "varying vec3 v_Position;       " +
-                    // This will be passed into the fragment shader.
-                    // This will be passed into the fragment shader.
-
-
-                    // The entry point for our vertex shader.
-                    "void main()" +
-                    "{" +
-                    // Transform the vertex into eye space.
-                    "    v_Position = vec3(vPosition);" +
-                    // Pass through the color.
-
-                    // gl_Position is a special variable used to store the final position.
-                    // Multiply the vertex by the matrix to get the final point in normalized screen coordinates. +
-                    "    gl_Position = uMVPMatrix * vPosition;" +
-                    "}";
-
-
-    final static String fragmentShaderCode =
-
-            "precision lowp float;" +
-                    "struct LightSource" +
-                    "{" +
-                    "lowp vec3 u_LightPos;" +
-                    "lowp float lightShinning;" +
-                    "lowp float lightDistance;" +
-                    "lowp vec4 lightColor;" +
-                    "};" +
-
-                    "uniform LightSource lights[5];" +
-
-
-                    "varying lowp vec3 v_Position;       // Interpolated position for this fragment.\n" +
-                    "uniform lowp vec4 vColor;          // This is the color from the vertex shader interpolated across the\n" +
-                    "                               // triangle per fragment.\n" +
-
-                    "uniform lowp vec3 dotLightPos;" +
-                    "uniform lowp float dotlightShinning;" +
-                    "uniform lowp float dotlightDistance;" +
-
-                    "// The entry point for our fragment shader.\n" +
-                    "void main()\n" +
-                    "{" +
-
-
-                    "   lowp float dotDistance = length(dotLightPos - v_Position);\n" +
-                    "   lowp float dotDiffuse =  dotlightShinning * (1.0 / (1.0 + 0.025 *( dotDistance * dotlightDistance)));\n" +
-
-                    "   lowp float explosionOneDistance = length(lights[1].u_LightPos - v_Position);\n" +
-                    "   lowp float explosionOneDiffuse =  lights[1].lightShinning * (1.0 / (1.0 + 0.025 *(  explosionOneDistance* lights[1].lightDistance)));\n" +
-                    "   lowp vec4 explosionOneResult = explosionOneDiffuse * lights[1].lightColor;" +
-
-                    "   lowp float explosionTwoDistance = length(lights[2].u_LightPos - v_Position);\n" +
-                    "   lowp float explosionTwoDiffuse =  lights[2].lightShinning * (1.0 / (1.0 + 0.025 *( explosionTwoDistance* lights[2].lightDistance)));\n" +
-                    "   lowp vec4 explosionTwoResult = explosionTwoDiffuse * lights[2].lightColor;" +
-
-                    "   lowp float explosionThreeDistance = length(lights[3].u_LightPos - v_Position);\n" +
-                    "   lowp float explosionThreeDiffuse =  lights[3].lightShinning * (1.0 / (1.0 + 0.025 *(  explosionThreeDistance* lights[3].lightDistance)));\n" +
-                    "   lowp vec4 explosionThreeResult = explosionThreeDiffuse * lights[3].lightColor;" +
-
-                    "   lowp float explosionFourDistance = length(lights[4].u_LightPos - v_Position);\n" +
-                    "   lowp float explosionFourDiffuse =  lights[4].lightShinning * (1.0 / (1.0 + 0.025 *( explosionFourDistance* lights[4].lightDistance)));\n" +
-                    "   lowp vec4 explosionFourResult = explosionFourDiffuse * lights[4].lightColor;" +
-
-                    //"    // Multiply the color by the diffuse illumination level to get final output color.\n" +
-                    "    gl_FragColor = vColor*dotDiffuse +explosionOneResult + explosionTwoResult +explosionThreeResult + explosionFourResult;" +
-                    "}";
-
-
-
-
-*/
-
-
-    final static String vertexShaderCode =
-            "uniform mat4 uMVPMatrix;      " +
-                    "struct LightSource" +
-                    "{" +
-                    "lowp vec3 u_LightPos;" +
-                    "lowp float lightShinning;" +
-                    "lowp float lightDistance;" +
-                    "lowp vec4 lightColor;" +
-                    "};" +
-                    "uniform lowp vec4 vColor;" +
-                    "uniform lowp vec4 vColorFilter;" +
-
-                    "varying lowp vec4 color;" +
-                    "varying lowp vec4 explosionColor;" +
-
-
-                    "uniform LightSource lights[2];" +
-                    "varying vec3 v_Position;" +
-                    "attribute vec4 vPosition;     " +
-
-                    "void main()" +
-                    "{" +
-
-                    "v_Position = vec3(vPosition);" +
-
-
-                    "   lowp float explosionOneDistance = length(lights[0].u_LightPos - v_Position);\n" +
-                    "   lowp float explosionOneDiffuse =  lights[0].lightShinning * (1.0 / (1.0 + 0.015 *  explosionOneDistance* lights[0].lightDistance));\n" +
-                    "   lowp vec4 explosionOneResult = explosionOneDiffuse * lights[0].lightColor;" +
-
-                    "   lowp float explosionTwoDistance = length(lights[1].u_LightPos - v_Position);\n" +
-                    "   lowp float explosionTwoDiffuse =  lights[1].lightShinning * (1.0 / (1.0 + 0.015 * explosionTwoDistance* lights[1].lightDistance));\n" +
-                    "   lowp vec4 explosionTwoResult = explosionTwoDiffuse * lights[1].lightColor;" +
-
-                    "explosionColor=explosionOneResult+explosionTwoResult;" +
-                    "color = vColor+vColorFilter;" +
-
-                    "    gl_Position = uMVPMatrix * vPosition;" +
-                    "}";
-
-
-    final static String fragmentShaderCode =
-
-            "precision lowp float;" +
-                    "varying lowp vec3 v_Position;" +
-                    "uniform lowp vec3 dotLightPos;" +
-                    "uniform lowp float dotlightShinning;" +
-                    "uniform lowp float dotlightDistance;" +
-                    "varying lowp vec4 color;" +
-                    "varying lowp vec4 explosionColor;" +
-
-                    "void main()" +
-                    "{" +
-
-                    "   lowp float dotDistance = length(dotLightPos - v_Position);" +
-                    "   lowp float dotDiffuse =  dotlightShinning * (1.0 / (1.0 + 0.025 *( dotDistance * dotlightDistance)));" +
-
-                    "    gl_FragColor = color*dotDiffuse+explosionColor;" +
-                    "}";
-
-
     public void initGameShaders() {
 
         int vertexPointShader = SurfaceRenderer.loadShader(
                 GLES20.GL_VERTEX_SHADER,
-                pointVertexShader);
+                Shaders.pointVertexShader);
         int fragmentPointShader = SurfaceRenderer.loadShader(
                 GLES20.GL_FRAGMENT_SHADER,
-                pointFragmentShader);
+                Shaders.pointFragmentShader);
 
         mPointProgram = gameView.createAndLinkProgram(vertexPointShader, fragmentPointShader,
-                new String[]{"vPosition"});
+                new String[]{"vPosition", "a_TexCoordinate"});
 
         mPointSizeHandle = GLES20.glGetAttribLocation(mPointProgram, "vSize");
         mPointPositionHandle = GLES20.glGetAttribLocation(mPointProgram, "vPosition");
@@ -276,17 +134,17 @@ public class Game {
         // prepare shaders and OpenGL program
         int vertexShader = SurfaceRenderer.loadShader(
                 GLES20.GL_VERTEX_SHADER,
-                vertexShaderCode);
+                Shaders.getVertexShaderCode());
         int fragmentShader = SurfaceRenderer.loadShader(
                 GLES20.GL_FRAGMENT_SHADER,
-                fragmentShaderCode);
+                Shaders.getFragmentShaderCode());
         mProgram = gameView.createAndLinkProgram(vertexShader, fragmentShader,
                 new String[]{"vPosition"});
 
 
-        mDotLightPosHandle = GLES20.glGetUniformLocation(mProgram, "dotLightPos");
-        mDotLightDistanceHandle = GLES20.glGetUniformLocation(mProgram, "dotlightDistance");
-        mDotLightShinningHandle = GLES20.glGetUniformLocation(mProgram, "dotlightShinning");
+        mDotLightPosHandle = GLES20.glGetUniformLocation(mProgram, "lights[0].u_LightPos");
+        mDotLightDistanceHandle = GLES20.glGetUniformLocation(mProgram, "lights[0].lightDistance");
+        mDotLightShinningHandle = GLES20.glGetUniformLocation(mProgram, "lights[0].lightShinning");
         //  mDotLightColorHandle = GLES20.glGetUniformLocation(mProgram, "lights[0].lightColor");
 
 
@@ -295,6 +153,9 @@ public class Game {
         mColorFilterHandle = GLES20.glGetUniformLocation(mProgram, "vColorFilter");
 
         mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
+
+
+        // background.loadTexture(gameView.context,R.drawable.bubles);
 
 
         //   if(!updateThread.isAlive())
@@ -307,7 +168,8 @@ public class Game {
         //updateThread.interrupt();
 
 
-        MainActivity.sendAction(SoundsService.ACTION_CONFIG, stage.config.sounds);
+        MainActivity.configServiceStage(stage);
+        //MainActivity.sendAction(SoundsService.ACTION_CONFIG, stage.config.sounds);
         MainActivity.sendAction(SoundsService.ACTION_BACKGROUND, null);
 
 //        SoundsService.getSoundsManager().configure(stage.config.sounds);
@@ -320,7 +182,7 @@ public class Game {
         // ExplosionManager.initBuffers();
         background = new Background(this, stage.config);
 
-        Log.d("rrr", "init stage ");
+
         maze = null;
         maze = new Maze(this, stage);
 
@@ -333,21 +195,62 @@ public class Game {
 
         resetDot();
 
+
+        background.setPosition(mainSprite.centerX, mainSprite.centerY);
+
         //updateThread.start();
-        Log.d("SSS", "Thread startd");
     }
+
+
+    public void update(float ratio) {
+
+        if (isPaused)
+            return;
+
+        // long tmp = System.currentTimeMillis();
+
+
+        //   long current = System.nanoTime();
+        //   float diff = (current - lastUpdate)/frame;
+        //   if(lastUpdate>0 && diff>1.5f)
+        //   Log.e("ccc", "update time =" + diff);
+        //   lastUpdate=current;
+
+
+        //Log.e("ccc","move "+ratio);
+        if (!isCrashed && mainSprite != null) {
+            mainSprite.update(ratio);
+
+            if (background != null)
+                background.setPosition(mainSprite.centerX, mainSprite.centerY);
+        }
+        if (explosionManager != null)
+            explosionManager.update(System.currentTimeMillis());
+
+
+    }
+
+
+    float smoothedDeltaRealTime_ms = 17.5f; // initial value, Optionally you can save the new computed value (will change with each hardware) in Preferences to optimize the first drawing frames
+    float movAverageDeltaTime_ms = smoothedDeltaRealTime_ms; // mov Average start with default value
+    long lastRealTimeMeasurement_ms; // temporal storage for last time measurement
+
+    // smooth constant elements to play with
+    static final float movAveragePeriod = 40; // #frames involved in average calc (suggested values 5-100)
+    static final float smoothFactor = 0.1f; // adjusting ratio (suggested values 0.01-0.5)
 
 
     public void onDraw(float[] mMVPMatrix) {
 
+        update(smoothedDeltaRealTime_ms);
 
-        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
+
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
 
         GLES20.glUseProgram(mProgram);
+        GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mMVPMatrix, 0);
 
         GLES20.glUniform4fv(mColorFilterHandle, 1, colorFilter, 0);
-
-
         if (background != null)
             background.drawGl2(mMVPMatrix);
 
@@ -355,14 +258,27 @@ public class Game {
         if (maze != null)
             maze.drawGL20(mMVPMatrix);
 
-
-        if (mainSprite != null)
+        if (!isCrashed && mainSprite != null)
             mainSprite.drawGl2(mMVPMatrix);
-
 
         if (explosionManager != null)
             explosionManager.drawGl2(mMVPMatrix);
-        update();
+
+
+        // Moving average calc
+        long currTimePick_ms = SystemClock.uptimeMillis();
+        float realTimeElapsed_ms;
+        if (lastRealTimeMeasurement_ms > 0) {
+            realTimeElapsed_ms = (currTimePick_ms - lastRealTimeMeasurement_ms);
+        } else {
+            realTimeElapsed_ms = smoothedDeltaRealTime_ms; // just the first time
+        }
+        movAverageDeltaTime_ms = (realTimeElapsed_ms + movAverageDeltaTime_ms * (movAveragePeriod - 1)) / movAveragePeriod;
+
+        // Calc a better aproximation for smooth stepTime
+        smoothedDeltaRealTime_ms = smoothedDeltaRealTime_ms + (movAverageDeltaTime_ms - smoothedDeltaRealTime_ms) * smoothFactor;
+
+        lastRealTimeMeasurement_ms = currTimePick_ms;
 
 
     }
@@ -465,7 +381,8 @@ public class Game {
             explosionManager.configure(currentStage.config);
         }
 
-        MainActivity.sendAction(SoundsService.ACTION_CONFIG, currentStage.config.sounds);
+        // MainActivity.configServiceStage(currentStage);
+        //MainActivity.sendAction(SoundsService.ACTION_CONFIG, currentStage.config.sounds);
 
         // SoundsService.getSoundsManager().configure(currentStage.config.sounds);
 
@@ -473,18 +390,8 @@ public class Game {
 
     }
 
-
-    private void update() {
-
-        if (isPaused)
-            return;
-
-        if (mainSprite != null)
-            mainSprite.update();
-
-        if (explosionManager != null)
-            explosionManager.update(System.currentTimeMillis());
-
+    public void configureSounds() {
+        MainActivity.configServiceStage(currentStage);
     }
 
 
@@ -499,7 +406,6 @@ public class Game {
 
                 MainActivity.sendAction(SoundsService.ACTION_PRESS, null);
 
-//                SoundsService.getSoundsManager().playMoveSound();
 
                 setDotMovement(movement);
             }
@@ -513,21 +419,24 @@ public class Game {
 
     public void resetDot() {
 
-
+        isCrashed = true;
         mainSprite = null;
         TileRoute startRoute = maze.getStartRoute();
         float startX = startRoute.topX + startRoute.width / 2;
         float startY = startRoute.topY + startRoute.height / 2;
         mainSprite = new MainSprite(this, startX, startY,
                 (int) dotSize, (int) dotSize, currentStage.config);
-
+        isCrashed = false;
 
         maze.initPoints();
         stopDot();
+
     }
 
     public void destroyDot() {
+        isCrashed = true;
         mainSprite = null;
+
 
     }
 

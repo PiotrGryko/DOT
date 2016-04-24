@@ -48,14 +48,14 @@ import pl.slapps.dot.model.World;
 /**
  * Created by piotr on 05/03/16.
  */
-public class FragmentMainMenu extends Fragment {
+public class LayoutMainMenu{
 
 
     //private MainMenu mainMenu;
 
-    public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
+    public View onCreateView(MainActivity context) {
 
-        this.context = (MainActivity) getActivity();
+        this.context = context;
         this.game = context.surfaceRenderer;
         //mainMenu = new MainMenu(context,context.surfaceRenderer);
 
@@ -66,7 +66,7 @@ public class FragmentMainMenu extends Fragment {
 
     }
 
-    private String TAG = FragmentMainMenu.class.getName();
+    private String TAG = LayoutMainMenu.class.getName();
 
     public View layout;
 
@@ -92,7 +92,7 @@ public class FragmentMainMenu extends Fragment {
 
     private String startBackgroundColor;
     private String startTextColor;
-    public AdView mAdView;
+   // public AdView mAdView;
 
 
     private Random random = new Random();
@@ -219,6 +219,8 @@ public class FragmentMainMenu extends Fragment {
         btnGenerate.setVisibility(View.VISIBLE);
         btnSkipStage.setVisibility(View.VISIBLE);
 
+        setColor(stage.config);
+
     }
 
 
@@ -285,9 +287,11 @@ public class FragmentMainMenu extends Fragment {
         btnStages = (ImageButton) layout.findViewById(R.id.btn_stages);
         btnOnline = (ImageButton) layout.findViewById(R.id.btn_online);
 
-        mAdView = (AdView) layout.findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
+       // mAdView = (AdView) layout.findViewById(R.id.adView);
+       // AdRequest adRequest = new AdRequest.Builder().build();
+        //mAdView.loadAd(adRequest);
+
+
 
 
         startTextColor = randomColor();
@@ -308,8 +312,8 @@ public class FragmentMainMenu extends Fragment {
         btnSkipStage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //((MainActivity)FragmentMainMenu.this.getActivity()).getActivityBilling().buyGap();
-                ((MainActivity) FragmentMainMenu.this.getActivity()).showVideoAdv();
+                //((MainActivity)LayoutMainMenu.this.getActivity()).getActivityBilling().buyGap();
+                context.showVideoAdv();
 
             }
         });
@@ -328,7 +332,7 @@ public class FragmentMainMenu extends Fragment {
                     //SoundsService.getSoundsManager().mute(true);
                     MainActivity.mute(true);
                 }
-                //  ((MainActivity) FragmentMainMenu.this.getActivity()).getActivityBilling().disableAds();
+                //  ((MainActivity) LayoutMainMenu.this.getActivity()).getActivityBilling().disableAds();
             }
         });
 
@@ -372,10 +376,11 @@ public class FragmentMainMenu extends Fragment {
 
 
                 game.drawGenerator = false;
-                mAdView.setVisibility(View.GONE);
+              //  mAdView.setVisibility(View.GONE);
                 animationMainMenu.hideMenu();
                 //  SoundsService.getSoundsManager().playFinishSound();
                 MainActivity.sendAction(SoundsService.ACTION_FINISH, null);
+                game.getGame().setPaused(false);
 
             }
         });
@@ -396,13 +401,9 @@ public class FragmentMainMenu extends Fragment {
 
                 //context.gameHolder.removeView(layoutMenu);
 
-                context.removeCurrentFragment();
+                context.removeMainMenu();
 
-                context.gameHolder.addView(context.getMockView());
-                //context.rootLayout.addView(context.getActivityControls().getLayoutButtons());
-
-                //menuHideAnimation.startAnimation(500);
-                mAdView.setVisibility(View.GONE);
+              //  mAdView.setVisibility(View.GONE);
 
 
             }
@@ -563,6 +564,8 @@ public class FragmentMainMenu extends Fragment {
 
         if (context.getCurrentStage() != null)
             context.loadStage(context.getCurrentStage());
+
+        game.getGame().setPaused(true);
 
 
         return layout;

@@ -1,7 +1,9 @@
 package pl.slapps.dot;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
@@ -43,10 +45,17 @@ public class ActivityLoader {
     private MainActivity context;
     public ArrayList<String> sounds;
     //public ArrayList<Stage> stages;
-    public JSONArray jsonStages;
     public final String WORLDS_FILE = "worlds.json";
-    private LoadStages stagesThread;
+    private LoadStages stageThread;
     private Handler handler;
+
+    private final String STAGES_PREFIX = "tier_";
+    private final String STAGES_SUFFIX = ".json";
+
+    private final int TIER_SIZE = 10;
+    private JSONArray jsonStages;
+    private int CURRENT_TIER = -1;
+    private boolean assets;
 
 
     public ActivityLoader(MainActivity context, Handler handler) {
@@ -57,6 +66,21 @@ public class ActivityLoader {
 
     }
 
+
+    public void onDestroy() {
+
+        if (stageThread != null) {
+            stageThread.cancel();
+            stageThread = null;
+        }
+
+        Runtime.getRuntime().gc();
+    }
+    ////////////////////////
+
+    /**
+     * SOUNDS LOADING
+     */
 
     private class DownloadFile extends AsyncTask<String, Integer, String> {
 
@@ -159,14 +183,36 @@ public class ActivityLoader {
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    public ArrayList<String> listRaw() {
+    public ArrayList<String> listSoundsFromAssets() {
         ArrayList<String> files = new ArrayList<>();
         String[] fields = new String[0];
         try {
             fields = context.getAssets().list("sounds");
         } catch (IOException e) {
             e.printStackTrace();
-            Log.d("yyy",e.toString());
+            Log.d("yyy", e.toString());
+        }
+        for (int count = 0; count < fields.length; count++) {
+
+            files.add(fields[count]);
+
+        }
+        for (int i = 0; i < sounds.size(); i++) {
+            files.add(sounds.get(i));
+        }
+        files.add("");
+        return files;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    public ArrayList<String> listBackgroundsFromAssets() {
+        ArrayList<String> files = new ArrayList<>();
+        String[] fields = new String[0];
+        try {
+            fields = context.getAssets().list("backgrounds");
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.d("yyy", e.toString());
         }
         for (int count = 0; count < fields.length; count++) {
 
@@ -194,9 +240,17 @@ public class ActivityLoader {
 
     }
 
-    private void saveTextFile(String text) {
+
+    ////////////////////////
+
+    /**
+     * SAVING STAGES
+     */
+
+
+    private void saveTextFile(String text, String filename) {
         try {
-            File myFile = new File(context.getCacheDir(), WORLDS_FILE);
+            File myFile = new File(context.getCacheDir(), filename);
             myFile.createNewFile();
             FileOutputStream fOut = new FileOutputStream(myFile);
             OutputStreamWriter myOutWriter =
@@ -204,14 +258,25 @@ public class ActivityLoader {
             myOutWriter.append(text);
             myOutWriter.close();
             fOut.close();
-            Toast.makeText(context,
-                    "Done writing SD 'mysdfile.txt'",
-                    Toast.LENGTH_SHORT).show();
+            //  Toast.makeText(context,
+            //          "Done writing SD 'mysdfile.txt'",
+            //         Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "Stages file saved " + filename);
         } catch (Exception e) {
             Toast.makeText(context, e.getMessage(),
                     Toast.LENGTH_SHORT).show();
+            Log.e(TAG, e.toString());
+
         }
     }
+
+
+    ////////////////////////
+
+    /**
+     * LOADING STAGES
+     */
+
 
     public interface OnStagesLoadingListener {
         public void onLoaded();
@@ -221,9 +286,17 @@ public class ActivityLoader {
         public void onProgress(float progress);
     }
 
+    public interface OnStageLoadingListener {
+        public void onLoaded(Stage stage);
+        public void onFailed();
+    }
+
+
     public void loadStagesFile(final OnStagesLoadingListener listener, final boolean assets) {
+        this.assets=assets;
         if (assets) {
-            loadStages(true, listener);
+            listener.onLoaded();
+            //loadStages(true, listener);
             //  if (listener != null)
             //      listener.onLoaded();
         } else {
@@ -231,28 +304,109 @@ public class ActivityLoader {
                 @Override
                 public void onResponse(Object response) {
 
-                    saveTextFile(response.toString());
-                    loadStages(false, listener);
+                    try {
+                        int counter = 0;
+                        int currentTier = 0;
+
+                        JSONObject jsonData = new JSONObject(response.toString());
+                        JSONObject api = jsonData.has("api") ? jsonData.getJSONObject("api") : new JSONObject();
+                        jsonStages = new JSONArray();
+                        JSONArray jsonArray = api.has("results") ? api.getJSONArray("results") : new JSONArray();
+
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject world = jsonArray.getJSONObject(i);
+                            JSONArray stages = world.has("stages") ? world.getJSONArray("stages") : new JSONArray();
+                            for (int j = 0; j < stages.length(); j++) {
+                                jsonStages.put(stages.getJSONObject(j));
+
+
+                                if (counter > 0 && counter % 10 == 0) {
+                                    int tier = counter / 10;
+                                    if (currentTier != tier) {
+                                        String fileName =STAGES_PREFIX + currentTier+STAGES_SUFFIX;
+                                        saveTextFile(jsonStages.toString(), fileName);
+                                        currentTier = tier;
+
+                                        jsonStages = new JSONArray();
+                                    }
+                                }
+
+                                counter++;
+
+
+                            }
+                        }
+
+                        //    result = true;
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        Log.d(TAG, e.toString());
+                        ///   result = false;
+                    }
+
+
+                    // saveTextFile(response.toString());
+                    //  loadStages(false, listener);
+
+
+                    listener.onLoaded();
 
                 }
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     Toast.makeText(context, error.toString(), Toast.LENGTH_LONG).show();
-                    loadStages(false, listener);
-
+                    // loadStages(false, listener);
+                    // listener.onFailed();
+                    listener.onLoaded();
                 }
             }, true);
         }
     }
 
-    private InputStream getInputStream(boolean assets) {
+    public void getStageAtIndex(int index, OnStageLoadingListener listener) {
+
+        Log.d(TAG, "Loading stage raw index=" + index);
+
+        int tier = 0;
+        if (index > 0)
+            tier = index / 10;
+
+
+        if(tier==CURRENT_TIER && listener!=null) {
+            if(index>0)
+            index = index%TIER_SIZE;
+            try {
+                Log.d(TAG,"Loading stage from current tier "+CURRENT_TIER +" stage="+index);
+                listener.onLoaded(Stage.valueOf(jsonStages.getJSONObject(index)));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return;
+
+        }
+
+        String filename = STAGES_PREFIX + tier+STAGES_SUFFIX;
+
+        if (stageThread != null) {
+            stageThread.cancel();
+
+        }
+        stageThread = new LoadStages();
+        Log.d(TAG,"loading stage nr="+index +"tier="+tier+" from file "+filename);
+        stageThread.load(listener, filename, tier, index);
+
+
+    }
+
+
+    private InputStream getInputStream(String filename) {
         InputStream stream = null;
         try {
             if (assets)
-                stream = context.getAssets().open("worlds.json");
+                stream = context.getAssets().open("stages/"+filename);
             else {
-                File myFile = new File(context.getCacheDir(), WORLDS_FILE);
+                File myFile = new File(context.getCacheDir(), filename);
                 stream = new FileInputStream(myFile);
             }
 
@@ -263,37 +417,20 @@ public class ActivityLoader {
 
     }
 
-    public Stage getStageAtIndex(int index) {
-        Stage stage = null;
-
-        try {
-            stage = Stage.valueOf(jsonStages.getJSONObject(index));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return stage;
-    }
-
-    public void onDestroy() {
-        if (stagesThread != null) {
-            stagesThread.cancel();
-            stagesThread = null;
-        }
-        Runtime.getRuntime().gc();
-    }
-
     class LoadStages extends Thread {
         StringBuilder returnString = null;
         InputStream fIn = null;
-
-        boolean assets;
-        OnStagesLoadingListener listener;
+        String filename;
+        OnStageLoadingListener listener;
         boolean running;
+        private int tier;
+        private int stageNr;
 
-        public void load(boolean assets, OnStagesLoadingListener listener) {
-            this.assets = assets;
+        public void load(OnStageLoadingListener listener, String filename, int tier, int stageNr) {
             this.listener = listener;
-
+            this.filename = filename;
+            this.tier = tier;
+            this.stageNr = stageNr;
             start();
         }
 
@@ -313,7 +450,7 @@ public class ActivityLoader {
                 fIn = null;
 
             }
-            stagesThread = null;
+            stageThread = null;
 
             Log.d("EEE", "Cancel internal");
 
@@ -323,11 +460,11 @@ public class ActivityLoader {
 
         public void run() {
 
-            boolean result = false;
             running = true;
 
             try {
-                fIn = getInputStream(assets);
+
+                fIn = getInputStream(filename);
                 returnString = new StringBuilder();
                 byte[] bytes = new byte[1000];
                 int numRead = 0;
@@ -348,48 +485,40 @@ public class ActivityLoader {
                 }
             }
 
+
             try {
 
-                JSONObject jsonData = new JSONObject(returnString.toString());
-                JSONObject api = jsonData.has("api") ? jsonData.getJSONObject("api") : new JSONObject();
-                jsonStages = new JSONArray();
-                JSONArray jsonArray = api.has("results") ? api.getJSONArray("results") : new JSONArray();
+                jsonStages = new JSONArray(returnString.toString());
+                final Stage stage = Stage.valueOf(jsonStages.getJSONObject(stageNr % TIER_SIZE));
 
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    JSONObject world = jsonArray.getJSONObject(i);
-                    JSONArray stages = world.has("stages") ? world.getJSONArray("stages") : new JSONArray();
-                    for (int j = 0; j < stages.length(); j++) {
-                        jsonStages.put(stages.getJSONObject(j));
+
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (listener != null)
+                            listener.onLoaded(stage);
+                        Log.d(TAG, "stage loaded tier=" + tier + " stage nr " + stageNr + " stage in tier nr= " + stageNr % TIER_SIZE);
+                        CURRENT_TIER = tier;
+
+                        onDestroy();
 
                     }
-                }
+                });
 
-                result = true;
             } catch (JSONException e) {
                 e.printStackTrace();
                 Log.d(TAG, e.toString());
-                result = false;
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        //  if(listener!=null)
+                        //   listener.onFailed();
+                        onDestroy();
+                    }
+                });
             }
 
-            if (result)
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(listener!=null)
-                        listener.onLoaded();
-                        onDestroy();
 
-                    }
-                });
-            else
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(listener!=null)
-                        listener.onFailed();
-                        onDestroy();
-                    }
-                });
             running = false;
             //clear();
 
@@ -397,16 +526,5 @@ public class ActivityLoader {
 
     }
 
-    private void loadStages(final boolean assets, final OnStagesLoadingListener listener) {
-
-        if (stagesThread != null) {
-            stagesThread.cancel();
-
-        }
-        stagesThread = new LoadStages();
-        stagesThread.load(assets, listener);
-
-
-    }
 
 }

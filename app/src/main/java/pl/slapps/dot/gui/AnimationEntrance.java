@@ -32,6 +32,7 @@ public class AnimationEntrance {
                 Animation.RELATIVE_TO_SELF, 0.5f, // Pivot point of X scaling
                 Animation.RELATIVE_TO_SELF, 0.5f); // Pivot point of Y scaling
 
+
         animation.setFillAfter(true);
         animation.setAnimationListener(new Animation.AnimationListener() {
             @Override
@@ -72,7 +73,12 @@ public class AnimationEntrance {
     }
 
     public void clearAnimation() {
+        animation.setFillAfter(false);
+        animation.reset();
+        view.clearAnimation();
         ViewCompat.setScaleX(view, 1);
         ViewCompat.setScaleY(view, 1);
+        animation.setFillAfter(true);
+
     }
 }

@@ -211,7 +211,7 @@ public class GeneratorLayout {
                                 if (generator.getFinishRoute() != null)
                                     generator.getFinishRoute().setCurrentTile(true);
                                 dialogStages.dismiss();
-                                context.drawer.closeDrawer(context.drawerContent);
+                       //         context.drawer.closeDrawer(context.drawerContent);
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -235,36 +235,7 @@ public class GeneratorLayout {
 
     }
 
-    public void loadMaze() {
-        final Dialog stages = new Dialog(context);
-        stages.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
-        View v = LayoutInflater.from(context).inflate(R.layout.dialog_stages, null);
-        ListView listView = (ListView) v.findViewById(R.id.lv);
-        ArrayList<String> entries = new ArrayList<String>();
-        for (int i = 0; i < context.getActivityLoader().jsonStages.length(); i++) {
-            entries.add(Integer.toString(i));
-        }
-        listView.setAdapter(new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, entries));
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View v, int i, long l) {
-
-                loadRoute(context.getActivityLoader().getStageAtIndex(i));
-                generator._id = null;
-                generator.getPathBuilderPopup().startRouteConfiguration();
-
-                ArrayList<TileRoute> currentRoutes = generator.getPathBuilderPopup().getPath();
-                layoutConstruct.refreashLayout(currentRoutes);
-                stages.dismiss();
-
-
-            }
-        });
-        stages.setContentView(v);
-        stages.show();
-    }
 
 
     public void setCurrentTile(TileRoute tile) {
@@ -461,8 +432,8 @@ public class GeneratorLayout {
 
         this.tile.setCurrentTile(true);
         //this.generator.getPathPopup().showPath(this.tile.centerX, this.tile.centerY);
-        context.drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-        context.drawer.closeDrawer(context.drawerContent);
+      //  context.drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+      //  context.drawer.closeDrawer(context.drawerContent);
     }
 
 

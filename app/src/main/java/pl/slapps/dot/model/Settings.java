@@ -32,6 +32,8 @@ public class Settings {
 
     public boolean disableBackground =false;
 
+    public String backgroundFile = "";
+
     public float speedRatio = 1;
 
 
@@ -58,6 +60,7 @@ public class Settings {
             settings.put("dot_light_distance_start", dotLightDistanceStart);
             settings.put("dot_light_distance_end", dotLightDistanceEnd);
             settings.put("speed_ratio", speedRatio);
+            settings.put("background_file",backgroundFile);
 
 
 
@@ -96,7 +99,7 @@ public class Settings {
             boolean switchLightsDistance = settings.has("switch_lights_distance") ? settings.getBoolean("switch_lights_distance"):returnObject.switchRouteColors;
             boolean switchDotColor = settings.has("switch_dot_color") ? settings.getBoolean("switch_dot_color"):returnObject.switchDotColor;
             float speedRatio = settings.has("speed_ratio")?(float)settings.getDouble("speed_ratio"):1.0f;
-
+            String backgroundFile = settings.has("background_file")?settings.getString("background_file"):"";
 
             returnObject.dotLightDistance=(float)dotLightDistance;
             returnObject.dotLightShinning=(float)dotLightShinning;
@@ -115,6 +118,7 @@ public class Settings {
             returnObject.switchRouteColors=switchRouteColors;
             returnObject.switchDotLightDistance=switchLightsDistance;
             returnObject.switchDotColor=switchDotColor;
+            returnObject.backgroundFile=backgroundFile;
 
 
         } catch (JSONException e) {

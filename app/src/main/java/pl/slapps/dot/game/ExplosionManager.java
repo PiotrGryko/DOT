@@ -145,6 +145,36 @@ public class ExplosionManager {
 
         public void drawGl2(float[] mvpMatrix) {
 
+
+            GLES20.glUseProgram(view.mProgram);
+
+
+            switch (EXPLOSION_INDEX) {
+                case 0: {
+                    mExplosionLightPosHandle = GLES20.glGetUniformLocation(view.mProgram, "lights[1].u_LightPos");
+                    mExplosionLightDistanceHandle = GLES20.glGetUniformLocation(view.mProgram, "lights[1].lightDistance");
+                    mExplosionLightShinningHandle = GLES20.glGetUniformLocation(view.mProgram, "lights[1].lightShinning");
+                    mExplosionLightColorHandle = GLES20.glGetUniformLocation(view.mProgram, "lights[1].lightColor");
+                    break;
+
+
+                }
+
+                case 1: {
+                    mExplosionLightPosHandle = GLES20.glGetUniformLocation(view.mProgram, "lights[2].u_LightPos");
+                    mExplosionLightDistanceHandle = GLES20.glGetUniformLocation(view.mProgram, "lights[2].lightDistance");
+                    mExplosionLightShinningHandle = GLES20.glGetUniformLocation(view.mProgram, "lights[2].lightShinning");
+                    mExplosionLightColorHandle = GLES20.glGetUniformLocation(view.mProgram, "lights[2].lightColor");
+                    break;
+                }
+
+            }
+
+            GLES20.glUniform3f(mExplosionLightPosHandle, x, y, 0.0f);
+            GLES20.glUniform1f(mExplosionLightDistanceHandle, config.settings.explosionOneLightDistance);
+            GLES20.glUniform1f(mExplosionLightShinningHandle, config.settings.explosionOneLightShinning - (float) elapsedTime / (float) LIFE_TIME * config.settings.explosionOneLightShinning);
+            GLES20.glUniform4fv(mExplosionLightColorHandle, 1, color, 0);
+
             // Add program to OpenGL environment
             GLES20.glUseProgram(view.mPointProgram);
 
@@ -175,67 +205,11 @@ public class ExplosionManager {
 
             // Apply the projection and generator transformation
             GLES20.glUniformMatrix4fv(view.mPointMVPMatrixHandle, 1, false, mvpMatrix, 0);
-            SurfaceRenderer.checkGlError("glUniformMatrix4fv");
 
             GLES20.glDrawArrays(GL10.GL_POINTS, START_POSITION, PARTICLES_PER_EXPLOSION);
 
-            GLES20.glUseProgram(view.mProgram);
 
 
-            switch (EXPLOSION_INDEX) {
-                case 0: {
-                    mExplosionLightPosHandle = GLES20.glGetUniformLocation(view.mProgram, "lights[0].u_LightPos");
-                    mExplosionLightDistanceHandle = GLES20.glGetUniformLocation(view.mProgram, "lights[0].lightDistance");
-                    mExplosionLightShinningHandle = GLES20.glGetUniformLocation(view.mProgram, "lights[0].lightShinning");
-                    mExplosionLightColorHandle = GLES20.glGetUniformLocation(view.mProgram, "lights[0].lightColor");
-                    break;
-
-
-                }
-
-                case 1: {
-                    mExplosionLightPosHandle = GLES20.glGetUniformLocation(view.mProgram, "lights[1].u_LightPos");
-                    mExplosionLightDistanceHandle = GLES20.glGetUniformLocation(view.mProgram, "lights[1].lightDistance");
-                    mExplosionLightShinningHandle = GLES20.glGetUniformLocation(view.mProgram, "lights[1].lightShinning");
-                    mExplosionLightColorHandle = GLES20.glGetUniformLocation(view.mProgram, "lights[1].lightColor");
-                    break;
-                }
-            /*
-                case 2: {
-                    mExplosionLightPosHandle = GLES20.glGetUniformLocation(view.mProgram, "lights[2].u_LightPos");
-                    mExplosionLightDistanceHandle = GLES20.glGetUniformLocation(view.mProgram, "lights[2].lightDistance");
-                    mExplosionLightShinningHandle = GLES20.glGetUniformLocation(view.mProgram, "lights[2].lightShinning");
-                    mExplosionLightColorHandle = GLES20.glGetUniformLocation(view.mProgram, "lights[2].lightColor");
-                    break;
-                }
-                case 3: {
-                    mExplosionLightPosHandle = GLES20.glGetUniformLocation(view.mProgram, "lights[3].u_LightPos");
-                    mExplosionLightDistanceHandle = GLES20.glGetUniformLocation(view.mProgram, "lights[3].lightDistance");
-                    mExplosionLightShinningHandle = GLES20.glGetUniformLocation(view.mProgram, "lights[3].lightShinning");
-                    mExplosionLightColorHandle = GLES20.glGetUniformLocation(view.mProgram, "lights[3].lightColor");
-                    break;
-                }
-*/
-
-            }
-
-            //  if(EXPLOSION_INDEX==0||EXPLOSION_INDEX==2) {
-
-            GLES20.glUniform3f(mExplosionLightPosHandle, x, y, 0.0f);
-            GLES20.glUniform1f(mExplosionLightDistanceHandle, config.settings.explosionOneLightDistance);
-            GLES20.glUniform1f(mExplosionLightShinningHandle, config.settings.explosionOneLightShinning - (float) elapsedTime / (float) LIFE_TIME * config.settings.explosionOneLightShinning);
-            GLES20.glUniform4fv(mExplosionLightColorHandle, 1, color, 0);
-
-           /*
-            }
-            else
-            {
-                GLES20.glUniform3f(view.mExplosionLightTwoPosHandle, x, y, 0.0f);
-                GLES20.glUniform1f(view.mExplosionLightTwoDistanceHandle, config.settings.explosionTwoLightDistance);
-                GLES20.glUniform1f(view.mExplosionLightTwoShinningHandle, config.settings.explosionTwoLightShinning - (float) elapsedTime / (float) LIFE_TIME * config.settings.explosionTwoLightShinning);
-                GLES20.glUniform4fv(view.mExplosionLightTwoColorHandle, 1, color, 0);
-            }
-*/
             GLES20.glDisableVertexAttribArray(view.mPointPositionHandle
             );
 

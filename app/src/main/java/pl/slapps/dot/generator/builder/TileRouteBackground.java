@@ -66,7 +66,7 @@ public class TileRouteBackground extends Sprite {
 
 
     public void update() {
-        super.update();
+        super.update(1);
     }
 
 
@@ -74,7 +74,7 @@ public class TileRouteBackground extends Sprite {
 
 
         // Enable a handle to the triangle vertices
-        GLES20.glEnableVertexAttribArray(generator.mPositionHandle);
+        //GLES20.glEnableVertexAttribArray(generator.mPositionHandle);
 
         // Prepare the triangle coordinate data
         GLES20.glVertexAttribPointer(
@@ -87,12 +87,9 @@ public class TileRouteBackground extends Sprite {
         // Set color for drawing the triangle
         GLES20.glUniform4fv(generator.mColorHandle, 1, color, 0);
 
-        // get handle to shape's transformation matrix
-        SurfaceRenderer.checkGlError("glGetUniformLocation");
 
         // Apply the projection and generator transformation
-        GLES20.glUniformMatrix4fv(generator.mMVPMatrixHandle, 1, false, mvpMatrix, 0);
-        SurfaceRenderer.checkGlError("glUniformMatrix4fv");
+        //GLES20.glUniformMatrix4fv(generator.mMVPMatrixHandle, 1, false, mvpMatrix, 0);
 
         // Draw the square
         GLES20.glDrawElements(
@@ -100,7 +97,7 @@ public class TileRouteBackground extends Sprite {
                 GLES20.GL_UNSIGNED_SHORT, bufferedIndices);
 
         // Disable vertex array
-        GLES20.glDisableVertexAttribArray(generator.mPositionHandle);
+        //GLES20.glDisableVertexAttribArray(generator.mPositionHandle);
 
 
     }

@@ -89,8 +89,8 @@ public class PopupLayoutFactory {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
 
-                    if (generator.view.context.drawer.isDrawerOpen(generator.view.context.drawerContent))
-                        return true;
+                  //  if (generator.view.context.drawer.isDrawerOpen(generator.view.context.drawerContent))
+                  //      return true;
 
                     int action = event.getAction();
                     if (action == MotionEvent.ACTION_DOWN) {
@@ -287,6 +287,7 @@ public class PopupLayoutFactory {
         popupControls = new PopupLayout(layoutControls.getLayout(), false, "", null);
         popupControls.getDrag().setBackgroundDrawable(null);
 
+        /*
         generator.view.context.drawer.setDrawerListener(new DrawerLayout.DrawerListener() {
             @Override
             public void onDrawerSlide(View drawerView, float slideOffset) {
@@ -318,6 +319,7 @@ public class PopupLayoutFactory {
 
             }
         });
+        */
 
     }
 
@@ -345,15 +347,15 @@ public class PopupLayoutFactory {
     }
 
     private void setDrawerState(PopupLayout window) {
-        if (generator.view.context.drawer.isDrawerOpen(generator.view.context.drawerContent)) {
-            ViewCompat.setAlpha(window.getPopup().getContentView(), 0);
+        //if (generator.view.context.drawer.isDrawerOpen(generator.view.context.drawerContent)) {
+        //    ViewCompat.setAlpha(window.getPopup().getContentView(), 0);
             //window.getPopup().getContentView().setEnabled(false);
-            window.dismissAndReopen();
+//            window.dismissAndReopen();
 
-        } else {
+  //      } else {
             ViewCompat.setAlpha(window.getPopup().getContentView(), 1);
             window.getPopup().getContentView().setEnabled(true);
-        }
+    //    }
     }
 
 

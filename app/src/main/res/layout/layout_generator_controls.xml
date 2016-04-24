@@ -72,4 +72,14 @@
         android:padding="7dp"
         android:background="@drawable/circle_still_selector"
         android:src="@drawable/note" />
+
+
+    <ImageView
+        android:id="@+id/btn_background"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_margin="3dp"
+        android:padding="7dp"
+        android:background="@drawable/circle_still_selector"
+        android:src="@drawable/images" />
 </LinearLayout>

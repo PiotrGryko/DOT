@@ -59,7 +59,7 @@ public class MainSprite extends Sprite {
     }
 
     private void stopBooster() {
-        if(booster) {
+        if (booster) {
             booster = false;
             this.game.colorFilter = Util.parseColor(config.colors.colorFilter);
         }
@@ -121,8 +121,10 @@ public class MainSprite extends Sprite {
     }
 
 
-    public void update() {
-        super.update();
+    public void update(float ratio) {
+        super.update(ratio);
+
+        long start = System.currentTimeMillis();
 
         if (booster) {
             if (System.currentTimeMillis() - BOOSTER_START_TIME > BOOSTER_TIME) {
@@ -131,13 +133,20 @@ public class MainSprite extends Sprite {
             }
         }
 
-        //TileRoute collision = fence.checkRouteCollision(centerX, centerY, width / 2);
-        TileRoute tmpCurrent = fence.getCurrentRouteObject(centerX, centerY);
+        TileRoute tmpCurrent = null;
 
-        fence.checkCoinCollision(this);
+        if (currentTile == null || !currentTile.contains(centerX, centerY))
+            tmpCurrent = fence.getCurrentRouteObject(centerX, centerY);
+        else
+            tmpCurrent = currentTile;
+
         Wall.Type collision = null;
         if (tmpCurrent != null)
             collision = tmpCurrent.checkCollision(centerX, centerY, width / 2);
+
+        fence.checkCoinCollision(this);
+
+
         if (tmpCurrent != null && currentTile != tmpCurrent) {
 
             currentTile = tmpCurrent;
@@ -156,6 +165,7 @@ public class MainSprite extends Sprite {
 
                 speedRatio = (float) currentTile.speedRatio;
             }
+
 
             if (x > 0)
                 x = spriteSpeed * speedRatio;
@@ -176,16 +186,13 @@ public class MainSprite extends Sprite {
                 game.destroyDot();
                 if (game.getPreview()) {
                     game.resetDot();
-                    MainActivity.sendAction(SoundsService.ACTION_FINISH,null);
+                    MainActivity.sendAction(SoundsService.ACTION_FINISH, null);
 
-                    // SoundsService.getSoundsManager().playFinishSound();
                 } else
                     game.gameView.moveToNextLvl();
-                //    game.resetDot();
 
             } else if (!prepareToDie) {
                 game.crashDot(true);
-                //    game.toggleColors();
             } else {
                 game.explodeDot(true);
 
@@ -196,10 +203,10 @@ public class MainSprite extends Sprite {
                 }
 */
                 game.resetDot();
-                //   game.toggleColors();
             }
 
         }
+
 
     }
 
@@ -230,8 +237,8 @@ public class MainSprite extends Sprite {
         //  SurfaceRenderer.checkGlError("glGetUniformLocation");
 
         // Apply the projection and game transformation
-        GLES20.glUniformMatrix4fv(game.mMVPMatrixHandle, 1, false, mvpMatrix, 0);
-        SurfaceRenderer.checkGlError("glUniformMatrix4fv");
+        //  GLES20.glUniformMatrix4fv(game.mMVPMatrixHandle, 1, false, mvpMatrix, 0);
+        //  SurfaceRenderer.checkGlError("glUniformMatrix4fv");
 
 
         GLES20.glUniform3f(game.mDotLightPosHandle, getCenterX(), getCenterY(), 0.0f);

@@ -251,7 +251,7 @@ public class Path {
 
 
         // Add program to OpenGL environment
-        GLES20.glUseProgram(game.mProgram);
+       // GLES20.glUseProgram(game.mProgram);
 
         // get handle to vertex shader's vPosition member
 
@@ -272,8 +272,8 @@ public class Path {
 
 
         // Apply the projection and generator transformation
-        GLES20.glUniformMatrix4fv(game.mMVPMatrixHandle, 1, false, mvpMatrix, 0);
-        SurfaceRenderer.checkGlError("glUniformMatrix4fv");
+       // GLES20.glUniformMatrix4fv(game.mMVPMatrixHandle, 1, false, mvpMatrix, 0);
+       // SurfaceRenderer.checkGlError("glUniformMatrix4fv");
 
         // Draw the square
         GLES20.glDrawElements(
@@ -281,7 +281,7 @@ public class Path {
                 GLES20.GL_UNSIGNED_SHORT, roadBufferedIndices);
 
         // Disable vertex array
-        GLES20.glDisableVertexAttribArray(game.mPositionHandle);
+       GLES20.glDisableVertexAttribArray(game.mPositionHandle);
 
 
     }

@@ -20,6 +20,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 import pl.slapps.dot.model.Sounds;
 
@@ -36,7 +37,8 @@ public class SoundsService extends Service {
     public static final int ACTION_COIN = 4;
     public static final int ACTION_MUTE = 5;
     public static final int ACTION_CONFIG = 6;
-    public static final int ACTION_RAW = 7;
+    public static final int ACTION_CONFIG_RAW = 7;
+    public static final int ACTION_RAW = 8;
 
 
     AssetManager am;
@@ -45,6 +47,7 @@ public class SoundsService extends Service {
     private String DEFAULT_CRASH = "spacebib";
     private String DEFAULT_FINISH = "finish";
     private String DEFAULT_COIN = "coin";
+    private String CURRENT_FINISH = "";
 
     private int BACKGROUND_SOUND;
     private int PRESS_SOUND;
@@ -53,53 +56,21 @@ public class SoundsService extends Service {
     private int FINISH_SOUND;
     private int COIN_SOUND;
 
-    private AsyncPlayer asyncPlayer;
+    private HashMap<String, Integer> customSounds;
+
+
+    private MediaPlayer m;
 
 
     private String parseSound(String filename) {
         if (!filename.endsWith(".mp3"))
             filename += ".mp3";
-        if(!filename.startsWith("sounds/"))
-            filename="sounds/"+filename;
+        if (!filename.startsWith("sounds/"))
+            filename = "sounds/" + filename;
         return filename;
 
     }
 
-    private void playRawFile(String filename) {
-
-        MediaPlayer m = new MediaPlayer();
-        filename = parseSound(filename);
-        try {
-            if (m.isPlaying()) {
-                m.stop();
-                m.release();
-                m = new MediaPlayer();
-            }
-
-            AssetFileDescriptor descriptor = am.openFd(filename);
-            m.setDataSource(descriptor.getFileDescriptor(), descriptor.getStartOffset(), descriptor.getLength());
-            descriptor.close();
-
-            m.prepare();
-            m.setVolume(1f, 1f);
-            //m.setLooping(true);
-            m.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.release();
-                    mp=null;
-                }
-            });
-            m.start();
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.e("yyy",e.toString());
-        }
-
-        //  asyncPlayer.play(this, custom, false, AudioManager.STREAM_MUSIC);
-
-
-    }
 
     private boolean crashFlag;
 
@@ -118,7 +89,7 @@ public class SoundsService extends Service {
         @Override
         public void handleMessage(Message msg) {
 
-            Log.d("YYY", "message received " + msg.what);
+        //    Log.d("YYY", "message received " + msg.what);
             switch (msg.what) {
                 case ACTION_BACKGROUND:
                     playBackgrondSound();
@@ -141,6 +112,9 @@ public class SoundsService extends Service {
                 case ACTION_CONFIG:
                     configure((Sounds) msg.obj);
                     break;
+                case ACTION_CONFIG_RAW:
+                    configureAdditionalSound((String) msg.obj);
+                    break;
                 case ACTION_RAW:
                     playRawFile((String) msg.obj);
                     break;
@@ -162,11 +136,8 @@ public class SoundsService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         am = this.getAssets();
-        asyncPlayer = new AsyncPlayer("custom");
-
 
         Toast.makeText(getApplicationContext(), "binding", Toast.LENGTH_SHORT).show();
-        createSoundPool();
 
         return mMessenger.getBinder();
 
@@ -186,7 +157,7 @@ public class SoundsService extends Service {
                 .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                 .build();
         sounds = new SoundPool.Builder()
-                .setAudioAttributes(attributes)
+                .setAudioAttributes(attributes).setMaxStreams(5)
                 .build();
     }
 
@@ -199,6 +170,8 @@ public class SoundsService extends Service {
 
     private int loadSound(String soundName, String defaultName) {
         int id = 0;
+        if(soundName.trim().equals("")&&defaultName.trim().equals(""))
+            return id;
         if (soundName.trim().equals(""))
             soundName = defaultName;
         try {
@@ -226,16 +199,29 @@ public class SoundsService extends Service {
 
     }
 
+    public void configureAdditionalSound(String sound) {
+
+        if (!customSounds.containsKey(sound)) {
+            customSounds.put(sound, loadSound(sound, ""));
+           // Log.d("yyy", "additional sound configured... " + sound);
+        }
+    }
 
     public void configure(Sounds s) {
 
 
-        sounds.unload(BACKGROUND_SOUND);
-        sounds.unload(PRESS_SOUND);
-        sounds.unload(CRASH_TWO_SOUND);
-        sounds.unload(CRASH_ONE_SOUND);
-        sounds.unload(FINISH_SOUND);
-        sounds.unload(COIN_SOUND);
+        if (sounds != null) {
+            sounds.unload(BACKGROUND_SOUND);
+            sounds.unload(PRESS_SOUND);
+            sounds.unload(CRASH_TWO_SOUND);
+            sounds.unload(CRASH_ONE_SOUND);
+            sounds.unload(FINISH_SOUND);
+            sounds.unload(COIN_SOUND);
+            sounds.release();
+            sounds = null;
+        }
+
+        createSoundPool();
 
 
         BACKGROUND_SOUND = loadSound(s.soundBackground, "");
@@ -244,10 +230,62 @@ public class SoundsService extends Service {
         CRASH_TWO_SOUND = loadSound(s.soundCrashTwo, DEFAULT_CRASH);
         FINISH_SOUND = loadSound(s.soundFinish, DEFAULT_FINISH);
         COIN_SOUND = loadSound("", DEFAULT_COIN);
+        CURRENT_FINISH = s.soundFinish;
 
+        customSounds = new HashMap<>();
 
     }
 
+    private void playRawFile(String filename) {
+        if (customSounds.containsKey(filename)) {
+            sounds.play(customSounds.get(filename), 1, 1, 0, 0, 1);
+
+        } else {
+            playMediaPlayerFile(filename);
+        }
+    }
+
+    private void playMediaPlayerFile(String filename) {
+
+        if (m == null)
+            m = new MediaPlayer();
+        filename = parseSound(filename);
+        try {
+            if (m.isPlaying()) {
+                m.stop();
+                m.release();
+                m = new MediaPlayer();
+            }
+
+            AssetFileDescriptor descriptor = am.openFd(filename);
+            m.setDataSource(descriptor.getFileDescriptor(), descriptor.getStartOffset(), descriptor.getLength());
+            descriptor.close();
+            m.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    m.start();
+
+                }
+            });
+            m.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    m.stop();
+                    m.release();
+                    m = null;
+                }
+            });
+            m.prepareAsync();
+         //   m.setVolume(1f, 1f);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e("yyy", e.toString());
+        }
+
+        //  asyncPlayer.play(this, custom, false, AudioManager.STREAM_MUSIC);
+
+       // Log.d("yyy", "play media player file " + filename);
+    }
 
     public void playBackgrondSound() {
 
@@ -257,7 +295,8 @@ public class SoundsService extends Service {
 
     public void playFinishSound() {
 
-        sounds.play(FINISH_SOUND, 1, 1, 0, 0, 1);
+        playMediaPlayerFile(CURRENT_FINISH);
+        //sounds.play(FINISH_SOUND, 1, 1, 0, 0, 1);
         //  mediaPlayerMove.start();
     }
 

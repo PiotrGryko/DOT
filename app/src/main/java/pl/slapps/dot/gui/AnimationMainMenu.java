@@ -2,27 +2,26 @@ package pl.slapps.dot.gui;
 
 import android.graphics.Color;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
 
 import pl.slapps.dot.drawing.Util;
-import pl.slapps.dot.gui.fragment.FragmentMainMenu;
+import pl.slapps.dot.gui.fragment.LayoutMainMenu;
 
 /**
  * Created by piotr on 23/02/16.
  */
 public class AnimationMainMenu {
 
-    private FragmentMainMenu menu;
+    private LayoutMainMenu menu;
     public AnimationHide menuHideAnimation;
     public AnimationShow menuShowAnimation;
     public AnimationHide headerHideAnimation;
     public AnimationHide btnsHideAnimation;
     public AnimationEntrance entranceAnimation;
 
-    public AnimationMainMenu(FragmentMainMenu menu)
+    public AnimationMainMenu(LayoutMainMenu menu)
     {
         this.menu=menu;
 
@@ -87,7 +86,7 @@ public class AnimationMainMenu {
 
                 new Handler().post(new Runnable() {
                     public void run() {
-                        menu.context.removeCurrentFragment();
+                        menu.context.removeMainMenu();
                     }
                 });
                 //menu.context.gameHolder.removeView(menu.getLayout());

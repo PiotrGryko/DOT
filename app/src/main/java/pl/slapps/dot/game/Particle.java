@@ -38,6 +38,10 @@ public class Particle extends Quad {
     public float y;
 
 
+    private long LAST_FRAME;
+    private final long NANO = 1000000;
+    private final float SECOND = 1000 * NANO;
+    private final float DEFAULT_FRAME = SECOND/60;
 
     private Wall.Type lastCollision;
 
@@ -84,6 +88,7 @@ public class Particle extends Quad {
 
     public void update(long current) {
 
+
         long elapsedTime = current - creationTime;
 
         if(elapsedTime>lifeTime)
@@ -95,21 +100,39 @@ public class Particle extends Quad {
             return;
         }
 
-        moveX += x;
-        moveY += y;
-        centerX += x;
-        centerY += y;
+        /*
+        float ratio =0;
+        if(LAST_FRAME==0)
+            ratio = 1;
+        else
+        {
+            long diff = System.nanoTime()-LAST_FRAME;
+            ratio=diff/DEFAULT_FRAME;
+
+           // Log.d("HHH","update "+ratio+" "+diff);
+
+        }
+*/
+        float measuredX = x;//*ratio;
+        float measuredY = y;//*ratio;
+
+        moveX += measuredX;
+        moveY += measuredY;
+        centerX += measuredX;
+        centerY += measuredY;
 
 
-        bottomLeft.update(x, y);
-        bottomRight.update(x, y);
-        topLeft.update(x, y);
-        topRight.update(x, y);
+        bottomLeft.update(measuredX, measuredY);
+        bottomRight.update(measuredX, measuredY);
+        topLeft.update(measuredX, measuredY);
+        topRight.update(measuredX, measuredY);
         initVertexArray(centerX, centerY, width, height);
 
         explosionBufferedVertex.position(bufferStartPosition);
         explosionBufferedVertex.put(vertices);
         explosionBufferedVertex.position(0);
+
+        LAST_FRAME = System.nanoTime();
 
         this.x = startX - ((float) elapsedTime / (float) lifeTime) * startX;
         this.y = startY - ((float) elapsedTime / (float) lifeTime) * startY;
@@ -132,6 +155,7 @@ public class Particle extends Quad {
                     break;
             }
         }
+
 
 
 

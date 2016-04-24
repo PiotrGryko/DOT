@@ -49,10 +49,6 @@ public class AnimationScoreLayout {
     private MainActivity context;
 
     private View layout;
-    public View getLayout()
-    {
-        return layout;
-    }
 
     public AnimationScoreLayout(SurfaceRenderer renderer) {
         this.renderer = renderer;
@@ -201,6 +197,8 @@ public class AnimationScoreLayout {
             @Override
             public void onAnimationStart() {
 
+                headerEntranceAnimation.clearAnimation();
+
             }
         }, 500);
     }
@@ -222,8 +220,9 @@ public class AnimationScoreLayout {
 
 
       //  entranceAnimation.clearAnimation();
-        headerEntranceAnimation.clearAnimation();
+
         hideAnimation.clearAnimation();
+
         layoutHeader.setVisibility(View.GONE);
        // tvScore.setVisibility(View.VISIBLE);
 

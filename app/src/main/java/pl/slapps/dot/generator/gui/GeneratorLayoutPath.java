@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
@@ -1312,7 +1311,7 @@ public class GeneratorLayoutPath {
                 dialogChooseSound.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 final View chooseView = LayoutInflater.from(generator.view.context).inflate(R.layout.dialog_stages, null);
                 ListView lv = (ListView) chooseView.findViewById(R.id.lv);
-                lv.setAdapter(new AdapterSounds(generator.view.context, generator.view.context.getActivityLoader().listRaw()));
+                lv.setAdapter(new AdapterSounds(generator.view.context, generator.view.context.getActivityLoader().listSoundsFromAssets()));
 
                 lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
@@ -1320,6 +1319,7 @@ public class GeneratorLayoutPath {
                         generatorLayout.tile.sound = adapterView.getItemAtPosition(i).toString();
                         btnSound.setText(generatorLayout.tile.sound);
                         dialogChooseSound.dismiss();
+                        generator.refreashSounds();
                     }
                 });
                 dialogChooseSound.setContentView(chooseView);

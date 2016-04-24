@@ -1,17 +1,17 @@
 package pl.slapps.dot.generator.gui;
 
-import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.ListView;
 
-import com.android.volley.Response;
+import java.util.ArrayList;
 
-import pl.slapps.dot.DAO;
 import pl.slapps.dot.R;
 import pl.slapps.dot.generator.Generator;
 
@@ -31,7 +31,7 @@ public class GeneratorLayoutControls {
     private ImageView btnPalette;
     private ImageView btnLights;
     private ImageView btnGrid;
-
+    private ImageView btnBackground;
     private ImageView btnSounds;
 
     public View getButtonSettings() {
@@ -59,6 +59,9 @@ public class GeneratorLayoutControls {
         return btnGrid;
     }
 
+    public ImageView getButtonBackground() {
+        return btnBackground;
+    }
 
     public View getLayout() {
         return layoutControls;
@@ -82,7 +85,7 @@ public class GeneratorLayoutControls {
 */
     }
 
-    public void initLayout(GeneratorLayout generatorLayout) {
+    public void initLayout(final GeneratorLayout generatorLayout) {
         this.generatorLayout = generatorLayout;
         this.generator = generatorLayout.generator;
 
@@ -101,13 +104,17 @@ public class GeneratorLayoutControls {
 
         btnGrid = (ImageView) layoutControls.findViewById(R.id.btn_grid);
 
+        btnBackground = (ImageView) layoutControls.findViewById(R.id.btn_background);
+
 
         getButtonSettings().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //GeneratorDialog.showGeneratorMenuDialog(Generator.this);
 
-                generator.view.context.toggleMenu();
+                generator.showMenu();
+
+
             }
         });
 
@@ -187,6 +194,48 @@ public class GeneratorLayoutControls {
             }
         });
 
+        final Dialog dialogChooseSound = new Dialog(generator.view.context);
+        dialogChooseSound.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                getButtonBackground().setSelected(false);
+            }
+        });
+
+
+        dialogChooseSound.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        View chooseView = LayoutInflater.from(generator.view.context).inflate(R.layout.dialog_stages, null);
+        ListView lv = (ListView) chooseView.findViewById(R.id.lv);
+        final ArrayList<String> files = generator.view.context.getActivityLoader().listBackgroundsFromAssets();
+        lv.setAdapter(new ArrayAdapter<String>(generator.view.context, android.R.layout.simple_expandable_list_item_1, files));
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                generator.getConfig().settings.backgroundFile = files.get(i);
+                generator.refreashMaze();
+                dialogChooseSound.dismiss();
+            }
+        });
+        dialogChooseSound.setContentView(chooseView);
+
+        getButtonBackground().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (!getButtonBackground().isSelected()) {
+                    getButtonBackground().setSelected(true);
+
+                    dialogChooseSound.show();
+                } else {
+                    getButtonBackground().setSelected(false);
+                    if (dialogChooseSound.isShowing())
+                        dialogChooseSound.dismiss();
+                }
+
+
+            }
+        });
 
         refreshLayout();
 

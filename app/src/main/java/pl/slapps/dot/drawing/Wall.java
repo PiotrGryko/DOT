@@ -123,7 +123,6 @@ public class Wall {
 
         // get handle to vertex shader's vPosition member
         // Enable a handle to the triangle vertices
-        GLES20.glEnableVertexAttribArray(generator.mPositionHandle);
         // Prepare the triangle coordinate data
         GLES20.glVertexAttribPointer(
                 generator.mPositionHandle, COORDS_PER_VERTEX,
@@ -137,11 +136,11 @@ public class Wall {
 
 
         // get handle to shape's transformation matrix
-        SurfaceRenderer.checkGlError("glGetUniformLocation");
+        //SurfaceRenderer.checkGlError("glGetUniformLocation");
 
         // Apply the projection and generator transformation
-        GLES20.glUniformMatrix4fv(generator.mMVPMatrixHandle, 1, false, mvpMatrix, 0);
-        SurfaceRenderer.checkGlError("glUniformMatrix4fv");
+        //GLES20.glUniformMatrix4fv(generator.mMVPMatrixHandle, 1, false, mvpMatrix, 0);
+        //SurfaceRenderer.checkGlError("glUniformMatrix4fv");
         GLES20.glDrawArrays(GL10.GL_LINES, 0, this.vert.length / 3);
 
         // Draw the square
@@ -150,7 +149,6 @@ public class Wall {
         //        GLES20.GL_UNSIGNED_SHORT, bufferedIndices);
 
         // Disable vertex array
-        GLES20.glDisableVertexAttribArray(generator.mPositionHandle);
 
 
 

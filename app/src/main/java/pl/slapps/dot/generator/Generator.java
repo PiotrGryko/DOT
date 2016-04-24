@@ -1,5 +1,6 @@
 package pl.slapps.dot.generator;
 
+import android.app.Dialog;
 import android.graphics.Color;
 import android.opengl.GLES20;
 import android.util.Log;
@@ -334,6 +335,10 @@ public class Generator {
         return null;
     }
 
+    public void refreashSounds()
+    {
+        view.getGame().configureSounds();
+    }
     public void refreashMaze() {
 
         Log.d("zzz", "refreash maze ");
@@ -354,6 +359,23 @@ public class Generator {
             }
         }
 
+
+    }
+
+    private Dialog dialog;
+    public void initMenu()
+    {
+
+        dialog = new Dialog(view.context);
+        dialog.setTitle("Settings");
+        dialog.setContentView(getLayout().onCreateView());
+    }
+
+    public void showMenu()
+    {
+
+
+        dialog.show();
 
     }
 
@@ -647,11 +669,19 @@ public class Generator {
 
             if (tiles == null)
                 return;
+
+            GLES20.glEnableVertexAttribArray(mPositionHandle);
+            GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mMVPMatrix, 0);
+
+
             for (int i = 0; i < tiles.size(); i++) {
 
                 if (tiles.size() > i && tiles.get(i) != null)
                     tiles.get(i).drawGL20(mMVPMatrix);
             }
+
+            GLES20.glDisableVertexAttribArray(mPositionHandle);
+
         } else {
             view.getGame().onDraw(mMVPMatrix);
         }

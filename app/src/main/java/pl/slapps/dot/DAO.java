@@ -23,8 +23,8 @@ import java.util.Map;
  */
 public class DAO {
     final static String TAG = DAO.class.getName();
-    final static String url = "http://188.166.101.11:4321/v1/";
-    final public static String url_files = "http://188.166.101.11:4321/";
+    final static String url = "http://188.226.156.10:4321/v1/";
+    final public static String url_files = "http://188.226.156.10:4321/";
 
     private static RequestQueue queue;
     public static void initRequestQueue(Context context)

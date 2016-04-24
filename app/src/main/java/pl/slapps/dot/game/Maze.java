@@ -2,6 +2,7 @@ package pl.slapps.dot.game;
 
 import java.util.ArrayList;
 
+import android.opengl.GLES20;
 import android.util.Log;
 
 import pl.slapps.dot.drawing.Quad;
@@ -62,7 +63,6 @@ public class Maze {
         output.add(start);
         while ((start = findNextRoute(start)) != null) {
 
-            Log.d("rrr","sort maze ....");
             output.add(start);
             if (start.getType() == Route.Type.FINISH)
                 break;
