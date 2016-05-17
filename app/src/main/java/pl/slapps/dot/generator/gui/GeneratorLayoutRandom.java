@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.RadioButton;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -65,6 +66,27 @@ public class GeneratorLayoutRandom {
         final RadioButton cb70 = (RadioButton)layoutConfig.findViewById(R.id.cb_70);
         final RadioButton cb85 = (RadioButton)layoutConfig.findViewById(R.id.cb_85);
         final RadioButton cb100 = (RadioButton)layoutConfig.findViewById(R.id.cb_100);
+
+        final SeekBar speed = (SeekBar)layoutConfig.findViewById(R.id.sb_speed);
+        speed.setProgress((int)(100*generator.getConfig().settings.speedRatio));
+
+        speed.setMax(200);
+        speed.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                generator.getConfig().settings.speedRatio=((float)progress)/100.0f;
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
 
 
         TextView tvGenerateRandom = (TextView) layoutConfig.findViewById(R.id.tv_generate_random);

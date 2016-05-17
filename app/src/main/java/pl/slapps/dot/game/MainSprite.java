@@ -3,6 +3,8 @@ package pl.slapps.dot.game;
 import android.opengl.GLES20;
 import android.util.Log;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -40,6 +42,8 @@ public class MainSprite extends Sprite {
     public float defaultSpeed = 0;
 
     public boolean booster = false;
+    //private boolean initialized = false;
+
     private final long BOOSTER_TIME = 10 * 1000;
     private long BOOSTER_START_TIME;
 
@@ -49,6 +53,8 @@ public class MainSprite extends Sprite {
 
 
     float color[] = {0.0f, 0.0f, 0.0f, 1.0f};
+    //public FloatBuffer colorBuffer;
+
 
     public void startBooster() {
         BOOSTER_START_TIME = System.currentTimeMillis();
@@ -92,6 +98,15 @@ public class MainSprite extends Sprite {
         spriteSpeed = defaultSpeed;
         configure(config);
 
+/*
+        ByteBuffer cb = ByteBuffer.allocateDirect(color.length * 4);
+        cb.order(ByteOrder.nativeOrder());
+        colorBuffer = cb.asFloatBuffer();
+        colorBuffer.put(color);
+        colorBuffer.position(0);
+
+        initialized = true;
+*/
 
     }
 
@@ -109,7 +124,22 @@ public class MainSprite extends Sprite {
 
         }
 
+/*
+        float[] tmp = new float[0];
+        tmp = Util.summArrays(tmp, color);
+        tmp = Util.summArrays(tmp, color);
+        tmp = Util.summArrays(tmp, color);
+        tmp = Util.summArrays(tmp, color);
 
+        color = tmp;
+
+
+        if (initialized) {
+            colorBuffer.position(0);
+            colorBuffer.put(color);
+            colorBuffer.position(0);
+        }
+*/
         if (!config.settings.switchDotLightDistance)
             lightDistance = config.settings.dotLightDistance;
         else
@@ -196,12 +226,12 @@ public class MainSprite extends Sprite {
             } else {
                 game.explodeDot(true);
 
-                /*
-                if (new Random().nextFloat() > 0.93f) {
+
+                if (new Random().nextFloat() > 0.85f) {
                     game.setPaused(true);
-                    game.context.showAdv();
+                    game.gameView.context.showAdv();
                 }
-*/
+
                 game.resetDot();
             }
 
@@ -229,8 +259,12 @@ public class MainSprite extends Sprite {
         // mColorHandle = GLES20.glGetUniformLocation(game.mProgram, "vColor");
         // Pass in the color information
         // Set color for drawing the triangle
-        GLES20.glUniform4fv(game.mColorHandle, 1, color, 0);
+        //  GLES20.glUniform4fv(game.mColorHandle, 1, color, 0);
 
+        //GLES20.glEnableVertexAttribArray(game.mColorHandle);
+        GLES20.glUniform4fv(game.mColorHandle, 1, color, 0);
+// Prepare the triangle coordinate data
+        //GLES20.glVertexAttribPointer(game.mColorHandle, 4, GLES20.GL_FLOAT, false, 0, colorBuffer);
 
         // get handle to shape's transformation matrix
         //  mMVPMatrixHandle = GLES20.glGetUniformLocation(game.mProgram, "uMVPMatrix");

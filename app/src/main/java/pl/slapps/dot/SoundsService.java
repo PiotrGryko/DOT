@@ -43,10 +43,10 @@ public class SoundsService extends Service {
 
     AssetManager am;
 
-    private String DEFAULT_PRESS = "click2";
-    private String DEFAULT_CRASH = "spacebib";
-    private String DEFAULT_FINISH = "finish";
-    private String DEFAULT_COIN = "coin";
+    private String DEFAULT_PRESS = "sounds/press/click2";
+    private String DEFAULT_CRASH = "sounds/crash/spacebib";
+    private String DEFAULT_FINISH = "sounds/finish/finish";
+    private String DEFAULT_COIN = "sounds/variety/coin";
     private String CURRENT_FINISH = "";
 
     private int BACKGROUND_SOUND;
@@ -89,7 +89,7 @@ public class SoundsService extends Service {
         @Override
         public void handleMessage(Message msg) {
 
-        //    Log.d("YYY", "message received " + msg.what);
+            //    Log.d("YYY", "message received " + msg.what);
             switch (msg.what) {
                 case ACTION_BACKGROUND:
                     playBackgrondSound();
@@ -167,22 +167,77 @@ public class SoundsService extends Service {
     }
     // Random number generator
 
+    /*
+    private String getAssetsFilePath(String filename) {
+        String path = digFile(filename, "sounds");
 
-    private int loadSound(String soundName, String defaultName) {
-        int id = 0;
-        if(soundName.trim().equals("")&&defaultName.trim().equals(""))
-            return id;
-        if (soundName.trim().equals(""))
-            soundName = defaultName;
+        Log.e("OOO", "path builded, output=" + path);
+        return path;
+    }
+*/
+    private String digFile(String input, String path) {
+        Log.e("OOO", "dig file input=" + input + " path " + path);
+        String[] fields = new String[0];
         try {
-            if (!soundName.endsWith(".mp3"))
-                soundName += ".mp3";
-            id = sounds.load(am.openFd("sounds/" + soundName), 1);
+            fields = getAssets().list(path);
+
         } catch (IOException e) {
             e.printStackTrace();
             Log.d("yyy", e.toString());
         }
-        Log.d("yyy", "load sound=" + soundName + " default=" + defaultName + " id=" + id);
+
+        for (int i = 0; i < fields.length; i++) {
+            if (fields[i].equals(input))
+                return path + "/" + input;
+            else if (!fields[i].contains(".")) {
+                String output = digFile(input, path + "/" + fields[i]);
+                if (output != null)
+                    return output;
+            }
+
+        }
+        return null;
+    }
+
+    private int loadSound(String soundName, String defaultName) {
+        int id = 0;
+        boolean configured = false;
+        if (soundName.trim().equals("") && defaultName.trim().equals(""))
+            return id;
+
+        try {
+            if (!soundName.endsWith(".mp3"))
+                soundName += ".mp3";
+
+            //soundName = getAssetsFilePath(soundName);
+           // if (soundName != null) {
+                id = sounds.load(am.openFd(soundName), 1);
+                Log.d("yyy", "load sound=" + soundName + " id=" + id);
+            //}
+            configured=true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.d("yyy", e.toString());
+        }
+
+        if(!configured)
+        {
+            try {
+                soundName=defaultName;
+                if (!soundName.endsWith(".mp3"))
+                    soundName += ".mp3";
+
+                //soundName = getAssetsFilePath(soundName);
+                // if (soundName != null) {
+                id = sounds.load(am.openFd(soundName), 1);
+                Log.d("yyy", "load default sound=" + soundName+ " id=" + id);
+                //}
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.d("yyy", e.toString());
+            }
+
+        }
 
         return id;
 
@@ -203,7 +258,7 @@ public class SoundsService extends Service {
 
         if (!customSounds.containsKey(sound)) {
             customSounds.put(sound, loadSound(sound, ""));
-           // Log.d("yyy", "additional sound configured... " + sound);
+            // Log.d("yyy", "additional sound configured... " + sound);
         }
     }
 
@@ -276,7 +331,7 @@ public class SoundsService extends Service {
                 }
             });
             m.prepareAsync();
-         //   m.setVolume(1f, 1f);
+            //   m.setVolume(1f, 1f);
         } catch (Exception e) {
             e.printStackTrace();
             Log.e("yyy", e.toString());
@@ -284,7 +339,7 @@ public class SoundsService extends Service {
 
         //  asyncPlayer.play(this, custom, false, AudioManager.STREAM_MUSIC);
 
-       // Log.d("yyy", "play media player file " + filename);
+        // Log.d("yyy", "play media player file " + filename);
     }
 
     public void playBackgrondSound() {

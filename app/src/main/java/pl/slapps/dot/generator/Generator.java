@@ -312,6 +312,7 @@ public class Generator {
 
 
 
+
     public TileRoute getFinishRoute() {
         for (int i = 0; i < tiles.size(); i++) {
             TileRoute t = tiles.get(i);
@@ -341,7 +342,7 @@ public class Generator {
     }
     public void refreashMaze() {
 
-        Log.d("zzz", "refreash maze ");
+        Log.d("zzz", "refreash maze " );
         configure(config);
 
         if (runPreview) {
@@ -382,6 +383,7 @@ public class Generator {
 
     private JSONObject dumpMaze() {
         pathBuilderPopup.startRouteConfiguration();
+
 
         JSONObject output = new JSONObject();
 
@@ -490,6 +492,7 @@ public class Generator {
     {
         public void onSaved();
         public void onFailed();
+        public JSONObject onDumped(JSONObject data);
 
     }
     public void saveMaze(final OnSaveListener listener) {
@@ -498,6 +501,13 @@ public class Generator {
 
 
         JSONObject data = dumpMaze();
+
+        if(listener!=null) {
+
+            JSONObject tmp = listener.onDumped(data);
+            if(tmp!=null)
+                data=tmp;
+        }
 
         DAO.addStage(data, new Response.Listener() {
             @Override
@@ -512,6 +522,7 @@ public class Generator {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                if(listener!=null)
                 listener.onFailed();
             }
         },_id);

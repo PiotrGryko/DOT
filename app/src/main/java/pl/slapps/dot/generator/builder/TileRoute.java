@@ -1,15 +1,11 @@
 package pl.slapps.dot.generator.builder;
 
+import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.os.SystemClock;
 import android.util.Log;
 
-import java.util.ArrayList;
-
-import pl.slapps.dot.drawing.Junction;
-import pl.slapps.dot.drawing.Wall;
 import pl.slapps.dot.generator.Generator;
-import pl.slapps.dot.model.Config;
 import pl.slapps.dot.model.Route;
 
 /**
@@ -28,6 +24,14 @@ public class TileRoute extends Tile {
     public boolean drawCoin = false;
     public boolean visited = false;
 
+    private final float scaleTime = 1f * 1000;
+    private long scaleStartTime = 0;
+    private float[] mModelMatrix = new float[16];
+    private float[] mvpLocalMatrix = new float[16];
+    private float scale = 1;
+    private boolean isIncreasing = false;
+
+
     public void setCurrentTile(boolean flag) {
         currentTile = flag;
     }
@@ -40,26 +44,13 @@ public class TileRoute extends Tile {
 
 
     public TileRoute(float screenWidth, float screenHeight, float widthBlocksCount, float heightBlocksCount, int widthNumber, int heightNumber, Route.Direction from, Route.Direction to, Route.Type t, Generator generator) {
-        super(screenWidth,screenHeight,widthBlocksCount,heightBlocksCount,widthNumber,heightNumber,from,to,t,generator);
+        super(screenWidth, screenHeight, widthBlocksCount, heightBlocksCount, widthNumber, heightNumber, from, to, t, generator);
 
     }
 
 
     public TileRoute(float screenWidth, float screenHeight, float widthBlocksCount, float heightBlocksCount, Route route, Generator generator) {
-        super(screenWidth,screenHeight,widthBlocksCount,heightBlocksCount,route,generator);
-        this.next = Route.Movement.valueOf(route.next.name());
-        backgroundColor = route.backgroundColor;
-        sound = route.sound;
-        speedRatio = route.speedRatio;
-        drawCoin=route.drawCoin;
-
-
-
-
-    }
-
-    public TileRoute(float screenWidth, float screenHeight, float widthBlocksCount, float heightBlocksCount, Route route) {
-        super(screenWidth,screenHeight,widthBlocksCount,heightBlocksCount,route);
+        super(screenWidth, screenHeight, widthBlocksCount, heightBlocksCount, route, generator);
         this.next = Route.Movement.valueOf(route.next.name());
         backgroundColor = route.backgroundColor;
         sound = route.sound;
@@ -67,6 +58,15 @@ public class TileRoute extends Tile {
         drawCoin = route.drawCoin;
 
 
+    }
+
+    public TileRoute(float screenWidth, float screenHeight, float widthBlocksCount, float heightBlocksCount, Route route) {
+        super(screenWidth, screenHeight, widthBlocksCount, heightBlocksCount, route);
+        this.next = Route.Movement.valueOf(route.next.name());
+        backgroundColor = route.backgroundColor;
+        sound = route.sound;
+        speedRatio = route.speedRatio;
+        drawCoin = route.drawCoin;
 
 
     }
@@ -78,29 +78,32 @@ public class TileRoute extends Tile {
     }
 
 
-    private float scale = 1;
-    private boolean isIncreading = false;
-
     public void setScale(float scale) {
         this.scale = scale;
     }
 
     private void updateScale() {
-        if (scale <= 0)
-            isIncreading = true;
-        else if (scale >= 1)
-            isIncreading = false;
 
-        if (isIncreading)
-            scale += 0.03f;
-        else
-            scale -= 0.03f;
+        long currentTime = System.currentTimeMillis();
 
-        //return scale;
+        float diff = 0;
+        if ((scale >= 1 || scale <= 0)) {
+            isIncreasing = !isIncreasing;
+            scaleStartTime = currentTime;
+            diff = 5;
+        } else
+            diff = currentTime - scaleStartTime;
+        //if (diff == 0|| scaleStartTime==0)
+        //    return;
+
+        scale = diff / scaleTime;
+        if (isIncreasing) {
+
+            scale = 1 - scale;
+        }
+
+
     }
-
-    private float[] mModelMatrix = new float[16];
-    private float[] mvpLocalMatrix = new float[16];
 
 
     public void drawGL20(float[] mvpMatrix) {
@@ -108,6 +111,7 @@ public class TileRoute extends Tile {
 
         if (!isInitialized)
             return;
+
 
         if (currentTile || currentHeadTile) {
             Matrix.setIdentityM(mModelMatrix, 0);
@@ -133,6 +137,7 @@ public class TileRoute extends Tile {
             // This multiplies the modelview matrix by the projection matrix, and stores the result in the MVP matrix
             // (which now contains model * view * projection).
             Matrix.multiplyMM(mvpLocalMatrix, 0, generator.view.mProjectionMatrix, 0, mvpLocalMatrix, 0);
+            GLES20.glUniformMatrix4fv(generator.mMVPMatrixHandle, 1, false, mvpLocalMatrix, 0);
 
             if (backgroundPartOne != null)
                 backgroundPartOne.drawGl2(mvpLocalMatrix);
@@ -146,7 +151,9 @@ public class TileRoute extends Tile {
 
             Matrix.setIdentityM(generator.view.mModelMatrix, 0);
 
+
         } else {
+            GLES20.glUniformMatrix4fv(generator.mMVPMatrixHandle, 1, false, mvpMatrix, 0);
 
 
             super.drawGL20(mvpMatrix);
@@ -154,8 +161,6 @@ public class TileRoute extends Tile {
 
 
     }
-
-
 
 
 }

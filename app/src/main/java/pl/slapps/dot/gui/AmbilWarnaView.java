@@ -84,7 +84,7 @@ public class AmbilWarnaView extends LinearLayout{
 
     public void init(final Context context) {
 
-        this.supportsAlpha = false;
+        this.supportsAlpha = true;
        // this.alpha=0;
         //this.listener = listener;
 
@@ -133,6 +133,37 @@ public class AmbilWarnaView extends LinearLayout{
                     if(listener!=null)
                         listener.onTouch(getColor());
                     updateAlphaView();
+                    return true;
+                }
+                return false;
+            }
+        });
+
+
+        if (supportsAlpha) viewAlphaCheckered.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if ((event.getAction() == MotionEvent.ACTION_MOVE)
+                        || (event.getAction() == MotionEvent.ACTION_DOWN)
+                        || (event.getAction() == MotionEvent.ACTION_UP)) {
+
+                    float y = event.getY();
+                    if (y < 0.f) {
+                        y = 0.f;
+                    }
+                    if (y > viewAlphaCheckered.getMeasuredHeight()) {
+                        y = viewAlphaCheckered.getMeasuredHeight() - 0.001f; // to avoid jumping the cursor from bottom to top.
+                    }
+                    final int a = Math.round(255.f - ((255.f / viewAlphaCheckered.getMeasuredHeight()) * y));
+                    setAlpha(a);
+
+                    // update view
+                    moveAlphaCursor();
+                    int col = getColor();
+                    int c = a << 24 | col & 0x00ffffff;
+                    viewNewColor.setBackgroundColor(c);
+                    if(listener!=null)
+                        listener.onTouch(c);
                     return true;
                 }
                 return false;

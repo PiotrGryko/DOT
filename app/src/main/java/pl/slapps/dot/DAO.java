@@ -144,6 +144,10 @@ public class DAO {
             }
         };
 // Add the request to the RequestQueue.
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                20 * 1000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         queue.add(stringRequest);
     }
 
@@ -201,7 +205,7 @@ public class DAO {
 // Add the request to the RequestQueue.
 
         stringRequest.setRetryPolicy(new DefaultRetryPolicy(
-                10 * 1000,
+                100 * 1000,
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         queue.add(stringRequest);

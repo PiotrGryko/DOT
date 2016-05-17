@@ -9,6 +9,8 @@ import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.util.Log;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -38,10 +40,13 @@ public class Background extends Sprite {
     private Config config;
     private boolean switchColors;
     private FloatBuffer textureBuffer;
+    //public FloatBuffer colorBuffer;
+
     public int mTextureDataHandle;
     public String currentTexture;
     private boolean shouldInit = false;
     private boolean useTexture = false;
+    //private boolean initialized = false;
 
 
     float color[] = {0.0f, 0.0f, 0.0f, 1.0f
@@ -60,16 +65,28 @@ public class Background extends Sprite {
 
         //if (!config.settings.switchBackgroundColors) {
         color = Util.parseColor(config.colors.colorBackground);
+/*
 
-        // } else {
-        //     switchColors = true;
-        //     color = Util.parseColor(config.colors.colorSwitchBackgroundStart);
+        float[] tmp = new float[0];
+        tmp = Util.summArrays(tmp, color);
+        tmp = Util.summArrays(tmp, color);
+        tmp = Util.summArrays(tmp, color);
+        tmp = Util.summArrays(tmp, color);
 
-        // }
+        color = tmp;
+
+        if (initialized) {
+            colorBuffer.position(0);
+            colorBuffer.put(color);
+            colorBuffer.position(0);
+        }
+*/
 
         String filename = config.settings.backgroundFile;
         if (filename == null || filename.trim().equals("")) {
             useTexture = false;
+
+
             if (mTextureDataHandle != 0)
                 view.gameView.unloadTexture();
         } else {
@@ -90,14 +107,13 @@ public class Background extends Sprite {
     }
 
 
-    public void onPause()
-    {
+    public void onPause() {
         view.gameView.unloadTexture();
         mTextureDataHandle = 0;
     }
-    public void onResume()
-    {
-        shouldInit=true;
+
+    public void onResume() {
+        shouldInit = true;
     }
 
     private int loadTexture(Context context, String filename) {
@@ -213,6 +229,16 @@ public class Background extends Sprite {
         textureBuffer.put(texture);
         textureBuffer.position(0);
 
+
+        ByteBuffer cb = ByteBuffer.allocateDirect(color.length * 4);
+        cb.order(ByteOrder.nativeOrder());
+      /*
+        colorBuffer = cb.asFloatBuffer();
+        colorBuffer.put(color);
+        colorBuffer.position(0);
+
+        initialized = true;
+*/
     }
 
 
@@ -223,16 +249,6 @@ public class Background extends Sprite {
 
 
     public void drawGl2(float[] mvpMatrix) {
-
-
-        // get handle to vertex shader's vPosition member
-        // Enable a handle to the triangle vertices
-        GLES20.glEnableVertexAttribArray(view.mPositionHandle);
-        // Prepare the triangle coordinate data
-        GLES20.glVertexAttribPointer(
-                view.mPositionHandle, COORDS_PER_VERTEX,
-                GLES20.GL_FLOAT, false,
-                0, bufferedVertex);
 
 
         // get handle to fragment shader's vColor member
@@ -250,6 +266,19 @@ public class Background extends Sprite {
 
 
         if (useTexture) {
+            GLES20.glUseProgram(view.mTextureProgram);
+            GLES20.glUniformMatrix4fv(view.mTextureMVPMatrixHandle, 1, false, mvpMatrix, 0);
+
+
+            // get handle to vertex shader's vPosition member
+            // Enable a handle to the triangle vertices
+            GLES20.glEnableVertexAttribArray(view.mTexturePositionHandle);
+            // Prepare the triangle coordinate data
+            GLES20.glVertexAttribPointer(
+                    view.mTexturePositionHandle, COORDS_PER_VERTEX,
+                    GLES20.GL_FLOAT, false,
+                    0, bufferedVertex);
+
 
             if (shouldInit) {
                 shouldInit = false;
@@ -257,8 +286,10 @@ public class Background extends Sprite {
             }
 
 
-            view.mTextureUniformHandle = GLES20.glGetUniformLocation(view.mProgram, "u_Texture");
-            view.mTextureCoordinateHandle = GLES20.glGetAttribLocation(view.mProgram, "a_TexCoordinate");
+            //GLES20.glBindTexture();
+
+            view.mTextureUniformHandle = GLES20.glGetUniformLocation(view.mTextureProgram, "u_Texture");
+            view.mTextureCoordinateHandle = GLES20.glGetAttribLocation(view.mTextureProgram, "a_TexCoordinate");
 
 
             GLES20.glEnableVertexAttribArray(view.mTextureCoordinateHandle);
@@ -275,22 +306,55 @@ public class Background extends Sprite {
 
             // Tell the texture uniform sampler to use this texture in the shader by binding to texture unit 0.
             GLES20.glUniform1i(view.mTextureUniformHandle, 0);
+// Draw the square
+            GLES20.glDrawElements(
+                    GLES20.GL_TRIANGLES, indices.length,
+                    GLES20.GL_UNSIGNED_SHORT, bufferedIndices);
+            //GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
 
-        } else {
-            GLES20.glUniform4fv(view.mColorHandle, 1, color, 0);
+            // Disable vertex array
+            GLES20.glDisable(GLES20.GL_TEXTURE_2D);
+            GLES20.glDisableVertexAttribArray(view.mTexturePositionHandle);
+            GLES20.glDisableVertexAttribArray(view.mTextureCoordinateHandle);
+
+
         }
 
 
+        GLES20.glUseProgram(view.mProgram);
+        GLES20.glUniformMatrix4fv(view.mMVPMatrixHandle, 1, false, mvpMatrix, 0);
+
+
+        // get handle to vertex shader's vPosition member
+        // Enable a handle to the triangle vertices
+        GLES20.glEnableVertexAttribArray(view.mPositionHandle);
+        // Prepare the triangle coordinate data
+        GLES20.glVertexAttribPointer(
+                view.mPositionHandle, COORDS_PER_VERTEX,
+                GLES20.GL_FLOAT, false,
+                0, bufferedVertex);
+
+        //GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
+
+
+        //GLES20.glEnableVertexAttribArray(view.mColorHandle);
+
+// Prepare the triangle coordinate data
+        //GLES20.glVertexAttribPointer(view.mColorHandle, 4, GLES20.GL_FLOAT, false, 0, colorBuffer);
+        // GLES20.glDisableVertexAttribArray(view.mColorHandle);
+           GLES20.glUniform4fv(view.mColorHandle, 1, color, 0);
         // Draw the square
         GLES20.glDrawElements(
                 GLES20.GL_TRIANGLES, indices.length,
                 GLES20.GL_UNSIGNED_SHORT, bufferedIndices);
 
+
         //GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 6);
 
         // Disable vertex array
-        GLES20.glDisableVertexAttribArray(view.mPositionHandle);
-        GLES20.glDisableVertexAttribArray(view.mTextureCoordinateHandle);
+        //  GLES20.glDisable(GLES20.GL_TEXTURE_2D);
+        //  GLES20.glDisableVertexAttribArray(view.mPositionHandle);
+        //  GLES20.glDisableVertexAttribArray(view.mTextureCoordinateHandle);
 
 
     }

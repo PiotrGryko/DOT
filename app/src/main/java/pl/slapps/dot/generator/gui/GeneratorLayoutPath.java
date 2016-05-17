@@ -1311,17 +1311,16 @@ public class GeneratorLayoutPath {
                 dialogChooseSound.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 final View chooseView = LayoutInflater.from(generator.view.context).inflate(R.layout.dialog_stages, null);
                 ListView lv = (ListView) chooseView.findViewById(R.id.lv);
-                lv.setAdapter(new AdapterSounds(generator.view.context, generator.view.context.getActivityLoader().listSoundsFromAssets()));
-
-                lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                lv.setAdapter(new AdapterSounds(generator.view.context, generator.view.context.getActivityLoader().listSoundsFromAssets(null), new AdapterSounds.OnSoundClickListener() {
                     @Override
-                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                        generatorLayout.tile.sound = adapterView.getItemAtPosition(i).toString();
+                    public void onClick(String sound) {
+                        generatorLayout.tile.sound = sound;
                         btnSound.setText(generatorLayout.tile.sound);
                         dialogChooseSound.dismiss();
                         generator.refreashSounds();
                     }
-                });
+                }));
+
                 dialogChooseSound.setContentView(chooseView);
                 dialogChooseSound.show();
 

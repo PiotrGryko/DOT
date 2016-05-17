@@ -62,8 +62,11 @@ public class Game {
     public int mPointSizeHandle;
     public int mPointMVPMatrixHandle;
 
+    public int mTextureMVPMatrixHandle;
 
     public int mTextureUniformHandle;
+    public int mTexturePositionHandle;
+
 
     /**
      * This will be used to pass in model texture coordinate information.
@@ -73,6 +76,7 @@ public class Game {
 
     public int mProgram;
     public int mPointProgram;
+    public int mTextureProgram;
 
 
     private boolean isPreview = false;
@@ -85,17 +89,24 @@ public class Game {
     public void onPause() {
         if (background != null)
             background.onPause();
+
+        lastRealTimeMeasurement_ms=0;
+
     }
 
     public void onResume() {
         if (background != null)
             background.onResume();
-        ;
+
+        lastRealTimeMeasurement_ms=0;
+
+
     }
 
 
     public void setPreview(boolean preview) {
         this.isPreview = preview;
+        lastRealTimeMeasurement_ms=0;
     }
 
     public boolean getPreview() {
@@ -104,6 +115,9 @@ public class Game {
 
     public void setPaused(boolean paused) {
         isPaused = paused;
+        //if(isPaused)
+            lastRealTimeMeasurement_ms=0;
+
 
     }
 
@@ -124,13 +138,14 @@ public class Game {
                 Shaders.pointFragmentShader);
 
         mPointProgram = gameView.createAndLinkProgram(vertexPointShader, fragmentPointShader,
-                new String[]{"vPosition", "a_TexCoordinate"});
+                new String[]{"vPosition"});
 
         mPointSizeHandle = GLES20.glGetAttribLocation(mPointProgram, "vSize");
         mPointPositionHandle = GLES20.glGetAttribLocation(mPointProgram, "vPosition");
         mPointMVPMatrixHandle = GLES20.glGetUniformLocation(mPointProgram, "uMVPMatrix");
         mPointColorHandle = GLES20.glGetUniformLocation(mPointProgram, "vColor");
 
+        ///////////////////////////////////////////////////////////////////////////////////////////
         // prepare shaders and OpenGL program
         int vertexShader = SurfaceRenderer.loadShader(
                 GLES20.GL_VERTEX_SHADER,
@@ -149,10 +164,27 @@ public class Game {
 
 
         mPositionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
+        //mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");
         mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");
         mColorFilterHandle = GLES20.glGetUniformLocation(mProgram, "vColorFilter");
 
         mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
+/////////////////////////////////////////////////////////////////////////////////////////
+
+
+        int vertexTextureShader = SurfaceRenderer.loadShader(
+                GLES20.GL_VERTEX_SHADER,
+                Shaders.textureVertexShader);
+        int fragmentTextureShader = SurfaceRenderer.loadShader(
+                GLES20.GL_FRAGMENT_SHADER,
+                Shaders.textureFragmentShader);
+
+        mTextureProgram = gameView.createAndLinkProgram(vertexTextureShader, fragmentTextureShader,
+                new String[]{"vPosition", "a_TexCoordinate"});
+
+        mTexturePositionHandle = GLES20.glGetAttribLocation(mTextureProgram, "vPosition");
+        mTextureMVPMatrixHandle = GLES20.glGetUniformLocation(mTextureProgram, "uMVPMatrix");
+
 
 
         // background.loadTexture(gameView.context,R.drawable.bubles);
@@ -218,12 +250,12 @@ public class Game {
 
 
         //Log.e("ccc","move "+ratio);
-        if (!isCrashed && mainSprite != null) {
+        if (!isCrashed && mainSprite != null)
             mainSprite.update(ratio);
 
-            if (background != null)
-                background.setPosition(mainSprite.centerX, mainSprite.centerY);
-        }
+        if (background != null && !isCrashed && mainSprite != null)
+            background.setPosition(mainSprite.centerX, mainSprite.centerY);
+
         if (explosionManager != null)
             explosionManager.update(System.currentTimeMillis());
 
@@ -245,15 +277,17 @@ public class Game {
         update(smoothedDeltaRealTime_ms);
 
 
+
+
+
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
 
-        GLES20.glUseProgram(mProgram);
-        GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mMVPMatrix, 0);
-
-        GLES20.glUniform4fv(mColorFilterHandle, 1, colorFilter, 0);
+        //BACKGROUND SETS MVP MATRIX!!!!!!! REMEMBER WHEN DISABLE
         if (background != null)
             background.drawGl2(mMVPMatrix);
 
+
+        GLES20.glUniform4fv(mColorFilterHandle, 1, colorFilter, 0);
 
         if (maze != null)
             maze.drawGL20(mMVPMatrix);
@@ -272,6 +306,7 @@ public class Game {
             realTimeElapsed_ms = (currTimePick_ms - lastRealTimeMeasurement_ms);
         } else {
             realTimeElapsed_ms = smoothedDeltaRealTime_ms; // just the first time
+
         }
         movAverageDeltaTime_ms = (realTimeElapsed_ms + movAverageDeltaTime_ms * (movAveragePeriod - 1)) / movAveragePeriod;
 
@@ -281,37 +316,42 @@ public class Game {
         lastRealTimeMeasurement_ms = currTimePick_ms;
 
 
+
     }
 
 
     private void setDotMovement(Route.Movement movement) {
 
+        float spriteSpeed =0;
         if (movement == null || mainSprite == null)
             return;
+        else
+            spriteSpeed=mainSprite.spriteSpeed;
+
 
         switch (movement) {
 
             case BOTTOMRIGHT:
             case TOPRIGHT:
             case LEFTRIGHT:
-                mainSprite.setMove(mainSprite.spriteSpeed, 0);
+                mainSprite.setMove(spriteSpeed, 0);
                 break;
             case BOTTOMLEFT:
             case TOPLEFT:
             case RIGHTLEFT:
-                mainSprite.setMove(-mainSprite.spriteSpeed, 0);
+                mainSprite.setMove(-spriteSpeed, 0);
                 break;
             case LEFTTOP:
             case RIGHTTOP:
             case BOTTOMTOP:
 
-                mainSprite.setMove(0, -mainSprite.spriteSpeed);
+                mainSprite.setMove(0, -spriteSpeed);
                 break;
             case LEFTBOTTOM:
             case RIGHTBOTTOM:
             case TOPBOTTOM:
 
-                mainSprite.setMove(0, mainSprite.spriteSpeed);
+                mainSprite.setMove(0, spriteSpeed);
                 break;
 
 
@@ -443,6 +483,7 @@ public class Game {
     public ExplosionManager explodeDot(boolean sound) {
         explosionManager.explode(mainSprite.centerX, mainSprite.centerY, mainSprite.spriteSpeed);
 
+        if(sound)
         MainActivity.sendAction(SoundsService.ACTION_CRASH, null);
 
         //if (sound)

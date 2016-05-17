@@ -11,8 +11,9 @@ public class Shaders {
     public static String getVertexShaderCode() {
         if (Build.VERSION.SDK_INT >= 21)
             return h_vertexShaderCode;
-            //  else if (Build.VERSION.SDK_INT >= 17)
-            //      return m_vertexShaderCode;
+        else
+        if (Build.VERSION.SDK_INT >= 17)
+            return m_vertexShaderCode;
         else
             return l_vertexShaderCode;
     }
@@ -20,8 +21,9 @@ public class Shaders {
     public static String getFragmentShaderCode() {
         if (Build.VERSION.SDK_INT >= 21)
             return h_fragmentShaderCode;
-            //  else if (Build.VERSION.SDK_INT >= 17)
-            //      return m_fragmentShaderCode;
+        else
+        if (Build.VERSION.SDK_INT >= 17)
+            return m_fragmentShaderCode;
         else
             return l_fragmentShaderCode;
     }
@@ -49,15 +51,41 @@ public class Shaders {
                     + "}                              ";
 
 
+    public static final String textureVertexShader =
+            "uniform mat4 uMVPMatrix;      "
+                    + "attribute vec4 vPosition;     "
+                    + "attribute vec2 a_TexCoordinate;"
+                    + "varying vec2 v_TexCoordinate;"
+                    + "void main()                    "
+                    + "{                              "
+                    + "v_TexCoordinate = a_TexCoordinate;"
+                    + "   gl_Position = uMVPMatrix   "
+                    + "               * vPosition;   "
+                    + "}                              ";
+
+    public static final String textureFragmentShader =
+            "precision mediump float;       " +
+                    "uniform lowp vec4 vColor;          // This is the color from the vertex shader interpolated across the\n"
+                    + "uniform sampler2D u_Texture;"
+                    + "varying vec2 v_TexCoordinate;"
+                    + "void main()                    "
+                    + "{                              "
+                    + "   gl_FragColor = texture2D(u_Texture, v_TexCoordinate);      "
+                    + "}                              ";
+
+
+///////////////////////////////////////////////////////////////////
+
+
     private final static String h_vertexShaderCode =
             "uniform mat4 uMVPMatrix;      " +
                     // A constant representing the combined model/generator/projection matrix
                     "attribute vec4 vPosition;     " +
                     "uniform lowp vec4 vColor;" +
+                    //"attribute lowp vec4 vColor;" +
+
                     "uniform lowp vec4 vColorFilter;" +
 
-                    "attribute vec2 a_TexCoordinate;" +
-                    "varying vec2 v_TexCoordinate;" +
 
                     // Per-vertex position information we will pass in.
 
@@ -76,7 +104,6 @@ public class Shaders {
                     // Transform the vertex into eye space.
                     "    v_Position = vec3(vPosition);" +
                     "v_Color=vColor+vColorFilter;" +
-                    "v_TexCoordinate = a_TexCoordinate;" +
                     // Pass through the color.
 
                     // gl_Position is a special variable used to store the final position.
@@ -102,8 +129,6 @@ public class Shaders {
                     "varying lowp vec3 v_Position;       // Interpolated position for this fragment.\n" +
                     "varying vec4 v_Color;       " +
 
-                    "uniform sampler2D u_Texture;" +
-                    "varying vec2 v_TexCoordinate;" +
 
                     "uniform lowp vec3 dotLightPos;" +
                     "uniform lowp float dotlightShinning;" +
@@ -124,18 +149,9 @@ public class Shaders {
                     "   lowp float explosionTwoDistance = length(lights[2].u_LightPos - v_Position);\n" +
                     "   lowp float explosionTwoDiffuse =  lights[2].lightShinning * (1.0 / (1.0 + 0.025 *( explosionTwoDistance* lights[2].lightDistance)));\n" +
                     "   lowp vec4 explosionTwoResult = explosionTwoDiffuse * lights[2].lightColor;" +
-/*
-                    "   lowp float explosionThreeDistance = length(lights[3].u_LightPos - v_Position);\n" +
-                    "   lowp float explosionThreeDiffuse =  lights[3].lightShinning * (1.0 / (1.0 + 0.025 *(  explosionThreeDistance* lights[3].lightDistance)));\n" +
-                    "   lowp vec4 explosionThreeResult = explosionThreeDiffuse * lights[3].lightColor;" +
 
-                    "   lowp float explosionFourDistance = length(lights[4].u_LightPos - v_Position);\n" +
-                    "   lowp float explosionFourDiffuse =  lights[4].lightShinning * (1.0 / (1.0 + 0.025 *( explosionFourDistance* lights[4].lightDistance)));\n" +
-                    "   lowp vec4 explosionFourResult = explosionFourDiffuse * lights[4].lightColor;" +
-*/
-                    //"    // Multiply the color by the diffuse illumination level to get final output color.\n" +
-                    "    gl_FragColor = (texture2D(u_Texture, v_TexCoordinate)+v_Color)*dotDiffuse +explosionOneResult + explosionTwoResult;" +// +explosionThreeResult + explosionFourResult;" +
-                    //"    gl_FragColor = v_Color*dotDiffuse+texture2D(u_Texture, v_TexCoordinate);"+
+                    "    gl_FragColor = v_Color*dotDiffuse +explosionOneResult + explosionTwoResult;" +
+
                     "}";
 
 
@@ -175,12 +191,12 @@ public class Shaders {
 
 
                     "   lowp float explosionOneDistance = length(lights[1].u_LightPos - v_Position);\n" +
-                    "   lowp float explosionOneDiffuse =  lights[1].lightShinning * (1.0 / (1.0 + 0.015 *  explosionOneDistance* lights[1].lightDistance));\n" +
+                    "   lowp float explosionOneDiffuse =  lights[1].lightShinning * (1.0 / (1.0 + 0.005 *  explosionOneDistance* lights[1].lightDistance));\n" +
                     "   lowp vec4 explosionOneResult = explosionOneDiffuse * lights[1].lightColor;" +
 
 
                     "   lowp float explosionTwoDistance = length(lights[2].u_LightPos - v_Position);\n" +
-                    "   lowp float explosionTwoDiffuse =  lights[2].lightShinning * (1.0 / (1.0 + 0.015 * explosionTwoDistance* lights[2].lightDistance));\n" +
+                    "   lowp float explosionTwoDiffuse =  lights[2].lightShinning * (1.0 / (1.0 + 0.005 * explosionTwoDistance* lights[2].lightDistance));\n" +
                     "   lowp vec4 explosionTwoResult = explosionTwoDiffuse * lights[2].lightColor;" +
 
                     // "   lowp float dotDistance = length(lights[0].u_LightPos - vPosition);" +
@@ -207,7 +223,7 @@ public class Shaders {
                     "{" +
 
                     "   lowp float dotDistance = length(v_lightPos - v_Position);" +
-                    "   lowp float dotDiffuse =  v_lightShinning * (1.0 / (1.0 + 0.025 *( dotDistance * v_lightDistance)));" +
+                    "   lowp float dotDiffuse = v_lightShinning*(1.0 / (1.0 + (0.01* dotDistance * v_lightDistance)));" +
 
                     "    gl_FragColor = color*dotDiffuse;" +
                     "}";

@@ -143,6 +143,15 @@
                     android:text="50%" />
             </RadioGroup>
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="speed"/>
+            <SeekBar
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/sb_speed"/>
+
             <pl.slapps.dot.gui.FontedTextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"

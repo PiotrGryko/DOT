@@ -319,7 +319,7 @@ public class MainActivity extends FragmentActivity {
 
         activityLoader.listCatche();
         //activityLoader.loadSounds();
-        activityLoader.listSoundsFromAssets();
+        //activityLoader.listSoundsFromAssets();
 
 
         android_id = Settings.Secure.getString(getContentResolver(),
@@ -374,6 +374,7 @@ public class MainActivity extends FragmentActivity {
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         currentStage = unlockedStage = preferences.getInt("current_stage", 0);
 
+        Log.d("activityloader","start loading stages");
         activityLoader.loadStagesFile(new ActivityLoader.OnStagesLoadingListener() {
             @Override
             public void onLoaded() {
@@ -387,6 +388,7 @@ public class MainActivity extends FragmentActivity {
                     @Override
                     public void onFailed() {
 
+                        Log.d(TAG,"loading stage fialed! ");
                         currentStage = 0;
                         activityLoader.getStageAtIndex(currentStage, new ActivityLoader.OnStageLoadingListener() {
                             @Override
@@ -402,34 +404,14 @@ public class MainActivity extends FragmentActivity {
                         });
                     }
                 });
-                /*
-                Log.d(TAG, "on loaded current stage " + currentStage);
-                if (currentStage < activityLoader.jsonStages.length())
-                    loadStage(activityLoader.getStageAtIndex(currentStage));
-                else {
 
-                    if (activityLoader.jsonStages.length() == 0) {
-                        Toast.makeText(MainActivity.this, "??", Toast.LENGTH_LONG).show();
-                    } else {
-                        currentStage = 0;
-                        loadStage(activityLoader.getStageAtIndex(currentStage));
-                    }
-                }
-            */
             }
 
             @Override
             public void onFailed() {
 
                 layoutMainMenu.displayError();
-                /*
-                if (getCurrentFragment() instanceof LayoutMainMenu) {
-                    LayoutMainMenu fm = (LayoutMainMenu) getCurrentFragment();
 
-                    fm.displayError();
-
-                }
-            */
             }
 
             @Override
@@ -506,6 +488,7 @@ public class MainActivity extends FragmentActivity {
     }
 
     public void showAdv() {
+        Log.d(TAG,"showinga ad...");
         handler.post(new Runnable() {
             @Override
             public void run() {

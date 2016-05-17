@@ -29,6 +29,9 @@ import java.lang.reflect.Field;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Objects;
 
 import pl.slapps.dot.model.Stage;
@@ -78,10 +81,11 @@ public class ActivityLoader {
     }
     ////////////////////////
 
+
     /**
      * SOUNDS LOADING
      */
-
+/*
     private class DownloadFile extends AsyncTask<String, Integer, String> {
 
         private JSONObject o;
@@ -180,14 +184,18 @@ public class ActivityLoader {
 
 
     }
-
+*/
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    public ArrayList<String> listSoundsFromAssets() {
+    public ArrayList<String> listSoundsFromAssets(String dir) {
+        if (dir == null || dir.equals(""))
+            dir = "sounds";
+        else if (!dir.equals("sounds"))
+            dir = "sounds" + dir;
         ArrayList<String> files = new ArrayList<>();
         String[] fields = new String[0];
         try {
-            fields = context.getAssets().list("sounds");
+            fields = context.getAssets().list(dir);
         } catch (IOException e) {
             e.printStackTrace();
             Log.d("yyy", e.toString());
@@ -201,6 +209,8 @@ public class ActivityLoader {
             files.add(sounds.get(i));
         }
         files.add("");
+
+        Log.e("BBB", "listing from " + dir + " listed " + Arrays.toString(fields));
         return files;
     }
 
@@ -250,7 +260,9 @@ public class ActivityLoader {
 
     private void saveTextFile(String text, String filename) {
         try {
-            File myFile = new File(context.getCacheDir(), filename);
+            //File myFile = new File(context.getCacheDir(), filename);
+            File myFile = new File(context.getObbDir(), filename);
+
             myFile.createNewFile();
             FileOutputStream fOut = new FileOutputStream(myFile);
             OutputStreamWriter myOutWriter =
@@ -288,22 +300,26 @@ public class ActivityLoader {
 
     public interface OnStageLoadingListener {
         public void onLoaded(Stage stage);
+
         public void onFailed();
     }
 
 
     public void loadStagesFile(final OnStagesLoadingListener listener, final boolean assets) {
-        this.assets=assets;
+        this.assets = assets;
+        Log.d(TAG, "loding stages assets=" + assets);
         if (assets) {
             listener.onLoaded();
             //loadStages(true, listener);
             //  if (listener != null)
             //      listener.onLoaded();
         } else {
+            Log.d(TAG, "making http request...");
             DAO.getWorlds(new Response.Listener() {
                 @Override
                 public void onResponse(Object response) {
 
+                    Log.d(TAG, "response " + response.toString());
                     try {
                         int counter = 0;
                         int currentTier = 0;
@@ -312,22 +328,55 @@ public class ActivityLoader {
                         JSONObject api = jsonData.has("api") ? jsonData.getJSONObject("api") : new JSONObject();
                         jsonStages = new JSONArray();
                         JSONArray jsonArray = api.has("results") ? api.getJSONArray("results") : new JSONArray();
-
+                        boolean saved = false;
+                        ArrayList<JSONObject> tmp = new ArrayList<JSONObject>();
                         for (int i = 0; i < jsonArray.length(); i++) {
                             JSONObject world = jsonArray.getJSONObject(i);
+                            tmp.add(world);
+                        }
+                        Collections.sort(tmp, new Comparator<JSONObject>() {
+                            @Override
+                            public int compare(JSONObject lhs, JSONObject rhs) {
+                                try {
+                                    String left = lhs.has("name") ? lhs.getString("name") : "";
+                                    String right = rhs.has("name") ? rhs.getString("name") : "";
+
+
+                                    int l = Integer.parseInt(left);
+                                    int r = Integer.parseInt(right);
+                                    return l - r;
+                                } catch (Throwable t) {
+
+                                }
+
+                                return 0;
+                            }
+                        });
+
+
+                        for (int i = 0; i < tmp.size(); i++) {
+                            JSONObject world = tmp.get(i);
+
+                            try {
+                            } catch (Throwable t) {
+                            }
+
                             JSONArray stages = world.has("stages") ? world.getJSONArray("stages") : new JSONArray();
                             for (int j = 0; j < stages.length(); j++) {
                                 jsonStages.put(stages.getJSONObject(j));
 
+                                Log.d(TAG, "iterating .. " + j);
 
                                 if (counter > 0 && counter % 10 == 0) {
                                     int tier = counter / 10;
                                     if (currentTier != tier) {
-                                        String fileName =STAGES_PREFIX + currentTier+STAGES_SUFFIX;
+                                        String fileName = STAGES_PREFIX + currentTier + STAGES_SUFFIX;
+                                        Log.d(TAG, "saving....");
                                         saveTextFile(jsonStages.toString(), fileName);
                                         currentTier = tier;
 
                                         jsonStages = new JSONArray();
+                                        saved = true;
                                     }
                                 }
 
@@ -336,6 +385,15 @@ public class ActivityLoader {
 
                             }
                         }
+                        if (!saved) {
+
+                            String fileName = STAGES_PREFIX + currentTier + STAGES_SUFFIX;
+                            Log.d(TAG, "saving....");
+                            saveTextFile(jsonStages.toString(), fileName);
+                            jsonStages = new JSONArray();
+                        }
+
+                        Log.d(TAG, "STAGES STAVED!");
 
                         //    result = true;
                     } catch (JSONException e) {
@@ -355,6 +413,7 @@ public class ActivityLoader {
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
+                    Log.d(TAG, "on http error " + error);
                     Toast.makeText(context, error.toString(), Toast.LENGTH_LONG).show();
                     // loadStages(false, listener);
                     // listener.onFailed();
@@ -373,11 +432,11 @@ public class ActivityLoader {
             tier = index / 10;
 
 
-        if(tier==CURRENT_TIER && listener!=null) {
-            if(index>0)
-            index = index%TIER_SIZE;
+        if (tier == CURRENT_TIER && listener != null) {
+            if (index > 0)
+                index = index % TIER_SIZE;
             try {
-                Log.d(TAG,"Loading stage from current tier "+CURRENT_TIER +" stage="+index);
+                Log.d(TAG, "Loading stage from current tier " + CURRENT_TIER + " stage=" + index);
                 listener.onLoaded(Stage.valueOf(jsonStages.getJSONObject(index)));
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -386,14 +445,14 @@ public class ActivityLoader {
 
         }
 
-        String filename = STAGES_PREFIX + tier+STAGES_SUFFIX;
+        String filename = STAGES_PREFIX + tier + STAGES_SUFFIX;
 
         if (stageThread != null) {
             stageThread.cancel();
 
         }
         stageThread = new LoadStages();
-        Log.d(TAG,"loading stage nr="+index +"tier="+tier+" from file "+filename);
+        Log.d(TAG, "loading stage nr=" + index + "tier=" + tier + " from file " + filename);
         stageThread.load(listener, filename, tier, index);
 
 
@@ -404,7 +463,7 @@ public class ActivityLoader {
         InputStream stream = null;
         try {
             if (assets)
-                stream = context.getAssets().open("stages/"+filename);
+                stream = context.getAssets().open("stages/" + filename);
             else {
                 File myFile = new File(context.getCacheDir(), filename);
                 stream = new FileInputStream(myFile);
@@ -412,6 +471,7 @@ public class ActivityLoader {
 
         } catch (Throwable t) {
             t.printStackTrace();
+
         }
         return stream;
 
@@ -474,11 +534,16 @@ public class ActivityLoader {
 
             } catch (Exception e) {
                 e.getMessage();
+                if (listener != null)
+                    listener.onFailed();
+                return;
             } finally {
                 try {
 
                     if (fIn != null)
                         fIn.close();
+
+
 
                 } catch (Exception e2) {
                     e2.getMessage();

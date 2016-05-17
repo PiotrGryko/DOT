@@ -23,13 +23,22 @@ import pl.slapps.dot.generator.widget.PlayButton;
  */
 public class AdapterSounds extends ArrayAdapter {
 
+    public interface OnSoundClickListener
+    {
+        public void onClick(String sound);
+    }
+
+    private OnSoundClickListener listener;
+
     private ArrayList<String> sounds;
     private MainActivity context;
     private MediaPlayer player;
+    private String currentPath="";
 
-    public AdapterSounds(MainActivity context, ArrayList<String> sounds) {
-        super(context, R.layout.row_sound, sounds);
+    public AdapterSounds(MainActivity context, ArrayList<String> sounds, OnSoundClickListener listener) {
+        super(context, R.layout.row_sound,sounds);
         this.sounds = sounds;
+        this.listener=listener;
         this.context = context;
         player = new MediaPlayer();
     }
@@ -37,6 +46,17 @@ public class AdapterSounds extends ArrayAdapter {
     class ViewHolder {
         public TextView tvLabel;
         public PlayButton playButton;
+    }
+
+
+    public int getCount()
+    {
+        return sounds.size();
+    }
+
+    public Object getItem(int position)
+    {
+      return "sounds"+currentPath+"/"+sounds.get(position);
     }
 
     public View getView(final int position, View convertView, ViewGroup parent) {
@@ -57,10 +77,31 @@ public class AdapterSounds extends ArrayAdapter {
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                playButton.play(sounds.get(position));
+                playButton.play((String)getItem(position));
             }
         });
+        if(!sounds.get(position).endsWith(".mp3"))
+            playButton.setVisibility(View.GONE);
+        else
+            playButton.setVisibility(View.VISIBLE);
+        convertView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String name = sounds.get(position);
+                if(name.endsWith(".mp3")||name.endsWith(".wav"))
+                {
+                    if(listener!=null)
+                        listener.onClick((String)getItem(position));
+                }
+                else
+                {
+                    currentPath+="/"+name;
 
+                    sounds = context.getActivityLoader().listSoundsFromAssets(currentPath);
+                    notifyDataSetChanged();
+                }
+            }
+        });
         return convertView;
     }
 }

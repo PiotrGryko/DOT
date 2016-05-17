@@ -47,9 +47,11 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
     private boolean startMonitoring = false;
     private boolean isRunning = false;
     private boolean isDrawing = true;
-    public boolean isInitialized = false;
 
     private Thread gameThread;
+
+
+
 
 
     public Game getGame() {
@@ -155,6 +157,7 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
     public SurfaceRenderer(MainActivity context) {
         super(context);
         setEGLContextClientVersion(2);
+        this.setEGLConfigChooser(false);
         this.setRenderer(this);
         this.context = context;
         this.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
@@ -165,6 +168,7 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
     public SurfaceRenderer(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
         setEGLContextClientVersion(2);
+        this.setEGLConfigChooser(false);
         this.setRenderer(this);
         this.context = (MainActivity) context;
         this.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
@@ -238,8 +242,8 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
     }
 
 
-    long lastUpdateTime = 0;
-    int framesCount = 0;
+    //long lastUpdateTime = 0;
+    //int framesCount = 0;
     private boolean ondraw = false;
 
     @Override
@@ -265,6 +269,7 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
             //        Log.e("ccc", "render time =" + diff);
 
 
+            /*
             if (startMonitoring) {
                 if (System.currentTimeMillis() - lastUpdateTime > 1000 && framesCount > 0) {
                     //  Log.d("ccc","frames "+framesCount);
@@ -280,7 +285,9 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
                     framesCount += 1;
                 }
 
+
             }
+            */
             ondraw = false;
         }
 
@@ -310,6 +317,8 @@ public class SurfaceRenderer extends GLSurfaceView implements GLSurfaceView.Rend
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         GLES20.glDisable(GLES20.GL_DEPTH_TEST);
         GLES20.glDisable(GLES20.GL_CULL_FACE);
+        GLES20.glEnable (GLES20.GL_BLEND);
+        GLES20.glBlendFunc (GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 
         // Use culling to remove back faces.
         //GLES20.glEnable(GLES20.GL_CULL_FACE);

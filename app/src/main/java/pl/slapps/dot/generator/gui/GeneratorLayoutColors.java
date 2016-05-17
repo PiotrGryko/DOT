@@ -1,6 +1,7 @@
 package pl.slapps.dot.generator.gui;
 
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -192,6 +193,7 @@ public class GeneratorLayoutColors {
 
 
     public void refreashLayout() {
+        Log.e("EEE","background color check "+generator.getConfig().colors.colorBackground);
         colorBackground.setBackgroundColor(Color.parseColor(generator.getConfig().colors.colorBackground));
         colorRoute.setBackgroundColor(Color.parseColor(generator.getConfig().colors.colorRoute));
         colorDot.setBackgroundColor(Color.parseColor(generator.getConfig().colors.colorShip));

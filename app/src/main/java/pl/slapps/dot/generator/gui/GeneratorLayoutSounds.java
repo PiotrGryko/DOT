@@ -192,12 +192,11 @@ public class GeneratorLayoutSounds {
                 dialogChooseSound.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 final View chooseView = LayoutInflater.from(generator.view.context).inflate(R.layout.dialog_stages, null);
                 ListView lv = (ListView) chooseView.findViewById(R.id.lv);
-                lv.setAdapter(new AdapterSounds(generator.view.context, generator.view.context.getActivityLoader().listSoundsFromAssets()));
-
-                lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                lv.setAdapter(new AdapterSounds(generator.view.context, generator.view.context.getActivityLoader().listSoundsFromAssets(null)
+                        , new AdapterSounds.OnSoundClickListener() {
                     @Override
-                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                        generator.getConfig().sounds.soundBackground = adapterView.getItemAtPosition(i).toString();
+                    public void onClick(String sound) {
+                        generator.getConfig().sounds.soundBackground = sound;
                         btnSoundBackground.setText(generator.getConfig().sounds.soundBackground);
                         generator.refreashMaze();
 
@@ -207,7 +206,9 @@ public class GeneratorLayoutSounds {
                         MainActivity.sendAction(SoundsService.ACTION_BACKGROUND, null);
                         dialogChooseSound.dismiss();
                     }
-                });
+                }));
+
+
                 dialogChooseSound.setContentView(chooseView);
                 dialogChooseSound.show();
 
@@ -221,18 +222,19 @@ public class GeneratorLayoutSounds {
                 dialogChooseSound.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 View chooseView = LayoutInflater.from(generator.view.context).inflate(R.layout.dialog_stages, null);
                 ListView lv = (ListView) chooseView.findViewById(R.id.lv);
-                lv.setAdapter(new AdapterSounds(generator.view.context, generator.view.context.getActivityLoader().listSoundsFromAssets()));
-                lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                        generator.getConfig().sounds.soundPress = adapterView.getItemAtPosition(i).toString();
-                        btnSoundPress.setText(generator.getConfig().sounds.soundPress);
-                        generator.refreashMaze();
-                        MainActivity.sendAction(SoundsService.ACTION_CONFIG, generator.getConfig().sounds);
+                lv.setAdapter(new AdapterSounds(generator.view.context, generator.view.context.getActivityLoader().listSoundsFromAssets(null),
+                        new AdapterSounds.OnSoundClickListener() {
+                            @Override
+                            public void onClick(String sound) {
+                                generator.getConfig().sounds.soundPress = sound;
+                                btnSoundPress.setText(generator.getConfig().sounds.soundPress);
+                                generator.refreashMaze();
+                                MainActivity.sendAction(SoundsService.ACTION_CONFIG, generator.getConfig().sounds);
 
-                        dialogChooseSound.dismiss();
-                    }
-                });
+                                dialogChooseSound.dismiss();
+                            }
+                        }));
+
                 dialogChooseSound.setContentView(chooseView);
                 dialogChooseSound.show();
 
@@ -246,18 +248,18 @@ public class GeneratorLayoutSounds {
                 dialogChooseSound.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 View chooseView = LayoutInflater.from(generator.view.context).inflate(R.layout.dialog_stages, null);
                 ListView lv = (ListView) chooseView.findViewById(R.id.lv);
-                lv.setAdapter(new AdapterSounds(generator.view.context, generator.view.context.getActivityLoader().listSoundsFromAssets()));
-                lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                lv.setAdapter(new AdapterSounds(generator.view.context, generator.view.context.getActivityLoader().listSoundsFromAssets(null), new AdapterSounds.OnSoundClickListener() {
                     @Override
-                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                        generator.getConfig().sounds.soundCrash = adapterView.getItemAtPosition(i).toString();
+                    public void onClick(String sound) {
+                        generator.getConfig().sounds.soundCrash = sound;
                         btnSoundCrash.setText(generator.getConfig().sounds.soundCrash);
                         generator.refreashMaze();
                         MainActivity.sendAction(SoundsService.ACTION_CONFIG, generator.getConfig().sounds);
 
                         dialogChooseSound.dismiss();
                     }
-                });
+                }));
+
                 dialogChooseSound.setContentView(chooseView);
                 dialogChooseSound.show();
 
@@ -271,18 +273,18 @@ public class GeneratorLayoutSounds {
                 dialogChooseSound.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 View chooseView = LayoutInflater.from(generator.view.context).inflate(R.layout.dialog_stages, null);
                 ListView lv = (ListView) chooseView.findViewById(R.id.lv);
-                lv.setAdapter(new AdapterSounds(generator.view.context, generator.view.context.getActivityLoader().listSoundsFromAssets()));
-                lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                lv.setAdapter(new AdapterSounds(generator.view.context, generator.view.context.getActivityLoader().listSoundsFromAssets(null), new AdapterSounds.OnSoundClickListener() {
                     @Override
-                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                        generator.getConfig().sounds.soundCrashTwo = adapterView.getItemAtPosition(i).toString();
+                    public void onClick(String sound) {
+                        generator.getConfig().sounds.soundCrashTwo = sound;
                         btnSoundCrashTwo.setText(generator.getConfig().sounds.soundCrashTwo);
                         generator.refreashMaze();
                         MainActivity.sendAction(SoundsService.ACTION_CONFIG, generator.getConfig().sounds);
 
                         dialogChooseSound.dismiss();
                     }
-                });
+                }));
+
                 dialogChooseSound.setContentView(chooseView);
                 dialogChooseSound.show();
 
@@ -297,18 +299,18 @@ public class GeneratorLayoutSounds {
                 dialogChooseSound.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 View chooseView = LayoutInflater.from(generator.view.context).inflate(R.layout.dialog_stages, null);
                 ListView lv = (ListView) chooseView.findViewById(R.id.lv);
-                lv.setAdapter(new AdapterSounds(generator.view.context, generator.view.context.getActivityLoader().listSoundsFromAssets()));
-                lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                lv.setAdapter(new AdapterSounds(generator.view.context, generator.view.context.getActivityLoader().listSoundsFromAssets(null), new AdapterSounds.OnSoundClickListener() {
                     @Override
-                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                        generator.getConfig().sounds.soundFinish = adapterView.getItemAtPosition(i).toString();
+                    public void onClick(String sound) {
+                        generator.getConfig().sounds.soundFinish = sound;
                         btnSoundFinish.setText(generator.getConfig().sounds.soundFinish);
                         generator.refreashMaze();
                         MainActivity.sendAction(SoundsService.ACTION_CONFIG, generator.getConfig().sounds);
 
                         dialogChooseSound.dismiss();
                     }
-                });
+                }));
+
                 dialogChooseSound.setContentView(chooseView);
                 dialogChooseSound.show();
 

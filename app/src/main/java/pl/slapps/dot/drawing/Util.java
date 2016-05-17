@@ -37,6 +37,21 @@ public class Util {
         }
     }
 
+    public static float[] summArrays(float[] array, float[] array_two)
+    {
+        float[] output = new float[array.length+array_two.length];
+        for(int i=0;i<array.length;i++)
+        {
+            output[i]=array[i];
+        }
+        for(int i=0;i<array_two.length;i++)
+        {
+            output[array.length+i]=array_two[i];
+        }
+
+        return output;
+    }
+
     public static String changeColorBrightness(String stringColor, boolean light) {
         int color = Color.parseColor(stringColor);
         float r = (float) Color.red(color) / 255;

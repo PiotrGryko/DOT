@@ -25,12 +25,14 @@ public class Fence {
 
     private float vert[];
     private FloatBuffer bufferedVertex;
+    //public FloatBuffer colorBuffer;
+
     private ArrayList<Wall> walls;
 
 
     static final int COORDS_PER_VERTEX = 2;
     private Game game;
-
+    //private boolean initialized;
 
     float color[] = {0.0f, 0.0f, 0.0f, 1.0f};
 
@@ -40,6 +42,21 @@ public class Fence {
     {
         this.color= Util.parseColor(config.colors.colorFence);
 
+        /*
+        if(initialized)
+        {
+            float[] tmpColor = new float[0];
+            for(int i=0;i<vert.length/COORDS_PER_VERTEX;i++)
+            {
+                tmpColor = Util.summArrays(tmpColor,color);
+                tmpColor = Util.summArrays(tmpColor,color);
+            }
+            color=tmpColor;
+            colorBuffer.position(0);
+            colorBuffer.put(color);
+            colorBuffer.position(0);
+        }
+*/
     }
 
 
@@ -61,6 +78,7 @@ public class Fence {
         ArrayList<Float> coords = new ArrayList<>();
 
 
+        float[] tmpColor = new float[0];
 
         for (int i = 0; i < walls.size(); i++) {
             Wall w = walls.get(i);
@@ -73,7 +91,12 @@ public class Fence {
             coords.add(w.end.x);
             coords.add(w.end.y);
 
+            tmpColor = Util.summArrays(tmpColor,color);
+            tmpColor = Util.summArrays(tmpColor,color);
+
+
         }
+        color = tmpColor;
         float[] tab = new float[coords.size()];
 
         for (int i = 0; i < coords.size(); i++) {
@@ -92,6 +115,17 @@ public class Fence {
         bufferedVertex = bytes.asFloatBuffer();
         bufferedVertex.put(vert).position(0);
 
+
+
+        ByteBuffer cb = ByteBuffer.allocateDirect(color.length * 4);
+        cb.order(ByteOrder.nativeOrder());
+       /*
+        colorBuffer = cb.asFloatBuffer();
+        colorBuffer.put(color);
+        colorBuffer.position(0);
+
+        initialized = true;
+*/
 
 
 
@@ -162,6 +196,11 @@ public class Fence {
                 game.mPositionHandle, COORDS_PER_VERTEX,
                 GLES20.GL_FLOAT, false,
                 0, bufferedVertex);
+
+        //GLES20.glEnableVertexAttribArray(game.mColorHandle);
+
+// Prepare the triangle coordinate data
+        //GLES20.glVertexAttribPointer(game.mColorHandle, 4, GLES20.GL_FLOAT, false, 0, colorBuffer);
 
 
         // get handle to fragment shader's vColor member

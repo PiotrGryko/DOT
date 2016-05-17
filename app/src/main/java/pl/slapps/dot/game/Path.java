@@ -3,6 +3,8 @@ package pl.slapps.dot.game;
 import android.opengl.GLES20;
 import android.util.Log;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -28,6 +30,8 @@ public class Path {
 
     public FloatBuffer roadBufferedVertex;
     public ShortBuffer roadBufferedIndices;
+    //public FloatBuffer colorBuffer;
+
 
 
     private String TAG = Path.class.getName();
@@ -38,6 +42,7 @@ public class Path {
     static final int COORDS_PER_VERTEX = 3;
     float color[] = {0.0f, 0.0f, 0.0f, 1.0f};
     private ArrayList<Quad> quads; //list of quads ordered from beginning to end
+    //boolean initialized=false;
 
     /*
     public Wall.Type checkCollision(Quad quad,float x, float y) {
@@ -109,9 +114,37 @@ public class Path {
         if (config.settings.switchRouteColors)
             finalColor = config.colors.colorSwitchRouteStart;
         color = Util.parseColor(finalColor);
+/*
+        buildColors();
 
+
+
+        if(initialized) {
+            colorBuffer.position(0);
+            colorBuffer.put(color);
+            colorBuffer.position(0);
+
+           // Log.e("zzz", "configure " + ArrayUtils.toString(color));
+        }
+  */
     }
 
+
+/*
+    private void buildColors()
+    {
+        float[] out = new float[0];
+        for(int i=0;i<quads.size();i++)
+        {
+            out = Util.summArrays(out,color);
+            out = Util.summArrays(out,color);
+            out = Util.summArrays(out,color);
+            out = Util.summArrays(out,color);
+        }
+        color=out;
+
+    }
+*/
     public Path(ArrayList<TileRoute> routes, Game game, Config config) {
         this.game = game;
         this.config = config;
@@ -140,6 +173,7 @@ public class Path {
 
         verticles = new float[this.quads.size() * COORDS_PER_VERTEX * 4];
         indices = new short[this.quads.size() * 2 * 3];
+  //      float[] colors = new float[this.quads.size()*4*4];
 
 
         //Building arrays
@@ -147,6 +181,7 @@ public class Path {
         for (int j = 0; j < this.quads.size(); j++) {
             int startVerticlesIndex = j * COORDS_PER_VERTEX * 4;
             int startIncentIndex = j * 6;
+
 
 
             Quad q = quads.get(j);
@@ -178,6 +213,7 @@ public class Path {
 
         }
 
+        //buildColors();
 
         roadVert = verticles;
         roadIndices = indices;
@@ -194,8 +230,15 @@ public class Path {
         roadBufferedIndices = bytes.asShortBuffer();
         roadBufferedIndices.put(roadIndices);
         roadBufferedIndices.position(0);
+/*
+        ByteBuffer cb = ByteBuffer.allocateDirect(color.length * 4);
+        cb.order(ByteOrder.nativeOrder());
+        colorBuffer = cb.asFloatBuffer();
+        colorBuffer.put(color);
+        colorBuffer.position(0);
 
-
+        initialized=true;
+*/
     }
 
 
@@ -253,6 +296,7 @@ public class Path {
         // Add program to OpenGL environment
        // GLES20.glUseProgram(game.mProgram);
 
+
         // get handle to vertex shader's vPosition member
 
         // Enable a handle to the triangle vertices
@@ -268,8 +312,14 @@ public class Path {
         // get handle to fragment shader's vColor member
         // Pass in the color information
         // Set color for drawing the triangle
-        GLES20.glUniform4fv(game.mColorHandle, 1, color, 0);
+        //GLES20.glUniform4fv(game.mColorHandle, 1, color, 0);
 
+
+        //GLES20.glEnableVertexAttribArray(game.mColorHandle);
+        GLES20.glUniform4fv(game.mColorHandle, 1, color, 0);
+// Prepare the triangle coordinate data
+       // GLES20.glVertexAttribPointer(game.mColorHandle, 4, GLES20.GL_FLOAT, false, 0, colorBuffer);
+        //GLES20.glDisableVertexAttribArray(game.mColorHandle);
 
         // Apply the projection and generator transformation
        // GLES20.glUniformMatrix4fv(game.mMVPMatrixHandle, 1, false, mvpMatrix, 0);
