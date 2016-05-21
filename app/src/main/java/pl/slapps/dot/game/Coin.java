@@ -41,16 +41,16 @@ public class Coin extends Sprite {
 
         boolean flag = false;
 
-        if (cointains(mainSprite.quad.topLeft)) {
+        if (cointains(mainSprite.centerX-mainSprite.dotSize/2,mainSprite.centerY-mainSprite.dotSize/2)) {  //topleft
             flag =  true;
         }
-        else if (cointains(mainSprite.quad.topRight)) {
+        else if (cointains(mainSprite.centerX+mainSprite.dotSize/2,mainSprite.centerY-mainSprite.dotSize/2)) { //top right
             flag =  true;
         }
-        else if (cointains(mainSprite.quad.bottomLeft)) {
+        else if (cointains(mainSprite.centerX-mainSprite.dotSize/2,mainSprite.centerY+mainSprite.dotSize/2)) { //bottom left
             flag =  true;
         }
-        else if (cointains(mainSprite.quad.topRight)) {
+        else if (cointains(mainSprite.centerX+mainSprite.dotSize/2,mainSprite.centerY+mainSprite.dotSize/2)) { //bottom right
             flag =  true;
         }
 
@@ -61,9 +61,6 @@ public class Coin extends Sprite {
             mainSprite.startBooster();
             MainActivity.sendAction(SoundsService.ACTION_COIN,null);
 
-            //  SoundsService.getSoundsManager().playCoinSound();
-            //view.addExplosion(new ExplosionManager(view, mainSprite.centerX, mainSprite.centerY, System.currentTimeMillis(), mainSprite.spriteSpeed, (int)view.dotSize, config));
-            //view.context.getSoundsManager().playCrashSound();
         }
 
         return flag;
@@ -71,19 +68,7 @@ public class Coin extends Sprite {
 
 
     public void configure(Config config) {
-       /*
-        Log.d(TAG, "configure background");
-        this.config=config;
-        Log.d(TAG,config.colors.colorBackground +"  "+config.colors.colorSwitchBackgroundStart);
 
-        if (!config.settings.switchBackgroundColors) {
-            color = Util.parseColor(config.colors.colorBackground);
-        } else {
-            switchColors = true;
-            color = Util.parseColor(config.colors.colorSwitchBackgroundStart);
-
-        }
-    */
     }
 
     public Coin(Game view, float centerX, float centerY, float width, float height) {

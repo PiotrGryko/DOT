@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
@@ -92,7 +93,7 @@ public class LayoutMainMenu{
 
     private String startBackgroundColor;
     private String startTextColor;
-   // public AdView mAdView;
+    public AdView mAdView;
 
 
     private Random random = new Random();
@@ -216,7 +217,7 @@ public class LayoutMainMenu{
         //layoutHeader.setVisibility(View.VISIBLE);
         btnPlay.setVisibility(View.VISIBLE);
         layoutPurchase.setVisibility(View.VISIBLE);
-        btnGenerate.setVisibility(View.VISIBLE);
+        //btnGenerate.setVisibility(View.VISIBLE);
         btnSkipStage.setVisibility(View.VISIBLE);
 
         setColor(stage.config);
@@ -287,9 +288,20 @@ public class LayoutMainMenu{
         btnStages = (ImageButton) layout.findViewById(R.id.btn_stages);
         btnOnline = (ImageButton) layout.findViewById(R.id.btn_online);
 
-       // mAdView = (AdView) layout.findViewById(R.id.adView);
-       // AdRequest adRequest = new AdRequest.Builder().build();
-        //mAdView.loadAd(adRequest);
+         mAdView = (AdView) layout.findViewById(R.id.adView);
+
+         AdRequest adRequest = new AdRequest.Builder().build();
+         mAdView.setAdListener(new AdListener() {
+             @Override
+             public void onAdFailedToLoad(int i) {
+                 super.onAdFailedToLoad(i);
+                 Log.d(TAG,"ads filed "+i);
+             }
+         });
+         mAdView.loadAd(adRequest);
+
+
+
 
 
 
@@ -376,7 +388,7 @@ public class LayoutMainMenu{
 
 
                 game.drawGenerator = false;
-              //  mAdView.setVisibility(View.GONE);
+                //mAdView.setVisibility(View.GONE);
                 animationMainMenu.hideMenu();
                 //  SoundsService.getSoundsManager().playFinishSound();
                 MainActivity.sendAction(SoundsService.ACTION_FINISH, null);

@@ -453,6 +453,7 @@ public class Generator {
 
     public void shareMaze()
     {
+        /*
         if(_id==null || _id.trim().equals("")) {
             DAO.addStage(dumpMaze(), new Response.Listener() {
                 @Override
@@ -486,6 +487,7 @@ public class Generator {
             view.context.getActivityInvite().invite(_id);
 
         }
+        */
     }
 
     public interface OnSaveListener

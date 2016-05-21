@@ -23,21 +23,22 @@ import android.view.WindowManager;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
-import com.facebook.FacebookSdk;
+import com.google.ads.mediation.admob.AdMobAdapter;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.reward.RewardItem;
 import com.google.android.gms.ads.reward.RewardedVideoAd;
 import com.google.android.gms.ads.reward.RewardedVideoAdListener;
+import com.unity3d.ads.android.IUnityAdsListener;
+import com.unity3d.ads.android.UnityAds;
 
 
 import java.io.IOException;
 import java.io.InputStream;
 
-import io.fabric.sdk.android.Fabric;
 
 import pl.slapps.dot.gui.AnimationShow;
 import pl.slapps.dot.gui.fragment.LayoutMainMenu;
@@ -68,12 +69,14 @@ public class MainActivity extends FragmentActivity {
 
     public InterstitialAd mInterstitialAd;
     public RewardedVideoAd mRewardedVideoAd;
+    //public AdView mAdView;
+
 
     public AnimationScoreLayout scoreLayout;
 
 
-   // public DrawerLayout drawer;
-   // public LinearLayout drawerContent;
+    // public DrawerLayout drawer;
+    // public LinearLayout drawerContent;
 
     public static float screenWidth;
     public static float screenHeight;
@@ -83,8 +86,7 @@ public class MainActivity extends FragmentActivity {
 
     private ActivityLoader activityLoader;
     private ActivityControls activityControls;
-    // private GoogleBilling activityBilling;
-    private GoogleInvite activityInvite;
+
     private LayoutMainMenu layoutMainMenu;
 
 
@@ -117,12 +119,6 @@ public class MainActivity extends FragmentActivity {
         }
     };
 
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        //   activityBilling.handleActivityResult(requestCode, resultCode, data);
-        activityInvite.onActivityResult(requestCode, resultCode, data);
-        Log.d("RRR", "on activity result ");
-    }
 
     public static void configServiceStage(Stage stage) {
         sendAction(SoundsService.ACTION_CONFIG, stage.config.sounds);
@@ -178,9 +174,7 @@ public class MainActivity extends FragmentActivity {
         return activityBilling;
     }
 */
-    public GoogleInvite getActivityInvite() {
-        return activityInvite;
-    }
+
 
     //  public SoundsManager getSoundsManager() {
     //      return soundsManager;
@@ -203,18 +197,19 @@ public class MainActivity extends FragmentActivity {
         gameHolder.addView(layoutMainMenu.onCreateView(this));
 
     }
-/*
-    public Fragment getCurrentFragment() {
-        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragments_container);
-        return fragment;
-    }
-*/
+
+    /*
+        public Fragment getCurrentFragment() {
+            Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragments_container);
+            return fragment;
+        }
+    */
     public void removeMainMenu() {
 
-        if(layoutMainMenu.getLayout().getParent()!=null)
+        if (layoutMainMenu.getLayout().getParent() != null)
             gameHolder.removeView(layoutMainMenu.getLayout());
 
-       // surfaceRenderer.setGameLoop();
+        // surfaceRenderer.setGameLoop();
        /*
         Fragment f = getCurrentFragment();
         if (f != null) {
@@ -247,45 +242,43 @@ public class MainActivity extends FragmentActivity {
      *
      * @return the BogoMIPS value as a String
      */
-    public static String getBogoMipsFromCpuInfo(){
+    public static String getBogoMipsFromCpuInfo() {
         String result = null;
         String cpuInfo = readCPUinfo();
-        String[] cpuInfoArray =cpuInfo.split(":");
-        for( int i = 0 ; i< cpuInfoArray.length;i++){
-            if(cpuInfoArray[i].contains("BogoMIPS")){
-                result = cpuInfoArray[i+1];
+        String[] cpuInfoArray = cpuInfo.split(":");
+        for (int i = 0; i < cpuInfoArray.length; i++) {
+            if (cpuInfoArray[i].contains("BogoMIPS")) {
+                result = cpuInfoArray[i + 1];
                 break;
             }
         }
-        if(result != null) result = result.trim();
+        if (result != null) result = result.trim();
         return result;
     }
 
     /**
-     * @see {http://stackoverflow.com/a/3021088/3014036}
-     *
      * @return the CPU info.
+     * @see {http://stackoverflow.com/a/3021088/3014036}
      */
-    public static String readCPUinfo()
-    {
+    public static String readCPUinfo() {
         ProcessBuilder cmd;
-        String result="";
+        String result = "";
         InputStream in = null;
-        try{
+        try {
             String[] args = {"/system/bin/cat", "/proc/cpuinfo"};
             cmd = new ProcessBuilder(args);
             Process process = cmd.start();
             in = process.getInputStream();
             byte[] re = new byte[1024];
-            while(in.read(re) != -1){
+            while (in.read(re) != -1) {
                 System.out.println(new String(re));
                 result = result + new String(re);
             }
-        } catch(IOException ex){
+        } catch (IOException ex) {
             ex.printStackTrace();
         } finally {
             try {
-                if(in !=null)
+                if (in != null)
                     in.close();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -297,24 +290,13 @@ public class MainActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Fabric.with(this, new Crashlytics());
         DAO.initRequestQueue(this);
 
-        Log.d("GLTEST",readCPUinfo());
+        Log.d("GLTEST", readCPUinfo());
 
         Intent intent = new Intent(this, SoundsService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
-        // if(Build.VERSION.SDK_INT>=11)
-        // setTheme(android.R.style.Theme_Holo_Dialog);
-
-        activityInvite = new GoogleInvite(this);
-
-        activityInvite.receive();
-
-
-        //  activityBilling = new GoogleBilling(this);
-        //  activityBilling.setupBilling();
         activityLoader = new ActivityLoader(this, handler);
 
         activityLoader.listCatche();
@@ -327,7 +309,6 @@ public class MainActivity extends FragmentActivity {
 
         screenHeight = this.getResources().getDisplayMetrics().heightPixels;
         screenWidth = this.getResources().getDisplayMetrics().widthPixels;
-        FacebookSdk.sdkInitialize(this.getApplicationContext());
 
         //   soundsManager = new SoundsManager(this);
 
@@ -358,9 +339,9 @@ public class MainActivity extends FragmentActivity {
         //mainMenu = new MainMenu(this, surfaceRenderer);
         scoreLayout = new AnimationScoreLayout(surfaceRenderer);
 
-      //  drawer = (DrawerLayout) findViewById(R.id.drawer);
-     //   drawerContent = (LinearLayout) findViewById(R.id.drawer_content);
-     //   drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        //  drawer = (DrawerLayout) findViewById(R.id.drawer);
+        //   drawerContent = (LinearLayout) findViewById(R.id.drawer_content);
+        //   drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
         //setupFragment();
 
@@ -374,7 +355,7 @@ public class MainActivity extends FragmentActivity {
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         currentStage = unlockedStage = preferences.getInt("current_stage", 0);
 
-        Log.d("activityloader","start loading stages");
+        Log.d("activityloader", "start loading stages");
         activityLoader.loadStagesFile(new ActivityLoader.OnStagesLoadingListener() {
             @Override
             public void onLoaded() {
@@ -388,7 +369,7 @@ public class MainActivity extends FragmentActivity {
                     @Override
                     public void onFailed() {
 
-                        Log.d(TAG,"loading stage fialed! ");
+                        Log.d(TAG, "loading stage fialed! ");
                         currentStage = 0;
                         activityLoader.getStageAtIndex(currentStage, new ActivityLoader.OnStageLoadingListener() {
                             @Override
@@ -422,11 +403,9 @@ public class MainActivity extends FragmentActivity {
         }, true);
 
 
-        //soundsManager.playBackgroundBirds();
-
 
         mInterstitialAd = new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+        mInterstitialAd.setAdUnitId("ca-app-pub-2117747061583571/7695580442");
 
         mInterstitialAd.setAdListener(new AdListener() {
             @Override
@@ -441,9 +420,6 @@ public class MainActivity extends FragmentActivity {
         });
 
         requestNewInterstitial();
-
-
-       // setupFragment();
 
 
         mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
@@ -466,10 +442,41 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onRewardedVideoAdClosed() {
 
+                Log.d("ADS","close");
+                requestNewAward();
+
             }
 
             @Override
             public void onRewarded(RewardItem rewardItem) {
+
+
+                Log.d("ADS","rewarded..");
+                currentStage++;
+                // if (currentStage == activityLoader.jsonStages.length())
+                //     currentStage = 0;
+
+                int savedStage = preferences.getInt("current_stage", 0);
+                if (savedStage < currentStage) {
+                    unlockedStage = currentStage;
+
+                    preferences.edit().putInt("current_stage", unlockedStage).apply();
+                }
+
+                activityLoader.getStageAtIndex(currentStage, new ActivityLoader.OnStageLoadingListener() {
+                    @Override
+                    public void onLoaded(Stage stage) {
+                        loadStage(stage);
+
+                    }
+
+                    @Override
+                    public void onFailed() {
+
+                    }
+
+                });
+
 
             }
 
@@ -480,26 +487,46 @@ public class MainActivity extends FragmentActivity {
 
             @Override
             public void onRewardedVideoAdFailedToLoad(int i) {
+                Log.d("ADS","rewarded failed");
 
             }
         });
 
+        requestNewAward();
 
     }
 
-    public void showAdv() {
-        Log.d(TAG,"showinga ad...");
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
+    public boolean showAdv() {
+        Log.d(TAG, "showinga ads...");
 
+            Log.d(TAG, "add is loaded");
 
-                if (mInterstitialAd.isLoaded()) {
-                    mInterstitialAd.show();
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+
+                    if (mInterstitialAd.isLoaded()) {
+
+                        mInterstitialAd.show();
+
+                    }
                 }
+            });
+            return true;
+  
+    }
 
-            }
-        });
+    private void show_award()
+    {
+
+        if(mRewardedVideoAd.isLoaded()) {
+            Log.d("ADS","show rewarded ad");
+            mRewardedVideoAd.show();
+
+        }
+        else
+            Log.d("ADS","rewarded not loaded");
+
     }
 
     public void showVideoAdv() {
@@ -522,22 +549,8 @@ public class MainActivity extends FragmentActivity {
         AlertDialog dialog = builder.setMessage("Skip to next stage?").setPositiveButton("yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                currentStage++;
-               // if (currentStage == activityLoader.jsonStages.length())
-               //     currentStage = 0;
 
-                activityLoader.getStageAtIndex(currentStage, new ActivityLoader.OnStageLoadingListener() {
-                    @Override
-                    public void onLoaded(Stage stage) {
-                        loadStage(stage);
-
-                    }
-
-                    @Override
-                    public void onFailed() {
-
-                    }
-                });
+                show_award();
                 dialog.dismiss();
 
 
@@ -557,10 +570,20 @@ public class MainActivity extends FragmentActivity {
 
     private void requestNewInterstitial() {
         AdRequest adRequest = new AdRequest.Builder()
-                .addTestDevice("SEE_YOUR_LOGCAT_TO_GET_YOUR_DEVICE_ID")
                 .build();
 
         mInterstitialAd.loadAd(adRequest);
+    }
+
+    private void requestNewAward()
+    {
+        Bundle extras = new Bundle();
+        extras.putBoolean("_noRefresh", true);
+        AdRequest adRequest = new AdRequest.Builder()
+                .addNetworkExtrasBundle(com.google.ads.mediation.unity.UnityAdapter.class, extras)
+                .build();
+        mRewardedVideoAd.loadAd(getResources().getString(R.string.award_ad_unit_id), adRequest);
+        Log.d("ads","loading reward..");
     }
 
     public void clearStageState()
@@ -579,7 +602,7 @@ public class MainActivity extends FragmentActivity {
             }
         });
 
-       // surfaceRenderer.loadStageData(activityLoader.getStageAtIndex(currentStage));
+        // surfaceRenderer.loadStageData(activityLoader.getStageAtIndex(currentStage));
 
     }
 
@@ -601,7 +624,7 @@ public class MainActivity extends FragmentActivity {
 
             }
 */
-            layoutMainMenu.loadStage(stage,currentStage);
+            layoutMainMenu.loadStage(stage, currentStage);
             scoreLayout.config(stage, currentStage);
 
 
@@ -612,17 +635,15 @@ public class MainActivity extends FragmentActivity {
             e.printStackTrace();
         }
         CURRENT_STAGE = stage;
-     //   surfaceRenderer.setRunnig(true);
+        //   surfaceRenderer.setRunnig(true);
     }
-
-
 
 
     public void moveToNextStage() {
 
         currentStage++;
-     //   if (currentStage >= activityLoader.jsonStages.length())
-     //       currentStage = 0;
+        //   if (currentStage >= activityLoader.jsonStages.length())
+        //       currentStage = 0;
 
 
         int savedStage = preferences.getInt("current_stage", 0);
@@ -668,7 +689,7 @@ public class MainActivity extends FragmentActivity {
                                 });
                             }
                         });
-                       // loadStage(activityLoader.getStageAtIndex(currentStage));
+                        // loadStage(activityLoader.getStageAtIndex(currentStage));
                         //surfaceRenderer.setRunnig(true);
                         surfaceRenderer.setDrawing(true);
 
@@ -704,8 +725,8 @@ public class MainActivity extends FragmentActivity {
                 setupMainMenu();
 
 
-           //     drawerContent.removeAllViews();
-           //     drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+                //     drawerContent.removeAllViews();
+                //     drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
 
             } else {
@@ -721,7 +742,12 @@ public class MainActivity extends FragmentActivity {
     public void onResume() {
 
         super.onResume();
+
         surfaceRenderer.onResume();
+
+        //UnityAds.changeActivity(this);
+
+
     }
 
     public void onPause() {

@@ -8,7 +8,10 @@ import org.apache.commons.lang3.ArrayUtils;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.util.Arrays;
 import java.util.Random;
+
+import javax.microedition.khronos.opengles.GL10;
 
 import pl.slapps.dot.MainActivity;
 import pl.slapps.dot.R;
@@ -25,7 +28,7 @@ import pl.slapps.dot.model.Config;
 import pl.slapps.dot.model.Route;
 
 
-public class MainSprite extends Sprite {
+public class MainSprite {
 
 
     private String TAG = MainSprite.class.getName();
@@ -36,24 +39,32 @@ public class MainSprite extends Sprite {
     private Game game;
     public TileRoute lastChangeRoute;
     public TileRoute currentTile;
-    private float lightDistance;
-    private float lightShinning;
+    public float lightDistance;
+    public float lightShinning;
     public float spriteSpeed = 0;
     public float defaultSpeed = 0;
 
     public boolean booster = false;
-    //private boolean initialized = false;
 
-    private final long BOOSTER_TIME = 10 * 1000;
     private long BOOSTER_START_TIME;
 
+    private static final long BOOSTER_TIME = 10 * 1000;
+    private static final int BYTES_PER_FLOAT = 4;
+    private static final int COORDS_PER_VERTEX = 3;
+    private static final int BUFFER_SIZE = COORDS_PER_VERTEX * BYTES_PER_FLOAT;
 
-    static final int COORDS_PER_VERTEX = 3;
-    private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
+    private final FloatBuffer bufferedSizesVertex;
+    private final FloatBuffer bufferedVertex;
+    private float[] vertices;
 
 
-    float color[] = {0.0f, 0.0f, 0.0f, 1.0f};
-    //public FloatBuffer colorBuffer;
+
+    public float color[] = {0.0f, 0.0f, 0.0f, 1.0f};
+    public float centerX;
+    public float centerY;
+    public float x; //movement x
+    public float y; //movement y
+    public float dotSize; //sprite size
 
 
     public void startBooster() {
@@ -83,12 +94,32 @@ public class MainSprite extends Sprite {
             return false;
     }
 
+    public void setMove(float x, float y) {
+        this.x = x;
+        this.y = y;
+    }
+
     public MainSprite(Game view, float centerX, float centerY, int width,
                       int height, Config config) {
 
-        super(centerX, centerY, width, height, true);
+
+        this.centerX=centerX;
+        this.centerY=centerY;
+        this.dotSize=width;
         this.game = view;
         fence = view.maze;
+
+
+        bufferedSizesVertex = ByteBuffer.allocateDirect(BYTES_PER_FLOAT).order(ByteOrder.nativeOrder()).asFloatBuffer();
+        bufferedVertex = ByteBuffer.allocateDirect(BUFFER_SIZE).order(ByteOrder.nativeOrder()).asFloatBuffer();
+        vertices = new float[]{centerX,centerY,0};
+
+        bufferedVertex.position(0);
+        bufferedVertex.put(vertices);
+        bufferedVertex.position(0);
+        bufferedSizesVertex.position(0);
+        bufferedSizesVertex.put(dotSize);
+        bufferedSizesVertex.position(0);
 
         if (MainActivity.screenHeight < MainActivity.screenWidth)
             defaultSpeed = MainActivity.screenHeight / 120;
@@ -98,15 +129,6 @@ public class MainSprite extends Sprite {
         spriteSpeed = defaultSpeed;
         configure(config);
 
-/*
-        ByteBuffer cb = ByteBuffer.allocateDirect(color.length * 4);
-        cb.order(ByteOrder.nativeOrder());
-        colorBuffer = cb.asFloatBuffer();
-        colorBuffer.put(color);
-        colorBuffer.position(0);
-
-        initialized = true;
-*/
 
     }
 
@@ -124,22 +146,6 @@ public class MainSprite extends Sprite {
 
         }
 
-/*
-        float[] tmp = new float[0];
-        tmp = Util.summArrays(tmp, color);
-        tmp = Util.summArrays(tmp, color);
-        tmp = Util.summArrays(tmp, color);
-        tmp = Util.summArrays(tmp, color);
-
-        color = tmp;
-
-
-        if (initialized) {
-            colorBuffer.position(0);
-            colorBuffer.put(color);
-            colorBuffer.position(0);
-        }
-*/
         if (!config.settings.switchDotLightDistance)
             lightDistance = config.settings.dotLightDistance;
         else
@@ -152,9 +158,20 @@ public class MainSprite extends Sprite {
 
 
     public void update(float ratio) {
-        super.update(ratio);
 
-        long start = System.currentTimeMillis();
+        ratio=ratio/16.6f;
+        if(ratio>2)
+            ratio=2;
+
+        centerX += x * ratio;
+        centerY += y * ratio;
+
+        vertices = new float[]{centerX,centerY,0};
+
+        bufferedVertex.position(0);
+        bufferedVertex.put(vertices);
+        bufferedVertex.position(0);
+
 
         if (booster) {
             if (System.currentTimeMillis() - BOOSTER_START_TIME > BOOSTER_TIME) {
@@ -172,7 +189,7 @@ public class MainSprite extends Sprite {
 
         Wall.Type collision = null;
         if (tmpCurrent != null)
-            collision = tmpCurrent.checkCollision(centerX, centerY, width / 2);
+            collision = tmpCurrent.checkCollision(centerX, centerY,dotSize / 2);
 
         fence.checkCoinCollision(this);
 
@@ -227,9 +244,12 @@ public class MainSprite extends Sprite {
                 game.explodeDot(true);
 
 
-                if (new Random().nextFloat() > 0.85f) {
-                    game.setPaused(true);
-                    game.gameView.context.showAdv();
+                if (new Random().nextFloat() > 0.75f) {
+
+                    if(game.gameView.context.showAdv())
+                        game.setPaused(true);
+
+
                 }
 
                 game.resetDot();
@@ -243,52 +263,46 @@ public class MainSprite extends Sprite {
 
     public void drawGl2(float[] mvpMatrix) {
 
+        GLES20.glUseProgram(game.mPointProgram);
+
         // get handle to vertex shader's vPosition member
-        //mPositionHandle = GLES20.glGetAttribLocation(game.mProgram, "vPosition");
 
         // Enable a handle to the triangle vertices
-        GLES20.glEnableVertexAttribArray(game.mPositionHandle);
+        GLES20.glEnableVertexAttribArray(game.mPointPositionHandle);
+
 
         // Prepare the triangle coordinate data
         GLES20.glVertexAttribPointer(
-                game.mPositionHandle, COORDS_PER_VERTEX,
+                game.mPointPositionHandle, COORDS_PER_VERTEX,
                 GLES20.GL_FLOAT, false,
-                vertexStride, bufferedVertex);
+                0, bufferedVertex);
 
 
-        // mColorHandle = GLES20.glGetUniformLocation(game.mProgram, "vColor");
-        // Pass in the color information
-        // Set color for drawing the triangle
-        //  GLES20.glUniform4fv(game.mColorHandle, 1, color, 0);
+        GLES20.glEnableVertexAttribArray(game.mPointSizeHandle);
 
-        //GLES20.glEnableVertexAttribArray(game.mColorHandle);
-        GLES20.glUniform4fv(game.mColorHandle, 1, color, 0);
-// Prepare the triangle coordinate data
-        //GLES20.glVertexAttribPointer(game.mColorHandle, 4, GLES20.GL_FLOAT, false, 0, colorBuffer);
+        GLES20.glVertexAttribPointer(
+                game.mPointSizeHandle, 1,
+                GLES20.GL_FLOAT, false,
+                0, bufferedSizesVertex);
+
+        GLES20.glUniform4fv(game.mPointColorHandle, 1, color, 0);
 
         // get handle to shape's transformation matrix
-        //  mMVPMatrixHandle = GLES20.glGetUniformLocation(game.mProgram, "uMVPMatrix");
-        //  SurfaceRenderer.checkGlError("glGetUniformLocation");
+        // SurfaceRenderer.checkGlError("glGetUniformLocation");
 
-        // Apply the projection and game transformation
-        //  GLES20.glUniformMatrix4fv(game.mMVPMatrixHandle, 1, false, mvpMatrix, 0);
-        //  SurfaceRenderer.checkGlError("glUniformMatrix4fv");
+        // Apply the projection and generator transformation
+        GLES20.glUniformMatrix4fv(game.mPointMVPMatrixHandle, 1, false, mvpMatrix, 0);
 
-
-        GLES20.glUniform3f(game.mDotLightPosHandle, getCenterX(), getCenterY(), 0.0f);
-        GLES20.glUniform1f(game.mDotLightDistanceHandle, lightDistance);
-        GLES20.glUniform1f(game.mDotLightShinningHandle, lightShinning);
-        //  GLES20.glUniform4fv(game.mDotLightColorHandle, 1, color, 0);
+        GLES20.glDrawArrays(GL10.GL_POINTS, 0, 1);
 
 
-        // Draw the square
-        GLES20.glDrawElements(
-                GLES20.GL_TRIANGLES, indices.length,
-                GLES20.GL_UNSIGNED_SHORT, bufferedIndices);
 
+        GLES20.glDisableVertexAttribArray(game.mPointPositionHandle
+        );
 
-        // Disable vertex array
-        GLES20.glDisableVertexAttribArray(game.mPositionHandle);
+        GLES20.glDisableVertexAttribArray(game.mPointSizeHandle
+        );
+
 
     }
 

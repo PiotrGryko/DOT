@@ -98,25 +98,15 @@ public class Sprite {
     }
 
     public void update(float ratio) {
-        //float ratio = 1;
-     //   if(ratio<1)
+
             ratio=ratio/16.6f;
         if(ratio>2)
             ratio=2;
-        //ratio=1;
-        /*
-        if (LAST_FRAME != 0)
-        {
-            long diff = System.nanoTime() - LAST_FRAME;
-            ratio = diff / DEFAULT_FRAME;
-        }
-*/
 
         moveX += x * ratio;
         moveY += y * ratio;
         centerX += x * ratio;
         centerY += y * ratio;
-        // Log.d("HHH","x="+(x*ratio)+" y="+(y*ratio));
 
         quad.update(x * ratio, y * ratio);
         quad.initSharedVerticles();
@@ -139,6 +129,16 @@ public class Sprite {
                 && v.x >= centerX - width / 2
                 && v.y <= centerY + height / 2
                 && v.y >= centerY - height / 2)
+            return true;
+
+        return false;
+    }
+
+    public boolean cointains(float x, float y) {
+        if (x <= centerX + width / 2
+                && x >= centerX - width / 2
+                && y <= centerY + height / 2
+                && y >= centerY - height / 2)
             return true;
 
         return false;

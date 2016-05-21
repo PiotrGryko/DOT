@@ -24,25 +24,20 @@ public class Game {
 
 
     public Game(SurfaceRenderer gameView) {
-        //this.context = context;
-        this.gameView = gameView;
 
+        this.gameView = gameView;
         dotSize = gameView.screenWidth / 20;
 
     }
 
-    //public MainActivity context;
     public SurfaceRenderer gameView;
 
 
     private MainSprite mainSprite;
     private Background background;
     public Maze maze;
-
     public ExplosionManager explosionManager;
-
     public Stage currentStage;
-
     public float dotSize;
 
 
@@ -121,9 +116,7 @@ public class Game {
 
     }
 
-    public boolean getPaused() {
-        return isPaused;
-    }
+
 
     // Define a simple shader program for our point.
 
@@ -186,32 +179,36 @@ public class Game {
         mTextureMVPMatrixHandle = GLES20.glGetUniformLocation(mTextureProgram, "uMVPMatrix");
 
 
-
-        // background.loadTexture(gameView.context,R.drawable.bubles);
-
-
-        //   if(!updateThread.isAlive())
-        //   updateThread.start();
     }
 
 
     public void initStage(Stage stage) {
 
-        //updateThread.interrupt();
 
 
         MainActivity.configServiceStage(stage);
-        //MainActivity.sendAction(SoundsService.ACTION_CONFIG, stage.config.sounds);
         MainActivity.sendAction(SoundsService.ACTION_BACKGROUND, null);
 
-//        SoundsService.getSoundsManager().configure(stage.config.sounds);
-//        SoundsService.getSoundsManager().playBackgroundSound();
         colorFilter = Util.parseColor(stage.config.colors.colorFilter);
 
 
         currentStage = stage;
+
+
+        /**
+         *
+         * SET CONSTANT VALUES FOR EVERY STAGE
+         *
+         */
+        currentStage.config.settings.dotLightDistance=0.1f;
+        currentStage.config.settings.dotLightShinning=0.8f;
+        currentStage.config.settings.explosionOneLightDistance=1f;
+        currentStage.config.settings.explosionOneLightShinning=2.5f;
+        currentStage.config.settings.explosionTwoLightDistance=1f;
+        currentStage.config.settings.explosionTwoLightShinning=2.5f;
+
+
         background = null;
-        // ExplosionManager.initBuffers();
         background = new Background(this, stage.config);
 
 
@@ -230,7 +227,6 @@ public class Game {
 
         background.setPosition(mainSprite.centerX, mainSprite.centerY);
 
-        //updateThread.start();
     }
 
 
@@ -239,17 +235,6 @@ public class Game {
         if (isPaused)
             return;
 
-        // long tmp = System.currentTimeMillis();
-
-
-        //   long current = System.nanoTime();
-        //   float diff = (current - lastUpdate)/frame;
-        //   if(lastUpdate>0 && diff>1.5f)
-        //   Log.e("ccc", "update time =" + diff);
-        //   lastUpdate=current;
-
-
-        //Log.e("ccc","move "+ratio);
         if (!isCrashed && mainSprite != null)
             mainSprite.update(ratio);
 
@@ -292,11 +277,22 @@ public class Game {
         if (maze != null)
             maze.drawGL20(mMVPMatrix);
 
-        if (!isCrashed && mainSprite != null)
+
+        if (!isCrashed && mainSprite != null) {
+
+            GLES20.glUniform3f(mDotLightPosHandle, mainSprite.centerX+mainSprite.x, mainSprite.centerY +mainSprite.y, 0.0f);
+            GLES20.glUniform1f(mDotLightDistanceHandle, mainSprite.lightDistance);
+            GLES20.glUniform1f(mDotLightShinningHandle, mainSprite.lightShinning);
             mainSprite.drawGl2(mMVPMatrix);
+
+
+        }
+
 
         if (explosionManager != null)
             explosionManager.drawGl2(mMVPMatrix);
+
+
 
 
         // Moving average calc
@@ -421,10 +417,7 @@ public class Game {
             explosionManager.configure(currentStage.config);
         }
 
-        // MainActivity.configServiceStage(currentStage);
-        //MainActivity.sendAction(SoundsService.ACTION_CONFIG, currentStage.config.sounds);
 
-        // SoundsService.getSoundsManager().configure(currentStage.config.sounds);
 
         colorFilter = Util.parseColor(currentStage.config.colors.colorFilter);
 
@@ -486,8 +479,6 @@ public class Game {
         if(sound)
         MainActivity.sendAction(SoundsService.ACTION_CRASH, null);
 
-        //if (sound)
-        //    SoundsService.getSoundsManager().playCrashSound();
         return null;
     }
 

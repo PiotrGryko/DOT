@@ -1,45 +1,49 @@
 {
   "project_info": {
-    "project_id": "dot1-d27f5",
     "project_number": "590785306030",
-    "name": "DOT1"
+    "firebase_url": "https://dot1-d27f5.firebaseio.com",
+    "project_id": "dot1-d27f5",
+    "storage_bucket": "dot1-d27f5.appspot.com"
   },
   "client": [
     {
       "client_info": {
         "mobilesdk_app_id": "1:590785306030:android:417adcedfbd4a974",
-        "client_id": "android:pl.slapps.dot",
-        "client_type": 1,
         "android_client_info": {
-          "package_name": "pl.slapps.dot",
-          "certificate_hash": []
+          "package_name": "pl.slapps.dot"
         }
       },
       "oauth_client": [
         {
-          "client_id": "590785306030-b573artk5hq9ont3bjbhfpr1r8dburru.apps.googleusercontent.com",
+          "client_id": "590785306030-vlig12cfh00fioil8pjbifp8u2sqlqai.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "pl.slapps.dot",
-            "certificate_hash": "FC6F3638F25A770428E69542ADD8617F1E7C5046"
+            "certificate_hash": "E98B4D23667CCFDA04B6277FEBE7F6B8DB6EF60B"
           }
+        },
+        {
+          "client_id": "590785306030-50moko873vam3hndmjmmeuueq35rogac.apps.googleusercontent.com",
+          "client_type": 3
         }
       ],
-      "api_key": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRXSbHdccal5GYHBr5qgjXJfCUCHNQE8I"
+        }
+      ],
       "services": {
         "analytics_service": {
           "status": 1
         },
-        "cloud_messaging_service": {
-          "status": 1,
-          "apns_config": []
-        },
         "appinvite_service": {
           "status": 2,
-          "other_platform_oauth_client": []
-        },
-        "google_signin_service": {
-          "status": 1
+          "other_platform_oauth_client": [
+            {
+              "client_id": "590785306030-50moko873vam3hndmjmmeuueq35rogac.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 1
@@ -47,6 +51,5 @@
       }
     }
   ],
-  "client_info": [],
-  "ARTIFACT_VERSION": "1"
+  "configuration_version": "1"
 }

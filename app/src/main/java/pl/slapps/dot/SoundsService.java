@@ -137,7 +137,7 @@ public class SoundsService extends Service {
     public IBinder onBind(Intent intent) {
         am = this.getAssets();
 
-        Toast.makeText(getApplicationContext(), "binding", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getApplicationContext(), "binding", Toast.LENGTH_SHORT).show();
 
         return mMessenger.getBinder();
 
