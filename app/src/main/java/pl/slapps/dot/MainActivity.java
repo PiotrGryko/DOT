@@ -360,6 +360,7 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onLoaded() {
 
+
                 activityLoader.getStageAtIndex(currentStage, new ActivityLoader.OnStageLoadingListener() {
                     @Override
                     public void onLoaded(Stage stage) {
@@ -419,7 +420,7 @@ public class MainActivity extends FragmentActivity {
             }
         });
 
-        requestNewInterstitial();
+        //requestNewInterstitial();
 
 
         mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
@@ -492,7 +493,7 @@ public class MainActivity extends FragmentActivity {
             }
         });
 
-        requestNewAward();
+        //requestNewAward();
 
     }
 

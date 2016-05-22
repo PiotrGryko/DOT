@@ -217,8 +217,9 @@ public class LayoutMainMenu{
         //layoutHeader.setVisibility(View.VISIBLE);
         btnPlay.setVisibility(View.VISIBLE);
         layoutPurchase.setVisibility(View.VISIBLE);
-        //btnGenerate.setVisibility(View.VISIBLE);
+        btnGenerate.setVisibility(View.VISIBLE);
         btnSkipStage.setVisibility(View.VISIBLE);
+        btnOnline.setVisibility(View.VISIBLE);
 
         setColor(stage.config);
 
@@ -298,7 +299,7 @@ public class LayoutMainMenu{
                  Log.d(TAG,"ads filed "+i);
              }
          });
-         mAdView.loadAd(adRequest);
+         ///mAdView.loadAd(adRequest);
 
 
 

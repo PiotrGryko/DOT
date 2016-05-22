@@ -208,7 +208,6 @@ public class ActivityLoader {
         for (int i = 0; i < sounds.size(); i++) {
             files.add(sounds.get(i));
         }
-        files.add("");
 
         Log.e("BBB", "listing from " + dir + " listed " + Arrays.toString(fields));
         return files;
@@ -232,7 +231,6 @@ public class ActivityLoader {
         for (int i = 0; i < sounds.size(); i++) {
             files.add(sounds.get(i));
         }
-        files.add("");
         return files;
     }
 

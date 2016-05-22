@@ -256,7 +256,10 @@ public class AutoGenerator {
     private String randomColor(int alpha) {
         int color = Color.argb(alpha, random.nextInt(255), random.nextInt(255), random.nextInt(255));
 
-        return "#" + Integer.toHexString(color);
+        String hex = Integer.toHexString(color);
+        if(hex.length()==7)
+            hex = "0"+hex;
+        return "#" +hex;
     }
 
     public void generateRandomStage() {
