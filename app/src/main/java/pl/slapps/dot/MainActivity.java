@@ -639,6 +639,34 @@ public class MainActivity extends FragmentActivity {
         //   surfaceRenderer.setRunnig(true);
     }
 
+    public void loadStageAt(final int index)
+    {
+        activityLoader.getStageAtIndex(index, new ActivityLoader.OnStageLoadingListener() {
+            @Override
+            public void onLoaded(Stage stage) {
+                currentStage=index;
+                loadStage(stage);
+            }
+
+            @Override
+            public void onFailed() {
+                currentStage = 0;
+                activityLoader.getStageAtIndex(index, new ActivityLoader.OnStageLoadingListener() {
+                    @Override
+                    public void onLoaded(Stage stage) {
+                        loadStage(stage);
+                    }
+
+                    @Override
+                    public void onFailed() {
+                        Toast.makeText(MainActivity.this, "??", Toast.LENGTH_LONG).show();
+
+                    }
+                });
+            }
+        });
+    }
+
 
     public void moveToNextStage() {
 
@@ -667,29 +695,7 @@ public class MainActivity extends FragmentActivity {
 
                         //mainMenu.playStage(false);
 
-                        activityLoader.getStageAtIndex(currentStage, new ActivityLoader.OnStageLoadingListener() {
-                            @Override
-                            public void onLoaded(Stage stage) {
-                                loadStage(stage);
-                            }
-
-                            @Override
-                            public void onFailed() {
-                                currentStage = 0;
-                                activityLoader.getStageAtIndex(currentStage, new ActivityLoader.OnStageLoadingListener() {
-                                    @Override
-                                    public void onLoaded(Stage stage) {
-                                        loadStage(stage);
-                                    }
-
-                                    @Override
-                                    public void onFailed() {
-                                        Toast.makeText(MainActivity.this, "??", Toast.LENGTH_LONG).show();
-
-                                    }
-                                });
-                            }
-                        });
+                     loadStageAt(currentStage);
                         // loadStage(activityLoader.getStageAtIndex(currentStage));
                         //surfaceRenderer.setRunnig(true);
                         surfaceRenderer.setDrawing(true);

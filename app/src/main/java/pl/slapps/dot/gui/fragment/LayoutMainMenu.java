@@ -11,10 +11,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -219,8 +221,8 @@ public class LayoutMainMenu{
         layoutPurchase.setVisibility(View.VISIBLE);
         btnGenerate.setVisibility(View.VISIBLE);
         btnSkipStage.setVisibility(View.VISIBLE);
-        btnOnline.setVisibility(View.VISIBLE);
-
+        //btnOnline.setVisibility(View.VISIBLE);
+        btnStages.setVisibility(View.VISIBLE);
         setColor(stage.config);
 
     }
@@ -439,6 +441,32 @@ public class LayoutMainMenu{
                 final Dialog worldsDialog = new Dialog(context);
                 worldsDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
+
+                ArrayList<String> stages = new ArrayList<String>();
+
+                for(int i=0;i<900;i++)
+                {
+                    stages.add(Integer.toString(i));
+                }
+
+
+                ListView listView = new ListView(context);
+                listView.setAdapter(new ArrayAdapter<String>(context,android.R.layout.simple_list_item_1,stages));
+
+
+                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                        context.loadStageAt(position);
+                        worldsDialog.dismiss();
+                    }
+                });
+
+                worldsDialog.setContentView(listView);
+                worldsDialog.show();
+
+                /*
                 View v = LayoutInflater.from(context).inflate(R.layout.dialog_worlds, null);
 
                 GridView gridView = (GridView) v.findViewById(R.id.grid_view);
@@ -488,9 +516,8 @@ public class LayoutMainMenu{
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+*/
 
-                worldsDialog.setContentView(v);
-                worldsDialog.show();
 
 
             }
