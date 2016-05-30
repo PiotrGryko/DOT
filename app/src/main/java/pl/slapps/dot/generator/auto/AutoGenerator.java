@@ -323,11 +323,13 @@ public class AutoGenerator {
         generator.getConfig().sounds.soundFinish = getRandomSound("/finish");
 
 
-        boolean useBackground = random.nextFloat()>0.80f;
+        boolean useBackground = random.nextFloat()>0.70f;
         if(useBackground)
             generator.getConfig().settings.backgroundFile = getRandomBackground();
         else
             generator.getConfig().settings.backgroundFile = "";
+
+        Log.d(TAG,"use background "+useBackground);
 
 
 
